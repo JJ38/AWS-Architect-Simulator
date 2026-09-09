@@ -13,7 +13,7 @@ export default function Sidebar() {
 
             {
                 services.map((service) => (
-                    <SidebarButton serviceName={service.name} serviceDescription={service.description} serviceImg={service.img} />
+                    <SidebarButton serviceName={service.name} serviceDescription={service.description} serviceImg={service.img} key={service.name} />
                 ))
             }
 

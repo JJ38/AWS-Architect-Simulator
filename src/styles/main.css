@@ -1,7 +1,3 @@
-@import url('@xyflow/react/dist/style.css');
-/* we put the theme css at the end to override some of the default css variables and styles */
-/* @import url('./xy-theme.css'); */
- 
 html,
 body {
   height: 100%;
@@ -11,6 +7,7 @@ body {
 }
  
 #root {
+  display: flex;
   height: 100%;
 }
 
