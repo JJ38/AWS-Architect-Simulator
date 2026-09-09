@@ -11,10 +11,11 @@ architectures is a stretch goal, separate from Terraform-for-hosting.
 - [ ] Define the core JSON schema: node (id, service type, position, config) and
       edge (id, source, target, label/protocol) — this is the foundation
       everything else reads/writes, worth getting reasonably right early
-- [ ] Render a basic canvas: pan/zoom, background grid, controls, minimap
+- [x] Render a basic canvas: pan/zoom, background grid, controls
+- [ ] Add minimap
 - [ ] Pick initial service catalog (~10-15 services): ALB, EC2/ASG, Lambda, RDS,
       DynamoDB, S3, CloudFront, SQS, API Gateway, Route53, ElastiCache
-- [ ] Build a sidebar/palette listing the service catalog (icon + name)
+- [x] Build a sidebar/palette listing the service catalog (icon + name)
 - [ ] Drag-and-drop from sidebar onto canvas creates a new node
 - [ ] Custom node component (icon, name, short config summary)
 - [ ] Click-drag between nodes creates an edge (connection)
