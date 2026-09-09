@@ -1,4 +1,7 @@
-.wrapper{
+.sidebar{
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
     color: rgb(194, 75, 75);
     height: 100%;
     width: 5%;
