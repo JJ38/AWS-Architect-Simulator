@@ -10,7 +10,7 @@ const nodes = [
 
 const edges = [{ id: 'n1-n2', source: 'n1', target: 'n2' }];
  
-export default function App() {
+export default function App({ selectedService, setSelectedService }: { selectedService: string | null; setSelectedService: (service: string | null) => void }) {
 
   const [stateNodes, setNodes] = useState(nodes);
   const [stateEdges, setEdges] = useState(edges);
@@ -28,7 +28,14 @@ export default function App() {
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
         fitView
+        onPaneClick={() => handlePaneClick(selectedService, setSelectedService)}
       />
     </div>
   );
+}
+
+function handlePaneClick(selectedService: string | null, setSelectedService: (service: string | null) => void) {
+
+  selectedService != null ? console.log(`Place service node ${selectedService}`) : console.log('Dont place service node');
+   
 }

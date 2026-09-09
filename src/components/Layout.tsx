@@ -10,7 +10,7 @@ export default function Layout() {
     return (
         <div className="layout">
             <Sidebar selectedService={selectedService} setSelectedService={setSelectedService} />
-            <Canvas />
+            <Canvas selectedService={selectedService} setSelectedService={setSelectedService} />
         </div>
     );
 }

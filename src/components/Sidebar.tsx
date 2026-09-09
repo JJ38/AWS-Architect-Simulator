@@ -36,5 +36,4 @@ function handleSidebarButtonClick(selectedService: string | null, setSelectedSer
 
     console.log("new selectedService value: " + selectedService);
 
-
 }
