@@ -71,6 +71,21 @@ keeps sim logic out of components.
 
 ## Working conventions (this user is learning TS/React/AWS/Terraform)
 
+- This is a learning project — the user wants to write the implementation
+  themselves. Default to explaining approach/tradeoffs/mechanics rather than
+  writing the code, even for requests that read as "how do I do X" or small
+  scoped tasks. Only write code when explicitly asked to implement/add/fix
+  something directly.
+- When a conversation explains a new TS/React/AWS/Terraform concept (Context,
+  hooks, etc. — not project-specific code review), add a short entry to
+  `react-concepts.md` (repo root) rather than leaving it only in chat — this
+  is the portable copy the user reads from environments without Claude
+  access, so it's the source of truth, checked into git like any other file.
+  Also mirror the entry into the cheatsheet artifact (same content, short and
+  digestible) at
+  https://claude.ai/code/artifact/4e73fff0-0437-4ed3-9bdc-1c43b24be4dd
+  — republish to that same URL (pass it as `url` to the Artifact tool) so it
+  updates in place instead of minting a new artifact each session.
 - Prefer named handler functions over inline anonymous ones once logic is more
   than a one-liner — extract for readability, not because inline is wrong (it's
   the normal default for simple cases).

@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { ReactFlow, applyNodeChanges, applyEdgeChanges, addEdge } from '@xyflow/react';
+import { ReactFlow, applyNodeChanges, applyEdgeChanges, addEdge, useReactFlow, type ViewportHelperFunctions } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import '../styles/Canvas.css'; 
 
@@ -10,10 +10,11 @@ const nodes = [
 
 const edges = [{ id: 'n1-n2', source: 'n1', target: 'n2' }];
  
-export default function App({ selectedService, setSelectedService }: { selectedService: string | null; setSelectedService: (service: string | null) => void }) {
+export default function Canvas({ selectedService, setSelectedService }: { selectedService: string | null; setSelectedService: (service: string | null) => void }) {
 
   const [stateNodes, setNodes] = useState(nodes);
   const [stateEdges, setEdges] = useState(edges);
+  const { screenToFlowPosition } = useReactFlow();
  
   const onNodesChange = useCallback((changes: any) => setNodes((nodesSnapshot) => applyNodeChanges(changes, nodesSnapshot)), []);
   const onEdgesChange = useCallback((changes: any) => setEdges((edgesSnapshot) => applyEdgeChanges(changes, edgesSnapshot)), []);
@@ -28,14 +29,32 @@ export default function App({ selectedService, setSelectedService }: { selectedS
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
         fitView
-        onPaneClick={() => handlePaneClick(selectedService, setSelectedService)}
+        onPaneClick={(event) => handlePaneClick(event, screenToFlowPosition, selectedService, setSelectedService, stateNodes, setNodes)}
+        onPaneMouseMove={(event) => handlePaneMouseMove(event, screenToFlowPosition, selectedService, setSelectedService)}
       />
     </div>
   );
 }
 
-function handlePaneClick(selectedService: string | null, setSelectedService: (service: string | null) => void) {
+function handlePaneClick(event: React.MouseEvent, screenToFlowPosition: ViewportHelperFunctions['screenToFlowPosition'], selectedService: string | null, setSelectedService: (service: string | null) => void, stateNodes: any[], setNodes: (nodes: any[]) => void) {
 
   selectedService != null ? console.log(`Place service node ${selectedService}`) : console.log('Dont place service node');
-   
+
+  if(selectedService == null) {
+    return;
+  }
+
+  const flowPosition = screenToFlowPosition({ x: event.clientX, y: event.clientY });
+  const newNode = { id: `n${stateNodes.length + 1}`, position: flowPosition, data: { label: selectedService ?? `${selectedService} ID:${stateNodes.length + 1}` } };
+
+  setNodes([...stateNodes, newNode]);
+
+  setSelectedService(null);
+
+}
+
+function handlePaneMouseMove(event: React.MouseEvent, screenToFlowPosition: ViewportHelperFunctions['screenToFlowPosition'], selectedService: string | null, setSelectedService: (service: string | null) => void) {
+
+  const flowPosition = screenToFlowPosition({ x: event.clientX, y: event.clientY });
+
 }
