@@ -58,7 +58,7 @@ function handlePaneClick(event: React.MouseEvent, screenToFlowPosition: Viewport
   }
 
   const flowPosition = screenToFlowPosition({ x: event.clientX, y: event.clientY });
-  const newNode = { id: `n${nodeIdCounter}`, position: flowPosition, data: { label: `n${nodeIdCounter}`, img: `${selectedService.image}`} , type: 'imageNode', measured: { width: 300, height: 72 } };
+  const newNode = { id: `n${nodeIdCounter}`, position: flowPosition, data: { label: `n${nodeIdCounter}`, ghost: false, img: `${selectedService.image}`} , type: 'imageNode', measured: { width: 300, height: 72 } };
 
   setNodes([...stateNodes, newNode]);
   setGhostNodes([]);
@@ -76,7 +76,7 @@ function handlePaneMouseMove(event: React.MouseEvent, screenToFlowPosition: View
   const flowPosition = screenToFlowPosition({ x: event.clientX, y: event.clientY });
   nodeIdCounter++;
 
-  const newGhostNode = { id: `n${nodeIdCounter}`, position: flowPosition, data: { label: `n${nodeIdCounter}`, img: `${selectedService.image}`} , type: 'imageNode', measured: { width: 300, height: 72 } };
+  const newGhostNode = { id: `n${nodeIdCounter}`, position: flowPosition, data: { label: `n${nodeIdCounter}`, ghost: true, img: `${selectedService.image}`} , type: 'imageNode', measured: { width: 300, height: 72 } };
   setGhostNodes([newGhostNode]);
   
 }

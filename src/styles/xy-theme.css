@@ -55,7 +55,7 @@
  
 /* Customizing Default Theming */
  
-.react-flow__node {
+.react-flow__node { /* Every node gets wrapped in a div by react flow. This class is added to that div. */
   box-shadow: var(--xy-node-boxshadow-default);
   border-radius: var(--xy-node-border-radius-default);
   background-color: var(--xy-node-background-color-default);

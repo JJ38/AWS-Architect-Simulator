@@ -1,4 +1,5 @@
 import { Handle, Position } from '@xyflow/react';
+import '../styles/ImageNode.css';
 
 function imageNode({ data, isConnectable }: { data: any; isConnectable: boolean }) {
     return (
