@@ -241,3 +241,58 @@ keep those prop references stable — `memo` alone, without that, is a common
 
 Not a default to reach for — an escape hatch from React's default cascade,
 used after profiling shows wasted re-renders.
+
+## 15. TS null safety vs. Dart's `?`/`!`
+
+Same vocabulary as Dart, weaker guarantees by default.
+
+**`?` as "nullable type"** only excludes `null`/`undefined` from a type when
+the `strictNullChecks` compiler option is on (bundled into `strict`). With
+it off — which is this project's current state, `tsconfig.app.json` sets
+neither — `null`/`undefined` are silently assignable to anything, no error.
+With it on, a plain `string` genuinely excludes them, same as Dart's
+`String?` vs `String`.
+
+**`?` is overloaded in TS; Dart's isn't:**
+
+```ts
+interface Foo { bar?: string }   // optional property — bar: string | undefined, may be absent
+obj?.prop                         // optional chaining — runtime check, short-circuits to undefined
+cond ? a : b                      // ordinary ternary, unrelated to null
+```
+
+**`!` (non-null assertion)** matches Dart's intent — "trust me, not null
+here" — but not its safety. Dart's `!` is a real runtime check: wrong, and
+it throws immediately at that line. TS's `!` emits zero runtime code; it's
+a compile-time-only instruction to stop checking. Get it wrong and nothing
+happens at the `!` — the bad value just keeps flowing through the program
+typed as if it were fine, and fails later, often somewhere confusingly far
+from the actual mistake.
+
+## 16. JSX — the X is "XML", not "React"
+
+JSX = "JavaScript XML" — the X names the angle-bracket markup syntax, not
+React. Not valid JavaScript on its own; a compiler (here, TypeScript itself,
+via the `jsx` option in `tsconfig.app.json`) transforms it into plain
+function calls before anything runs:
+
+```tsx
+<div className="foo">{label}</div>
+// compiles to roughly:
+jsx('div', { className: 'foo', children: label })
+```
+
+JSX carries no runtime behavior of its own — it's purely "translate this
+markup into a function call." What that function actually *does* is
+whatever the compiler was configured to target. React invented JSX and it's
+overwhelmingly associated with React, but it isn't React-exclusive —
+Preact, Solid.js, and others reuse the same syntax pointed at their own
+transform function.
+
+**Why the file extension matters:** the compiler only applies the JSX
+transform to files told to contain it — `.tsx`/`.jsx` vs `.ts`/`.js`.
+Without that signal, `<Foo>` in a `.ts` file is genuinely ambiguous:
+TypeScript's older angle-bracket cast syntax `<Type>value` uses the same
+characters, so the parser needs the extension to know which meaning is
+intended. A types-only file with no markup should be `.ts`; any file
+rendering JSX needs `.tsx`.

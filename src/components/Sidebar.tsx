@@ -1,13 +1,14 @@
+import type { Service } from '../types.tsx';
 import '../styles/Sidebar.css';
 import SidebarButton from './SidebarButton';
 
-const services = [
-    { name: 'EC2', description: 'Elastic Compute Cloud', img: 'serviceIcons/Res_Amazon-EC2_Instance_48.svg' },
-    { name: 'S3', description: 'Simple Storage Service', img: 'serviceIcons/Res_Amazon-Simple-Storage-Service_S3-Standard_48.svg' },
-    { name: 'Lambda', description: 'Serverless Computing Service', img: 'serviceIcons/Res_AWS-Lambda_Lambda-Function_48.svg' }
+const services: Service[] = [
+    { name: 'EC2', description: 'Elastic Compute Cloud', icon: 'serviceIcons/Res_Amazon-EC2_Instance_48.svg', image: 'serviceImages/Arch_Amazon-EC2_64.svg' },
+    { name: 'S3', description: 'Simple Storage Service', icon: 'serviceIcons/Res_Amazon-Simple-Storage-Service_S3-Standard_48.svg', image: 'serviceImages/Arch_Amazon-Simple-Storage-Service_64.svg' },
+    { name: 'Lambda', description: 'Serverless Computing Service', icon: 'serviceIcons/Res_AWS-Lambda_Lambda-Function_48.svg', image: 'serviceImages/Arch_AWS-Lambda_64.svg' }
 ]
 
-export default function Sidebar({ selectedService, setSelectedService }: { selectedService: string | null; setSelectedService: (service: string | null) => void}){
+export default function Sidebar({ selectedService, setSelectedService }: { selectedService: Service | null; setSelectedService: (service: Service | null) => void}){
     return <div className="sidebar">
 
             {
@@ -15,10 +16,10 @@ export default function Sidebar({ selectedService, setSelectedService }: { selec
                     <SidebarButton 
                         serviceName={service.name} 
                         serviceDescription={service.description} 
-                        serviceImg={service.img} 
+                        serviceImg={service.icon} 
                         key={service.name} 
-                        isSelected={selectedService === service.name}
-                        onClick={() => handleSidebarButtonClick(selectedService, setSelectedService, service.name)}
+                        isSelected={selectedService?.name === service.name}
+                        onClick={() => handleSidebarButtonClick(selectedService, setSelectedService, service)}
                     />
                 ))
             }
@@ -27,13 +28,13 @@ export default function Sidebar({ selectedService, setSelectedService }: { selec
   
 }
 
-function handleSidebarButtonClick(selectedService: string | null, setSelectedService: (service: string | null) => void, serviceName: string){
+function handleSidebarButtonClick(selectedService: Service | null, setSelectedService: (service: Service | null) => void, service: Service){
+    
+    if(selectedService?.name === service.name){
+        setSelectedService(null);
+        return;
+    }
 
-    console.log("current selected service: " + selectedService);
-    console.log("clicked service: " + serviceName);
-
-    setSelectedService(serviceName == selectedService ? null : serviceName);
-
-    console.log("new selectedService value: " + selectedService);
+    setSelectedService(service);
 
 }

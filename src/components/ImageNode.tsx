@@ -1,4 +1,3 @@
-import { memo } from 'react';
 import { Handle, Position } from '@xyflow/react';
 
 function imageNode({ data, isConnectable }: { data: any; isConnectable: boolean }) {
