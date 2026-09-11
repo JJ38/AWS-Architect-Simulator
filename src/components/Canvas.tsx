@@ -2,10 +2,12 @@ import { useState, useCallback } from 'react';
 import { ReactFlow, applyNodeChanges, applyEdgeChanges, addEdge, useReactFlow, type ViewportHelperFunctions } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import '../styles/Canvas.css'; 
+import ImageNode from './ImageNode';
 
 const nodes = [
   { id: 'n1', position: { x: 0, y: 0 }, data: { label: 'Node 1' } },
   { id: 'n2', position: { x: 0, y: 100 }, data: { label: 'Node 2' } },
+  { id: 'n3', position: { x: 0, y: 200 }, data: { label: 'Node 3', img: 'serviceImages/Arch_Amazon-EC2_64.svg' }, type: 'imageNode' },
 ];
 
 
@@ -24,6 +26,10 @@ export default function Canvas({ selectedService, setSelectedService }: { select
   const onNodesChange = useCallback((changes: any) => setNodes((nodesSnapshot) => applyNodeChanges(changes, nodesSnapshot)), []);
   const onEdgesChange = useCallback((changes: any) => setEdges((edgesSnapshot) => applyEdgeChanges(changes, edgesSnapshot)), []);
   const onConnect = useCallback((params: any) => setEdges((edgesSnapshot) => addEdge(params, edgesSnapshot)), []);
+
+  const nodeTypes = {
+    imageNode: ImageNode,
+  };
  
   return (
     <div className="reactFlowWrapper">
@@ -33,6 +39,7 @@ export default function Canvas({ selectedService, setSelectedService }: { select
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
+        nodeTypes={nodeTypes}
         fitView
         onPaneClick={(event) => handlePaneClick(event, screenToFlowPosition, selectedService, setSelectedService, stateNodes, setNodes, setGhostNodes)}
         onPaneMouseMove={(event) => handlePaneMouseMove(event, screenToFlowPosition, selectedService, setGhostNodes )}

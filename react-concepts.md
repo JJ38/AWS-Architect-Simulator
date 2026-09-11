@@ -173,3 +173,71 @@ setNodes: React.Dispatch<React.SetStateAction<typeof nodes>>
 
 Same lesson as entry 10 above: prefer the library's real type over retyping
 it by hand.
+
+## 13. `memo` is a wrapper, and anonymous functions stay anonymous
+
+`memo(Component)` is a higher-order function: it takes a component and
+returns a *new* component that shallow-compares props before re-rendering,
+skipping the render if nothing changed. It doesn't change how you write the
+component itself.
+
+A separate issue trips people copying docs examples: passing an inline
+arrow function straight into `memo(...)` leaves that function genuinely
+nameless at the JS level.
+
+```ts
+const Foo = () => {};   // Foo.name === "Foo" — inferred from the assignment
+memo(() => {});          // this function's name === "" — it's an argument, not an assignment
+```
+
+"Name inference" only fires for assignment/declaration forms (`const x =`,
+`let x =`, etc.) — a function passed directly as a call argument never
+qualifies, no matter how deeply nested. React DevTools and stack traces use
+that name to label components in the tree, so an anonymous one shows up
+unhelpfully once you're several nodes deep trying to debug something.
+
+Fix: name it before wrapping, either way works:
+
+```ts
+const CustomNode = ({ data, isConnectable }: Props) => { ... };
+export default memo(CustomNode);
+
+// or
+function CustomNode({ data, isConnectable }: Props) { ... }
+export default memo(CustomNode);
+```
+
+## 14. What `memo` is actually for (generic React, not React Flow)
+
+By default, when a component re-renders, React re-renders **every descendant
+in its subtree** — regardless of whether that descendant's own props
+changed. Re-rendering cascades down from wherever a `useState` update
+happened; it isn't gated per-component on "did my props change."
+
+Example: a `Parent` holds a search input's text in `useState` and also
+renders a list of `Item` components built from unrelated data. Every
+keystroke re-renders `Parent` → by default every `Item` re-renders too, even
+though none of their props touched the search text. Cheap items: nobody
+notices. Expensive items (heavy formatting, big subtree, hundreds of them):
+real wasted work on every keystroke.
+
+`memo(Item)` shallow-compares new props against last render's props and
+skips calling `Item`'s render function entirely if they're equal.
+
+**Use it when:** a component re-renders often for reasons that live in an
+ancestor and have nothing to do with its own props, *and* its render is
+expensive enough that skipping it is worth the comparison — ideally
+confirmed with the React DevTools Profiler, not guessed.
+
+**It does nothing (or wastes a comparison) when:** the component is cheap,
+or — the common trap — you're passing it a prop that's a *new reference*
+every render, like an inline `onClick={() => ...}` or `style={{...}}`
+literal. `memo`'s comparison is shallow (`===` per prop), so a fresh
+function/object reference fails the comparison every time even if its
+contents are identical, and `memo` never gets to skip anything. This is why
+`memo` on a child is usually paired with `useCallback`/`useMemo` upstream to
+keep those prop references stable — `memo` alone, without that, is a common
+"why isn't this doing anything" trap.
+
+Not a default to reach for — an escape hatch from React's default cascade,
+used after profiling shows wasted re-renders.
