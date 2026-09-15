@@ -1,0 +1,1 @@
+export const serviceImageSize = { width: 80, height: 80 };

@@ -296,3 +296,24 @@ TypeScript's older angle-bracket cast syntax `<Type>value` uses the same
 characters, so the parser needs the extension to know which meaning is
 intended. A types-only file with no markup should be `.ts`; any file
 rendering JSX needs `.tsx`.
+
+## 17. `useState`'s lazy initializer — value vs. function
+
+```ts
+useState(new CanvasController())     // constructs on every render
+useState(() => new CanvasController()) // constructs once, on mount only
+```
+
+Plain JS argument evaluation, not React magic: a function call always
+evaluates its arguments eagerly, *before* the call happens. Pass the
+constructor call directly and it runs every single render — React discarding
+the result afterward doesn't undo the fact that the object already got
+built (constructor side effects included).
+
+Pass a function instead and construction is deferred to whenever something
+actually *calls* that function. `useState` is written to call it only on the
+initial mount and ignore it on every render after — so the expensive/
+side-effecting work inside only ever runs once. This is React's "lazy
+initial state" pattern: reach for the function form whenever the initial
+value is expensive to compute or, as here, is itself a `new` call with
+constructor side effects.

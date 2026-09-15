@@ -68,6 +68,7 @@
   flex-direction: column;
   border: var(--xy-node-border-default);
   color: var(--xy-node-color, var(--xy-node-color-default));
+  transform: translate(-50%, -50%);
 }
  
 .react-flow__node.selectable:focus {

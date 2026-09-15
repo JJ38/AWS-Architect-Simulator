@@ -11,6 +11,7 @@ function imageNode({ data, isConnectable }: { data: any; isConnectable: boolean 
                 isConnectable={isConnectable}
             />
                 <img src={data.img} alt={data.label} />
+
             <Handle type="source" position={Position.Right} isConnectable={isConnectable} />
         </>
     );

@@ -1,6 +1,15 @@
 .react-flow__node-imageNode {
   margin: 0;
   padding: 0;
-  overflow: hidden;
   border: 1px solid pink;
+  border-radius: 8px;
+  background-color: #fff0;
+  transform: translate(-50%, -50%);
+
+}
+
+
+img{
+  overflow: hidden;
+  border-radius: 7px;
 }
