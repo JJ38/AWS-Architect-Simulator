@@ -4,9 +4,6 @@ import type { Service } from '../types.tsx';
 import { CanvasController } from '../Controllers/CanvasController.ts';
 import '@xyflow/react/dist/style.css';
 import '../styles/Canvas.css'; 
-import ImageNode from './ImageNode';
-
-// const canvasController = new CanvasController();  
 
 export default function Canvas({ selectedService, setSelectedService }: { selectedService: Service | null; setSelectedService: (service: Service | null) => void }) {
 
@@ -23,10 +20,6 @@ export default function Canvas({ selectedService, setSelectedService }: { select
   const onEdgesChange = useCallback((changes: any) => setEdges((edgesSnapshot) => applyEdgeChanges(changes, edgesSnapshot)), []);
   const onConnect = useCallback((params: any) => setEdges((edgesSnapshot) => addEdge(params, edgesSnapshot)), []);
 
-  const nodeTypes = {
-    imageNode: ImageNode,
-  };
-
   return (
     <div className="reactFlowWrapper">
       <ReactFlow
@@ -36,7 +29,8 @@ export default function Canvas({ selectedService, setSelectedService }: { select
         onEdgesChange={onEdgesChange}
         onNodeClick={(event, node) => stateCanvasController.handleNodeClick(event, node, stateSelectedNode, setSelectedNode, selectedService, setSelectedService, stateNodes, setNodes, setGhostNodes)}
         onConnect={onConnect}
-        nodeTypes={nodeTypes}
+        nodeTypes={stateCanvasController.model.nodeTypes}
+        edgeTypes={stateCanvasController.model.edgeTypes}
         fitView
         onPaneClick={(event) => stateCanvasController.handlePaneClick(event, selectedService, setSelectedService, stateNodes, setNodes, setGhostNodes, setSelectedNode)}
         onPaneMouseMove={(event) => stateCanvasController.handlePaneMouseMove(event, selectedService, setGhostNodes)}
