@@ -1,0 +1,23 @@
+.popupWrapper{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 200px;
+    height: 200px;
+    padding: 10px;
+    border: 1px solid black;
+    border-radius: 5px;
+    background-color: white;
+    z-index: 10;
+}
+
+.loadSavePopupButtonWrapper{
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    align-self: self-end;
+}

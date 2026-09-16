@@ -11,9 +11,9 @@ export class CanvasModel{
     ];
 
     public edges = [
+        // {}
         // { id: 'n1-n2', source: 'n1', target: 'n2', type: 'animatedSvg' }
     ];
-    // public edges = []
 
     public nodeTypes = {
         imageNode: ImageNode,

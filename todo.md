@@ -12,16 +12,15 @@ architectures is a stretch goal, separate from Terraform-for-hosting.
       edge (id, source, target, label/protocol) — this is the foundation
       everything else reads/writes, worth getting reasonably right early
 - [x] Render a basic canvas: pan/zoom, background grid, controls
-- [ ] Add minimap
 - [ ] Pick initial service catalog (~10-15 services): ALB, EC2/ASG, Lambda, RDS,
       DynamoDB, S3, CloudFront, SQS, API Gateway, Route53, ElastiCache
 - [x] Build a sidebar/palette listing the service catalog (icon + name)
-- [ ] Drag-and-drop from sidebar onto canvas creates a new node
+- [x] Drag-and-drop from sidebar onto canvas creates a new node
 - [ ] Custom node component (icon, name, short config summary)
-- [ ] Click-drag between nodes creates an edge (connection)
+- [x] Click-drag between nodes creates an edge (connection)
 - [ ] Node selection + properties panel (edit name, size/tier, config fields)
 - [ ] Edge selection + properties (label/protocol)
-- [ ] Delete node/edge (keyboard delete, right-click context menu)
+- [x] Delete node/edge (keyboard delete, right-click context menu)
 - [ ] Wire canvas to a zustand store (addNode, addEdge, updateNode, removeNode,
       selection state) instead of prop-drilling
 - [ ] Export architecture to JSON (download)

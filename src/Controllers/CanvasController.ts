@@ -13,7 +13,7 @@ export class CanvasController{
         console.log("Created canvas controller")
     }
 
-    private placeNode(selectedService: Service, setSelectedService: (service: Service | null) => void, stateNodes: any[], setNodes: (nodes: any[]) => void, setGhostNodes: (nodes: any[]) => void, position: XYPosition | null): void{
+    private placeNode(selectedService: Service, setSelectedService: (service: Service | null) => void, stateNodes: any[], setNodes: any, setGhostNodes: (nodes: any[]) => void, position: XYPosition | null): void{
 
         console.log("place node");
 
@@ -27,7 +27,7 @@ export class CanvasController{
 
     }
 
-    public handlePaneClick(event: React.MouseEvent, selectedService: Service | null, setSelectedService: (service: Service | null) => void, stateNodes: any[], setNodes: (nodes: any[]) => void, setGhostNodes: (nodes: any[]) => void, setSelectedNode: (node: Node | null) => void): void {
+    public handlePaneClick(event: React.MouseEvent, selectedService: Service | null, setSelectedService: (service: Service | null) => void, stateNodes: any[], setNodes: any, setGhostNodes: (nodes: any[]) => void, setSelectedNode: (node: Node | null) => void): void {
 
         setSelectedNode(null);
 
@@ -56,7 +56,7 @@ export class CanvasController{
         
     }
 
-    public handleNodeClick(event: React.MouseEvent, node: Node, stateSelectedNode : Node | null, setSelectedNode: (node: Node | null) => void, selectedService: Service | null, setSelectedService: (service: Service | null) => void, stateNodes: any[], setNodes: (nodes: any[]) => void, setGhostNodes: (nodes: any[]) => void): void{
+    public handleNodeClick(event: React.MouseEvent, node: Node, stateSelectedNode : Node | null, setSelectedNode: (node: Node | null) => void, selectedService: Service | null, setSelectedService: (service: Service | null) => void, stateNodes: any[], setNodes: any, setGhostNodes: (nodes: any[]) => void): void{
 
         if(selectedService != null){
             const position = this.getCanvasPosition(event);

@@ -1,16 +1,33 @@
 import { useState, useCallback } from 'react';
-import { ReactFlow, applyNodeChanges, applyEdgeChanges, addEdge, useReactFlow, type Node } from '@xyflow/react';
+import { ReactFlow, applyNodeChanges, applyEdgeChanges, addEdge, useReactFlow, type Node, type Edge } from '@xyflow/react';
 import type { Service } from '../types.tsx';
 import { CanvasController } from '../Controllers/CanvasController.ts';
 import '@xyflow/react/dist/style.css';
 import '../styles/Canvas.css'; 
 
-export default function Canvas({ selectedService, setSelectedService }: { selectedService: Service | null; setSelectedService: (service: Service | null) => void }) {
+export default function Canvas(
+  {
+    selectedService,
+    setSelectedService,
+    stateCanvasController,
+    stateNodes,
+    setNodes,
+    stateEdges,
+    setEdges
+  }
+    :
+  {
+    selectedService: Service | null;
+    setSelectedService: (service: Service | null) => void;
+    stateCanvasController: CanvasController;
+    stateNodes: Node[];
+    setNodes: React.Dispatch<React.SetStateAction<Node[]>>;
+    stateEdges: Edge[];
+    setEdges: React.Dispatch<React.SetStateAction<Edge[]>>
+  }
+){
 
-  const [stateCanvasController] = useState(() => new CanvasController())
-  const [stateNodes, setNodes] = useState(stateCanvasController.model.nodes);
   const [stateGhostNodes, setGhostNodes] = useState(stateCanvasController.model.ghostNodes);
-  const [stateEdges, setEdges] = useState(stateCanvasController.model.edges);
   const [stateSelectedNode, setSelectedNode] = useState<Node | null>(null);
   const { screenToFlowPosition } = useReactFlow();
 
