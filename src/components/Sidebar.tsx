@@ -3,6 +3,7 @@ import type { Edge, Node } from '@xyflow/react';
 import type { Service } from '../types.ts';
 import type { CanvasController } from '../Controllers/CanvasController.ts';
 import { SidebarController } from '../Controllers/SidebarController.ts';
+import { useNotification } from '../Providers/NotificationProvider.tsx';
 import SidebarButton from './ServiceButton.tsx';
 import '../styles/Sidebar.css';
 
@@ -22,7 +23,7 @@ export default function Sidebar(
         setNodes,
         stateEdges,
         setEdges,
-        setShowLoadPopup
+        setShowLoadPopup,
     }
         :
     {
@@ -37,7 +38,9 @@ export default function Sidebar(
     }
 ){
 
-    const [stateSidebarController] = useState(() => new SidebarController(setShowLoadPopup, selectedService, setSelectedService));
+    const showNotification = useNotification();
+    const [stateSidebarController] = useState(() => new SidebarController(setShowLoadPopup, selectedService, setSelectedService, showNotification));
+
 
     return <div className="sidebar">
             <div>

@@ -19,8 +19,8 @@ export class LoadSavePopUpController{
         this.setShowLoadPopUp(false);
     }
 
-    public handleSaveClick (){
-        console.log("save click from controller");
+    public handleLoadClick (){
+        console.log("Load click from controller");
 
         if(this.setShowLoadPopUp == null){
             return;

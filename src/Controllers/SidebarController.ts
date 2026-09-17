@@ -6,20 +6,20 @@ export class SidebarController{
     private setShowLoadPopup: React.Dispatch<React.SetStateAction<boolean>>;
     private setSelectedService: React.Dispatch<React.SetStateAction<Service | null>>;
     private selectedService: Service | null;
+    private showNotification: (success: boolean, message: string) => void;
 
 
-    public constructor(setShowLoadPopup: React.Dispatch<React.SetStateAction<boolean>>, selectedService: Service | null, setSelectedService: React.Dispatch<React.SetStateAction<Service | null>>){
+    public constructor(setShowLoadPopup: React.Dispatch<React.SetStateAction<boolean>>, selectedService: Service | null, setSelectedService: React.Dispatch<React.SetStateAction<Service | null>>, showNotification: (success: boolean, message: string) => void){
         this.setShowLoadPopup = setShowLoadPopup;
         this.setSelectedService = setSelectedService;
         this.selectedService = selectedService;
+        this.showNotification = showNotification;
     }
-
 
   
     public handleSaveButtonClick(stateNodes: Node[], stateEdges: Edge[]): void{
 
         //show popup that allows you to enter save file name
-
         const saveName = window.prompt("Enter a name for this save:");
 
         if(saveName === "" || saveName === null || saveName === undefined){
@@ -32,13 +32,11 @@ export class SidebarController{
         }
 
         console.log(save);
-
         const JSONSave = JSON.stringify(save);
-
         localStorage.setItem(saveName!, JSONSave);
-        const loadedSave = localStorage.getItem(saveName!);
 
-        console.log(loadedSave);
+
+        this.showNotification(true, "Notification after hook refactor");
     
     }
 

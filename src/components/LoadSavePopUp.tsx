@@ -36,8 +36,8 @@ export default function LoadSavePopUp({ setShowLoadPopup }: {setShowLoadPopup: R
                 />
 
                 <RoundedButton
-                    onClickHandler={() => stateLoadSavePopUpController.handleSaveClick()}
-                    buttonText='Save'
+                    onClickHandler={() => stateLoadSavePopUpController.handleLoadClick()}
+                    buttonText='Load'
                 />
 
             </div>

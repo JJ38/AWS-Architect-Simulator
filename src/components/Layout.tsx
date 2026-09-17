@@ -5,6 +5,7 @@ import { CanvasController } from '../Controllers/CanvasController.ts';
 import Sidebar from './Sidebar.tsx';
 import Canvas from './Canvas.tsx';
 import LoadSavePopUp from './LoadSavePopUp.tsx';
+import NotificationProvider from '../Providers/NotificationProvider.tsx';
 import '../styles/Layout.css';
 
 export default function Layout() {
@@ -17,19 +18,9 @@ export default function Layout() {
     const [stateShowLoadPopup, setShowLoadPopup] = useState<boolean>(false);
 
     return (
-        <div className="layout">
-            <Sidebar 
-                selectedService={selectedService} 
-                setSelectedService={setSelectedService}
-                stateCanvasController={stateCanvasController} 
-                stateNodes={stateNodes}
-                setNodes={setNodes}
-                stateEdges={stateEdges}
-                setEdges={setEdges}
-                setShowLoadPopup={setShowLoadPopup}
-            />
-            <ReactFlowProvider>
-                <Canvas 
+        <NotificationProvider>
+            <div className="layout">
+                <Sidebar 
                     selectedService={selectedService} 
                     setSelectedService={setSelectedService}
                     stateCanvasController={stateCanvasController} 
@@ -37,13 +28,26 @@ export default function Layout() {
                     setNodes={setNodes}
                     stateEdges={stateEdges}
                     setEdges={setEdges}
+                    setShowLoadPopup={setShowLoadPopup}
                 />
-            </ReactFlowProvider>
-            
-            {
-                stateShowLoadPopup ? <LoadSavePopUp setShowLoadPopup={setShowLoadPopup}></LoadSavePopUp> : <></>
-            }
+                <ReactFlowProvider>
+                    <Canvas 
+                        selectedService={selectedService} 
+                        setSelectedService={setSelectedService}
+                        stateCanvasController={stateCanvasController} 
+                        stateNodes={stateNodes}
+                        setNodes={setNodes}
+                        stateEdges={stateEdges}
+                        setEdges={setEdges}
+                    />
+                </ReactFlowProvider>
+                
+                {
+                    stateShowLoadPopup && <LoadSavePopUp setShowLoadPopup={setShowLoadPopup}></LoadSavePopUp>
+                }
 
-        </div>
+            </div>
+        </NotificationProvider>
     );
 }
+
