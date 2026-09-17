@@ -1,12 +1,17 @@
 import type { Edge, Node } from "@xyflow/react";
+import type { Service } from "../types";
 
 export class SidebarController{
 
-    private setShowLoadPopup: React.Dispatch<React.SetStateAction<boolean>> | null = null;
+    private setShowLoadPopup: React.Dispatch<React.SetStateAction<boolean>>;
+    private setSelectedService: React.Dispatch<React.SetStateAction<Service | null>>;
+    private selectedService: Service | null;
 
 
-    public constructor(setShowLoadPopup: React.Dispatch<React.SetStateAction<boolean>>){
+    public constructor(setShowLoadPopup: React.Dispatch<React.SetStateAction<boolean>>, selectedService: Service | null, setSelectedService: React.Dispatch<React.SetStateAction<Service | null>>){
         this.setShowLoadPopup = setShowLoadPopup;
+        this.setSelectedService = setSelectedService;
+        this.selectedService = selectedService;
     }
 
 
@@ -46,5 +51,22 @@ export class SidebarController{
         this.setShowLoadPopup(true);
         
     }
+
+
+    public handleSidebarButtonClick(service: Service): void{
+
+        if(this.setSelectedService == null){
+            return;
+        }
+    
+        if(this.selectedService?.name === service.name){
+            this.setSelectedService(null);
+            return;
+        }
+
+        this.setSelectedService(service);
+
+    }
+
 
 }

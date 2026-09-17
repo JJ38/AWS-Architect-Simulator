@@ -27,7 +27,7 @@ export default function Sidebar(
         :
     {
         selectedService: Service | null;
-        setSelectedService: (service: Service | null) => void;
+        setSelectedService: React.Dispatch<React.SetStateAction<Service | null>>;
         stateCanvasController: CanvasController;
         stateNodes: Node[];
         setNodes: React.Dispatch<React.SetStateAction<Node[]>>;
@@ -37,7 +37,7 @@ export default function Sidebar(
     }
 ){
 
-    const [stateSidebarController] = useState(() => new SidebarController(setShowLoadPopup));
+    const [stateSidebarController] = useState(() => new SidebarController(setShowLoadPopup, selectedService, setSelectedService));
 
     return <div className="sidebar">
             <div>
@@ -50,7 +50,7 @@ export default function Sidebar(
                             serviceImg={service.icon} 
                             key={service.name} 
                             isSelected={selectedService?.name === service.name}
-                            onClick={() => handleSidebarButtonClick(selectedService, setSelectedService, service)}
+                            onClick={() => stateSidebarController.handleSidebarButtonClick(service)}
                         />
                     ))
                 }
@@ -81,13 +81,3 @@ export default function Sidebar(
   
 }
 
-function handleSidebarButtonClick(selectedService: Service | null, setSelectedService: (service: Service | null) => void, service: Service): void{
-    
-    if(selectedService?.name === service.name){
-        setSelectedService(null);
-        return;
-    }
-
-    setSelectedService(service);
-
-}
