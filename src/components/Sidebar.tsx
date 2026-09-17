@@ -20,10 +20,9 @@ export default function Sidebar(
         setSelectedService,
         stateCanvasController,
         stateNodes,
-        setNodes,
         stateEdges,
-        setEdges,
         setShowLoadPopup,
+        setShowSavePopup
     }
         :
     {
@@ -31,15 +30,14 @@ export default function Sidebar(
         setSelectedService: React.Dispatch<React.SetStateAction<Service | null>>;
         stateCanvasController: CanvasController;
         stateNodes: Node[];
-        setNodes: React.Dispatch<React.SetStateAction<Node[]>>;
         stateEdges: Edge[];
-        setEdges: React.Dispatch<React.SetStateAction<Edge[]>>;
         setShowLoadPopup: React.Dispatch<React.SetStateAction<boolean>>;
+        setShowSavePopup: React.Dispatch<React.SetStateAction<boolean>>;
     }
 ){
 
     const showNotification = useNotification();
-    const [stateSidebarController] = useState(() => new SidebarController(setShowLoadPopup, selectedService, setSelectedService, showNotification));
+    const [stateSidebarController] = useState(() => new SidebarController(setShowLoadPopup, setShowSavePopup, selectedService, setSelectedService, showNotification));
 
 
     return <div className="sidebar">
@@ -57,6 +55,7 @@ export default function Sidebar(
                         />
                     ))
                 }
+
             </div>
 
 
@@ -76,7 +75,7 @@ export default function Sidebar(
                     serviceImg={"save_icon.svg"} 
                     key={"dwawafgsgs"} 
                     isSelected={false}
-                    onClick={() => stateSidebarController.handleSaveButtonClick(stateNodes, stateEdges)}
+                    onClick={() => stateSidebarController.handleSaveButtonClick()}
                 />
             </div>
 

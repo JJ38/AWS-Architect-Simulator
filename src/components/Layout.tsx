@@ -7,6 +7,7 @@ import Canvas from './Canvas.tsx';
 import LoadSavePopUp from './LoadSavePopUp.tsx';
 import NotificationProvider from '../Providers/NotificationProvider.tsx';
 import '../styles/Layout.css';
+import SavePopUp from './SavePopUp.tsx';
 
 export default function Layout() {
 
@@ -16,6 +17,8 @@ export default function Layout() {
     const [stateNodes, setNodes] = useState<Node[]>(stateCanvasController.model.nodes);
     const [stateEdges, setEdges] = useState<Edge[]>(stateCanvasController.model.edges);
     const [stateShowLoadPopup, setShowLoadPopup] = useState<boolean>(false);
+    const [stateShowSavePopup, setShowSavePopup] = useState<boolean>(false);
+    const [stateLoadedSaveName, setLoadedSaveName] = useState<string | null>(null);
 
     return (
         <NotificationProvider>
@@ -25,10 +28,9 @@ export default function Layout() {
                     setSelectedService={setSelectedService}
                     stateCanvasController={stateCanvasController} 
                     stateNodes={stateNodes}
-                    setNodes={setNodes}
                     stateEdges={stateEdges}
-                    setEdges={setEdges}
                     setShowLoadPopup={setShowLoadPopup}
+                    setShowSavePopup={setShowSavePopup}
                 />
                 <ReactFlowProvider>
                     <Canvas 
@@ -43,7 +45,25 @@ export default function Layout() {
                 </ReactFlowProvider>
                 
                 {
-                    stateShowLoadPopup && <LoadSavePopUp setShowLoadPopup={setShowLoadPopup}></LoadSavePopUp>
+                    stateShowLoadPopup 
+                        && 
+                    <LoadSavePopUp 
+                        setShowLoadPopup={setShowLoadPopup}
+                        setEdges={setEdges}
+                        setNodes={setNodes}
+                        setLoadedSaveName={setLoadedSaveName}
+                    />
+                }
+
+                {
+                    stateShowSavePopup 
+                        && 
+                    <SavePopUp 
+                        setShowSavePopup={setShowSavePopup}
+                        stateLoadedSaveName={stateLoadedSaveName}
+                        // setEdges={setEdges}
+                        // setNodes={setNodes}
+                    />
                 }
 
             </div>

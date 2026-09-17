@@ -1,26 +1,24 @@
 import { useState } from 'react';
-import { LoadSavePopUpController } from '../Controllers/LoadSavePopUpController';
 import { useNotification } from '../Providers/NotificationProvider';
-import type { Edge, Node } from '@xyflow/react';
 import '../styles/LoadSavePopUp.css'
 import RoundedButton from '../Components/RoundedButton'
 import SavePill from './SavePill';
+import { SavePopUpController } from '../Controllers/SavePopUpController';
 
-export default function LoadSavePopUp({ setShowLoadPopup, setEdges, setNodes, setLoadedSaveName }: {setShowLoadPopup: React.Dispatch<React.SetStateAction<boolean>>; setEdges: React.Dispatch<React.SetStateAction<Edge[]>>; setNodes: React.Dispatch<React.SetStateAction<Node[]>>; setLoadedSaveName: React.Dispatch<React.SetStateAction<string | null>>}){
+export default function SavePopUp({ setShowSavePopup, stateLoadedSaveName }: {setShowSavePopup: React.Dispatch<React.SetStateAction<boolean>>; stateLoadedSaveName: string | null}){
 
     const showNotification = useNotification();
-
     const [stateSelectedSave, setSelectedSave] = useState<string | null>(null);
-    const [stateLoadSavePopUpController] = useState(() => new LoadSavePopUpController(setShowLoadPopup, showNotification, setEdges, setNodes, setLoadedSaveName));
+    const [stateSavePopUpController] = useState(() => new SavePopUpController(setShowSavePopup, showNotification));
     console.log(stateSelectedSave)
     return(
 
         <div className="popupWrapper">
 
-            <div className='savePillsWrapper'>
+            {/* <div className='savePillsWrapper'>
 
                 {
-                    stateLoadSavePopUpController.model.saveKeys.map((key) => (
+                    stateSavePopUpController.model.saveKeys.map((key) => (
                         <SavePill
                             saveName={key}
                             isSelected={stateSelectedSave === key}
@@ -31,18 +29,29 @@ export default function LoadSavePopUp({ setShowLoadPopup, setEdges, setNodes, se
             
                 }
 
-            </div>
+            </div> */}
 
             <div className="loadSavePopupButtonWrapper">
 
                 <RoundedButton
-                    onClickHandler={() => stateLoadSavePopUpController.handleCancelClick()}
+                    onClickHandler={() => stateSavePopUpController.handleCancelClick()}
                     buttonText='Cancel'
                 />
+                
+                {
+
+                    stateLoadedSaveName &&
+
+                    <RoundedButton
+                        onClickHandler={() => stateSavePopUpController.handleSaveClick(stateLoadedSaveName)}
+                        buttonText='Save'
+                    />
+
+                }
 
                 <RoundedButton
-                    onClickHandler={() => stateLoadSavePopUpController.handleLoadClick(stateSelectedSave)}
-                    buttonText='Load'
+                    onClickHandler={() => stateSavePopUpController.handleSaveAsClick()}
+                    buttonText='Save As'
                 />
 
             </div>
