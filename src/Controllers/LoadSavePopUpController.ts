@@ -1,19 +1,45 @@
+import { LoadSavePopUpModel } from "../Models/LoadSavePopUpModel";
+
 export class LoadSavePopUpController{
 
-    setShowLoadPopUp: React.Dispatch<React.SetStateAction<boolean>> | null = null;
+    public model = new LoadSavePopUpModel();
+    private setShowLoadPopUp: React.Dispatch<React.SetStateAction<boolean>> | null = null;
+
+    public constructor(setShowLoadPopup: React.Dispatch<React.SetStateAction<boolean>>){
+        this.setShowLoadPopUp = setShowLoadPopup;
+    }
 
     public handleCancelClick (){
-        // console.log("cancel click from controller");
-        // this.setShowLoadPopUp?(false);
+        console.log(this.setShowLoadPopUp);
+
+        if(this.setShowLoadPopUp == null){
+            return;
+        }
+
+        this.setShowLoadPopUp(false);
     }
 
     public handleSaveClick (){
-        console.log("save click from controller")
+        console.log("save click from controller");
+
+        if(this.setShowLoadPopUp == null){
+            return;
+        }
+
+        this.setShowLoadPopUp(false);
+
     }
 
-    public constructor(setShowLoadPopup: React.Dispatch<React.SetStateAction<boolean>>){
-        this.setShowLoadPopUp
+    public handleSavePillClick (){
+
+        if(this.setShowLoadPopUp == null){
+            return;
+        }
+
+        this.setShowLoadPopUp(false);
+
     }
 
+   
 
 }

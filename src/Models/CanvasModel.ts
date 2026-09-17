@@ -1,5 +1,5 @@
-import { AnimatedSVGEdge } from "../components/AnimatedSVGEdge";
-import ImageNode from "../components/ImageNode";
+import { AnimatedSVGEdge } from "../Components/AnimatedSVGEdge";
+import ImageNode from "../Components/ImageNode";
 
 export class CanvasModel{
 
