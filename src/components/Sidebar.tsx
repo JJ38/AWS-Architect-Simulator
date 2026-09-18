@@ -17,7 +17,8 @@ export default function Sidebar(
         selectedService,
         setSelectedService,
         setShowLoadWidget,
-        setShowSaveWidget
+        setShowSaveWidget,
+        setShowTerraformWidget
     }
         :
     {
@@ -25,11 +26,12 @@ export default function Sidebar(
         setSelectedService: React.Dispatch<React.SetStateAction<Service | null>>;
         setShowLoadWidget: React.Dispatch<React.SetStateAction<boolean>>;
         setShowSaveWidget: React.Dispatch<React.SetStateAction<boolean>>;
+        setShowTerraformWidget: React.Dispatch<React.SetStateAction<boolean>>;
     }
 ){
 
     const showNotification = useNotification();
-    const [stateSidebarController] = useState(() => new SidebarController(setShowLoadWidget, setShowSaveWidget, selectedService, setSelectedService, showNotification));
+    const [stateSidebarController] = useState(() => new SidebarController(setShowLoadWidget, setShowSaveWidget, selectedService, setSelectedService, setShowTerraformWidget, showNotification));
 
 
     return <div className="sidebar">

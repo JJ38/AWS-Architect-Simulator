@@ -21,8 +21,6 @@ export default function Layout() {
     const [stateShowSaveWidget, setShowSaveWidget] = useState<boolean>(false);
     const [stateShowTerraformWidget, setShowTerraformWidget] = useState<boolean>(false);
     const [stateLoadedSaveName, setLoadedSaveName] = useState<string | null>(null);
-    
-
 
 
     return (
@@ -33,6 +31,7 @@ export default function Layout() {
                     setSelectedService={setSelectedService}
                     setShowLoadWidget={setShowLoadWidget}
                     setShowSaveWidget={setShowSaveWidget}
+                    setShowTerraformWidget={setShowTerraformWidget}
                 />
                 <ReactFlowProvider>
                     <Canvas 
@@ -51,6 +50,10 @@ export default function Layout() {
                         && 
                     <TerraformWidget 
                         setShowTerraformWidget={setShowTerraformWidget}
+                        stateNodes={stateNodes}
+                        setNodes={setNodes}
+                        stateEdges={stateEdges}
+                        setEdges={setEdges}
                     />
                 }
                 

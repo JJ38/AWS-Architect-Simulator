@@ -9,7 +9,7 @@ export default function SavePopUp({ setShowSaveWidget, stateLoadedSaveName, setL
 
     const showNotification = useNotification();
     const [stateSelectedSave, setSelectedSave] = useState<string | null>(null);
-    const [stateSavePopUpController] = useState(() => new SaveWidgetController(setShowSaveWidget, showNotification));
+    const [stateSaveWidgetController] = useState(() => new SaveWidgetController(setShowSaveWidget, showNotification));
     console.log(stateSelectedSave)
     return(
 
@@ -18,7 +18,7 @@ export default function SavePopUp({ setShowSaveWidget, stateLoadedSaveName, setL
             <div className="saveWidgetButtonWrapper">
 
                 <RoundedButton
-                    onClickHandler={() => stateSavePopUpController.handleCancelClick()}
+                    onClickHandler={() => stateSaveWidgetController.handleCancelClick()}
                     buttonText='Cancel'
                 />
                 
@@ -27,14 +27,14 @@ export default function SavePopUp({ setShowSaveWidget, stateLoadedSaveName, setL
                     stateLoadedSaveName &&
 
                     <RoundedButton
-                        onClickHandler={() => stateSavePopUpController.handleSaveClick(stateLoadedSaveName, stateNodes, stateEdges)}
+                        onClickHandler={() => stateSaveWidgetController.handleSaveClick(stateLoadedSaveName, stateNodes, stateEdges)}
                         buttonText='Save'
                     />
 
                 }
 
                 <RoundedButton
-                    onClickHandler={() => stateSavePopUpController.handleSaveAsClick(stateNodes, stateEdges, setLoadedSaveName)}
+                    onClickHandler={() => stateSaveWidgetController.handleSaveAsClick(stateNodes, stateEdges, setLoadedSaveName)}
                     buttonText='Save As'
                 />
 
