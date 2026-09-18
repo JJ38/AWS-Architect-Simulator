@@ -1,4 +1,4 @@
-export class LoadSavePopUpModel{
+export class LoadSaveWidgetModel{
 
     public saveKeys: string[] = [];
 

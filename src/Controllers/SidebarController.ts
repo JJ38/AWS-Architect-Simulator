@@ -2,15 +2,15 @@ import type { Service } from "../types";
 
 export class SidebarController{
 
-    private setShowLoadPopup: React.Dispatch<React.SetStateAction<boolean>>;
-    private setShowSavePopup: React.Dispatch<React.SetStateAction<boolean>>;
+    private setShowLoadWidget: React.Dispatch<React.SetStateAction<boolean>>;
+    private setShowSaveWidget: React.Dispatch<React.SetStateAction<boolean>>;
     private setSelectedService: React.Dispatch<React.SetStateAction<Service | null>>;
     private selectedService: Service | null;
     private showNotification: (success: boolean, message: string) => void;
 
-    public constructor(setShowLoadPopup: React.Dispatch<React.SetStateAction<boolean>>, setShowSavePopup: React.Dispatch<React.SetStateAction<boolean>>, selectedService: Service | null, setSelectedService: React.Dispatch<React.SetStateAction<Service | null>>, showNotification: (success: boolean, message: string) => void){
-        this.setShowLoadPopup = setShowLoadPopup;
-        this.setShowSavePopup = setShowSavePopup;
+    public constructor(setShowLoadWidget: React.Dispatch<React.SetStateAction<boolean>>, setShowSaveWidget: React.Dispatch<React.SetStateAction<boolean>>, selectedService: Service | null, setSelectedService: React.Dispatch<React.SetStateAction<Service | null>>, showNotification: (success: boolean, message: string) => void){
+        this.setShowLoadWidget = setShowLoadWidget;
+        this.setShowSaveWidget = setShowSaveWidget;
         this.setSelectedService = setSelectedService;
         this.selectedService = selectedService;
         this.showNotification = showNotification;
@@ -19,20 +19,25 @@ export class SidebarController{
   
     public handleSaveButtonClick(): void{
 
-        this.setShowSavePopup(true);
+        this.setShowSaveWidget(true);
     
     }
 
     public handleLoadClick(){
 
-        if(this.setShowLoadPopup == null){
+        if(this.setShowLoadWidget == null){
             return;
         }
         
-        this.setShowLoadPopup(true);
+        this.setShowLoadWidget(true);
         
     }
 
+    public handleTerraformClick(){
+
+        console.log("Terraform click");
+
+    }
 
     public handleSidebarButtonClick(service: Service): void{
 

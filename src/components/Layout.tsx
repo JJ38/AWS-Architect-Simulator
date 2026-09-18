@@ -4,10 +4,11 @@ import type { Service } from '../types.ts';
 import { CanvasController } from '../Controllers/CanvasController.ts';
 import Sidebar from './Sidebar.tsx';
 import Canvas from './Canvas.tsx';
-import LoadSavePopUp from './LoadSavePopUp.tsx';
+import LoadWidget from './Widgets/LoadSaveWidget.tsx';
 import NotificationProvider from '../Providers/NotificationProvider.tsx';
 import '../styles/Layout.css';
-import SavePopUp from './SavePopUp.tsx';
+import SaveWidget from './Widgets/SaveWidget.tsx';
+import TerraformWidget from './Widgets/TerraformWidget.tsx';
 
 export default function Layout() {
 
@@ -16,9 +17,11 @@ export default function Layout() {
     const [selectedService, setSelectedService] = useState<Service | null>(null);
     const [stateNodes, setNodes] = useState<Node[]>(stateCanvasController.model.nodes);
     const [stateEdges, setEdges] = useState<Edge[]>(stateCanvasController.model.edges);
-    const [stateShowLoadPopup, setShowLoadPopup] = useState<boolean>(false);
-    const [stateShowSavePopup, setShowSavePopup] = useState<boolean>(false);
+    const [stateShowLoadWidget, setShowLoadWidget] = useState<boolean>(false);
+    const [stateShowSaveWidget, setShowSaveWidget] = useState<boolean>(false);
+    const [stateShowTerraformWidget, setShowTerraformWidget] = useState<boolean>(false);
     const [stateLoadedSaveName, setLoadedSaveName] = useState<string | null>(null);
+    
 
 
 
@@ -28,11 +31,8 @@ export default function Layout() {
                 <Sidebar 
                     selectedService={selectedService} 
                     setSelectedService={setSelectedService}
-                    stateCanvasController={stateCanvasController} 
-                    stateNodes={stateNodes}
-                    stateEdges={stateEdges}
-                    setShowLoadPopup={setShowLoadPopup}
-                    setShowSavePopup={setShowSavePopup}
+                    setShowLoadWidget={setShowLoadWidget}
+                    setShowSaveWidget={setShowSaveWidget}
                 />
                 <ReactFlowProvider>
                     <Canvas 
@@ -45,12 +45,20 @@ export default function Layout() {
                         setEdges={setEdges}
                     />
                 </ReactFlowProvider>
+
+                {
+                    stateShowTerraformWidget
+                        && 
+                    <TerraformWidget 
+                        setShowTerraformWidget={setShowTerraformWidget}
+                    />
+                }
                 
                 {
-                    stateShowLoadPopup 
+                    stateShowLoadWidget
                         && 
-                    <LoadSavePopUp 
-                        setShowLoadPopup={setShowLoadPopup}
+                    <LoadWidget
+                        setShowLoadWidget={setShowLoadWidget}
                         setEdges={setEdges}
                         setNodes={setNodes}
                         setLoadedSaveName={setLoadedSaveName}
@@ -58,10 +66,10 @@ export default function Layout() {
                 }
 
                 {
-                    stateShowSavePopup 
+                    stateShowSaveWidget
                         && 
-                    <SavePopUp 
-                        setShowSavePopup={setShowSavePopup}
+                    <SaveWidget
+                        setShowSaveWidget={setShowSaveWidget}
                         stateLoadedSaveName={stateLoadedSaveName}
                         setLoadedSaveName={setLoadedSaveName}
                         stateNodes={stateNodes}

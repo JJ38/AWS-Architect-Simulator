@@ -1,10 +1,8 @@
 import { useState } from 'react';
-import type { Edge, Node } from '@xyflow/react';
 import type { Service } from '../types.ts';
-import type { CanvasController } from '../Controllers/CanvasController.ts';
 import { SidebarController } from '../Controllers/SidebarController.ts';
 import { useNotification } from '../Providers/NotificationProvider.tsx';
-import SidebarButton from './ServiceButton.tsx';
+import SidebarButton from './Buttons/ServiceButton.tsx';
 import '../styles/Sidebar.css';
 
 const services: Service[] = [
@@ -18,26 +16,20 @@ export default function Sidebar(
     {
         selectedService,
         setSelectedService,
-        stateCanvasController,
-        stateNodes,
-        stateEdges,
-        setShowLoadPopup,
-        setShowSavePopup
+        setShowLoadWidget,
+        setShowSaveWidget
     }
         :
     {
         selectedService: Service | null;
         setSelectedService: React.Dispatch<React.SetStateAction<Service | null>>;
-        stateCanvasController: CanvasController;
-        stateNodes: Node[];
-        stateEdges: Edge[];
-        setShowLoadPopup: React.Dispatch<React.SetStateAction<boolean>>;
-        setShowSavePopup: React.Dispatch<React.SetStateAction<boolean>>;
+        setShowLoadWidget: React.Dispatch<React.SetStateAction<boolean>>;
+        setShowSaveWidget: React.Dispatch<React.SetStateAction<boolean>>;
     }
 ){
 
     const showNotification = useNotification();
-    const [stateSidebarController] = useState(() => new SidebarController(setShowLoadPopup, setShowSavePopup, selectedService, setSelectedService, showNotification));
+    const [stateSidebarController] = useState(() => new SidebarController(setShowLoadWidget, setShowSaveWidget, selectedService, setSelectedService, showNotification));
 
 
     return <div className="sidebar">
@@ -61,19 +53,28 @@ export default function Sidebar(
 
             <div>
                 <SidebarButton  
-                    serviceName={"Djkawdwad"} 
-                    serviceDescription={"dwadwad"} 
+                    serviceName={"Terraform"} 
+                    serviceDescription={"Convert to terraform"} 
+                    serviceImg={"terraform_wired.svg"} 
+                    key={"Terraform"} 
+                    isSelected={false}
+                    onClick={() => stateSidebarController.handleTerraformClick()}
+                />
+
+                <SidebarButton  
+                    serviceName={"Load"} 
+                    serviceDescription={"Load"} 
                     serviceImg={"load_icon.svg"} 
-                    key={"dwadawd"} 
+                    key={"Load"} 
                     isSelected={false}
                     onClick={() => stateSidebarController.handleLoadClick()}
                 />
 
                 <SidebarButton  
-                    serviceName={"dawdwad"} 
-                    serviceDescription={"dwadwad"} 
+                    serviceName={"Save"} 
+                    serviceDescription={"Save"} 
                     serviceImg={"save_icon.svg"} 
-                    key={"dwawafgsgs"} 
+                    key={"Save"} 
                     isSelected={false}
                     onClick={() => stateSidebarController.handleSaveButtonClick()}
                 />

@@ -1,4 +1,4 @@
-import '../styles/RoundedButton.css'
+import '../../styles/RoundedButton.css'
 
 export default function RoundedButton({ onClickHandler, buttonText }: { onClickHandler: () => void; buttonText: string }){
 

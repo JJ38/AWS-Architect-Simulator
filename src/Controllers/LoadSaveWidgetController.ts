@@ -1,18 +1,18 @@
 import type { Edge, Node } from "@xyflow/react";
-import { LoadSavePopUpModel } from "../Models/LoadSavePopUpModel";
+import { LoadSaveWidgetModel } from "../Models/LoadSaveWidgetModel";
 
-export class LoadSavePopUpController{
+export class LoadSaveWidgetController{
 
-    public model = new LoadSavePopUpModel();
-    private setShowLoadPopUp: React.Dispatch<React.SetStateAction<boolean>> | null = null;
+    public model = new LoadSaveWidgetModel();
+    private setShowLoadWidget: React.Dispatch<React.SetStateAction<boolean>> | null = null;
     private showNotification: (success: boolean, message: string) => void;
     private setEdges: React.Dispatch<React.SetStateAction<Edge[]>>;
     private setNodes: React.Dispatch<React.SetStateAction<Node[]>>;
     private setLoadedSaveName: React.Dispatch<React.SetStateAction<string | null>>;
 
 
-    public constructor(setShowLoadPopup: React.Dispatch<React.SetStateAction<boolean>>, showNotification: (success: boolean, message: string) => void, setEdges: React.Dispatch<React.SetStateAction<Edge[]>>, setNodes: React.Dispatch<React.SetStateAction<Node[]>>, setLoadedSaveName: React.Dispatch<React.SetStateAction<string | null>>){
-        this.setShowLoadPopUp = setShowLoadPopup;
+    public constructor(setShowLoadWidget: React.Dispatch<React.SetStateAction<boolean>>, showNotification: (success: boolean, message: string) => void, setEdges: React.Dispatch<React.SetStateAction<Edge[]>>, setNodes: React.Dispatch<React.SetStateAction<Node[]>>, setLoadedSaveName: React.Dispatch<React.SetStateAction<string | null>>){
+        this.setShowLoadWidget = setShowLoadWidget;
         this.showNotification = showNotification;
         this.setEdges = setEdges;
         this.setNodes = setNodes;
@@ -22,16 +22,16 @@ export class LoadSavePopUpController{
 
     public handleCancelClick (){
 
-        if(this.setShowLoadPopUp == null){
+        if(this.setShowLoadWidget == null){
             return;
         }
 
-        this.setShowLoadPopUp(false);
+        this.setShowLoadWidget(false);
     }
 
     public handleLoadClick (stateSelectedSave: string | null){
 
-        if(this.setShowLoadPopUp == null){
+        if(this.setShowLoadWidget == null){
             return;
         }
 
@@ -74,17 +74,17 @@ export class LoadSavePopUpController{
 
         this.setLoadedSaveName(stateSelectedSave);
     
-        this.setShowLoadPopUp(false);
+        this.setShowLoadWidget(false);
 
     }
 
     public handleSavePillClick (){
 
-        if(this.setShowLoadPopUp == null){
+        if(this.setShowLoadWidget == null){
             return;
         }
 
-        this.setShowLoadPopUp(false);
+        this.setShowLoadWidget(false);
 
     }
 

@@ -1,25 +1,25 @@
 import type { Edge, Node } from "@xyflow/react";
 
-export class SavePopUpController{
+export class SaveWidgetController{
 
-    private setShowSavePopup: React.Dispatch<React.SetStateAction<boolean>>;
+    private setShowSaveWidget: React.Dispatch<React.SetStateAction<boolean>>;
     private showNotification: (success: boolean, message: string) => void;
 
-    public constructor(setShowSavePopup: React.Dispatch<React.SetStateAction<boolean>>, showNotification: (success: boolean, message: string) => void){
-        this.setShowSavePopup = setShowSavePopup;
+    public constructor(setShowSaveWidget: React.Dispatch<React.SetStateAction<boolean>>, showNotification: (success: boolean, message: string) => void){
+        this.setShowSaveWidget = setShowSaveWidget;
         this.showNotification = showNotification;
     }
 
     public handleCancelClick(){
         console.log("cancel clicked");
-        this.setShowSavePopup(false);
+        this.setShowSaveWidget(false);
     }
 
     public handleSaveClick(stateLoadedSaveName: string | null, stateNodes: Node[], stateEdges: Edge[]){
 
         console.log(stateLoadedSaveName);
         this.save(stateLoadedSaveName, stateNodes, stateEdges);
-        this.setShowSavePopup(false);
+        this.setShowSaveWidget(false);
 
     }
 
@@ -32,7 +32,7 @@ export class SavePopUpController{
             setLoadedSaveName(saveName!);
         }
 
-        this.setShowSavePopup(false);
+        this.setShowSaveWidget(false);
 
     }
 

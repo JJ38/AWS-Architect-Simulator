@@ -1,4 +1,4 @@
-import '../styles/SidebarButton.css';
+import '../../styles/SidebarButton.css';
 
 export default function SidebarButton({ serviceName, serviceDescription, serviceImg, isSelected, onClick }: { serviceName: string; serviceDescription: string; serviceImg: string; isSelected: boolean; onClick: () => void }) {
     return (
