@@ -1,3 +1,5 @@
+import type { Edge, Node } from "@xyflow/react";
+
 export class SavePopUpController{
 
     private setShowSavePopup: React.Dispatch<React.SetStateAction<boolean>>;
@@ -13,28 +15,50 @@ export class SavePopUpController{
         this.setShowSavePopup(false);
     }
 
-    public handleSaveClick(stateLoadedSaveName: string | null, ){
-
-        //show popup that allows you to enter save file name
+    public handleSaveClick(stateLoadedSaveName: string | null, stateNodes: Node[], stateEdges: Edge[]){
 
         console.log(stateLoadedSaveName);
-
-        // const save = {
-        //     nodes: stateNodes,
-        //     edges: stateEdges
-        // }
-
-        // const JSONSave = JSON.stringify(save);
-        // localStorage.setItem(saveName!, JSONSave);
-
-        // this.showNotification(true, "Notification after hook refactor");
+        this.save(stateLoadedSaveName, stateNodes, stateEdges);
+        this.setShowSavePopup(false);
 
     }
 
-    public handleSaveAsClick(){
+    public handleSaveAsClick(stateNodes: Node[], stateEdges: Edge[]){
 
-        
+        const saveName = window.prompt("Enter a name for this save:");
+        this.save(saveName, stateNodes, stateEdges);
+        this.setShowSavePopup(false);
+
     }
 
+
+    private save(saveName: string | null, stateNodes: Node[], stateEdges: Edge[]): void{
+
+        if(saveName === "" || saveName === null || saveName === undefined){
+            this.showNotification(false, "Error - invalid save name");
+            return;
+        }
+
+        const save = {
+            nodes: stateNodes,
+            edges: stateEdges
+        }
+
+        try{
+
+            const JSONSave = JSON.stringify(save);
+            localStorage.setItem(saveName!, JSONSave);
+
+        }catch (error){
+
+            console.log(error);
+            this.showNotification(false, "Error saving " + saveName);
+            return;
+
+        }
+
+        this.showNotification(true, saveName + " saved successfully");
+
+    }
 
 }

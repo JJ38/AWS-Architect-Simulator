@@ -1,10 +1,11 @@
 import { useState } from 'react';
+import type { Edge, Node } from '@xyflow/react';
 import { useNotification } from '../Providers/NotificationProvider';
 import { SavePopUpController } from '../Controllers/SavePopUpController';
 import '../styles/SavePopUp.css'
 import RoundedButton from '../Components/RoundedButton'
 
-export default function SavePopUp({ setShowSavePopup, stateLoadedSaveName }: {setShowSavePopup: React.Dispatch<React.SetStateAction<boolean>>; stateLoadedSaveName: string | null}){
+export default function SavePopUp({ setShowSavePopup, stateLoadedSaveName, stateNodes, stateEdges }: {setShowSavePopup: React.Dispatch<React.SetStateAction<boolean>>; stateLoadedSaveName: string | null; stateNodes: Node[], stateEdges: Edge[]}){
 
     const showNotification = useNotification();
     const [stateSelectedSave, setSelectedSave] = useState<string | null>(null);
@@ -26,14 +27,14 @@ export default function SavePopUp({ setShowSavePopup, stateLoadedSaveName }: {se
                     stateLoadedSaveName &&
 
                     <RoundedButton
-                        onClickHandler={() => stateSavePopUpController.handleSaveClick(stateLoadedSaveName)}
+                        onClickHandler={() => stateSavePopUpController.handleSaveClick(stateLoadedSaveName, stateNodes, stateEdges)}
                         buttonText='Save'
                     />
 
                 }
 
                 <RoundedButton
-                    onClickHandler={() => stateSavePopUpController.handleSaveAsClick()}
+                    onClickHandler={() => stateSavePopUpController.handleSaveAsClick(stateNodes, stateEdges)}
                     buttonText='Save As'
                 />
 

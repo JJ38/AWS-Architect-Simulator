@@ -47,24 +47,28 @@ export class LoadSavePopUpController{
             return;
         }
 
-        let saveJSON;
+        let edges;
+        let nodes;
 
         try{
 
-            saveJSON = JSON.parse(saveString);
+            const saveJSON = JSON.parse(saveString);
+            edges = saveJSON['edges'];
+            nodes = saveJSON['nodes'];
 
-        }catch(e){
+            if(edges == undefined || nodes == undefined){
+                this.showNotification(false, "Error - save corrupted");
+                return;
+            }
 
-            this.showNotification(false, "Error loading save"); 
+        }catch(error){
+
+            console.log(error);
+            this.showNotification(false, "Error - failed to load save"); 
             return;
 
         }
 
-        const edges = saveJSON['edges'];
-        const nodes = saveJSON['nodes'];
-
-        console.log(edges);
-        console.log(nodes);
 
         this.setEdges(edges);
         this.setNodes(nodes);
