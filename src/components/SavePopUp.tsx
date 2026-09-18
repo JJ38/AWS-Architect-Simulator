@@ -1,9 +1,8 @@
 import { useState } from 'react';
 import { useNotification } from '../Providers/NotificationProvider';
-import '../styles/LoadSavePopUp.css'
-import RoundedButton from '../Components/RoundedButton'
-import SavePill from './SavePill';
 import { SavePopUpController } from '../Controllers/SavePopUpController';
+import '../styles/SavePopUp.css'
+import RoundedButton from '../Components/RoundedButton'
 
 export default function SavePopUp({ setShowSavePopup, stateLoadedSaveName }: {setShowSavePopup: React.Dispatch<React.SetStateAction<boolean>>; stateLoadedSaveName: string | null}){
 
@@ -13,25 +12,9 @@ export default function SavePopUp({ setShowSavePopup, stateLoadedSaveName }: {se
     console.log(stateSelectedSave)
     return(
 
-        <div className="popupWrapper">
+        <div className="savePopupWrapper">
 
-            {/* <div className='savePillsWrapper'>
-
-                {
-                    stateSavePopUpController.model.saveKeys.map((key) => (
-                        <SavePill
-                            saveName={key}
-                            isSelected={stateSelectedSave === key}
-                            onClickHandler={() => setSelectedSave(key)}
-                            key={key} 
-                        />
-                    ))
-            
-                }
-
-            </div> */}
-
-            <div className="loadSavePopupButtonWrapper">
+            <div className="savePopupButtonWrapper">
 
                 <RoundedButton
                     onClickHandler={() => stateSavePopUpController.handleCancelClick()}

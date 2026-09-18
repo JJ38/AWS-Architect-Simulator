@@ -20,6 +20,8 @@ export default function Layout() {
     const [stateShowSavePopup, setShowSavePopup] = useState<boolean>(false);
     const [stateLoadedSaveName, setLoadedSaveName] = useState<string | null>(null);
 
+
+
     return (
         <NotificationProvider>
             <div className="layout">

@@ -15,10 +15,8 @@ export class CanvasController{
 
     private placeNode(selectedService: Service, setSelectedService: (service: Service | null) => void, stateNodes: any[], setNodes: any, setGhostNodes: (nodes: any[]) => void, position: XYPosition | null): void{
 
-        console.log("place node");
-
-        const newNode = { id: `n${this.model.nodeIDCounter}`, position: position, data: { label: `n${this.model.nodeIDCounter}`, ghost: false, img: `${selectedService.image}`} , type: 'imageNode', measured: { width: 1, height: 1 } };
-        this.model.nodeIDCounter++;
+        const nodeID = crypto.randomUUID()
+        const newNode = { id: `n-${nodeID}`, position: position, data: { label: `n-${nodeID}`, ghost: false, img: `${selectedService.image}`} , type: 'imageNode', measured: { width: 1, height: 1 } };
 
         setNodes([...stateNodes, newNode]);
         setGhostNodes([]);
@@ -51,7 +49,7 @@ export class CanvasController{
 
         const position: XYPosition | null = this.getCanvasPosition(event);
 
-        const newGhostNode = { id: `n${this.model.nodeIDCounter}`, position: position, data: { label: `n${this.model.nodeIDCounter}`, ghost: true, img: `${selectedService.image}`} , type: 'imageNode', measured: { width: 1, height: 1 }};
+        const newGhostNode = { id: `n-ghostNode`, position: position, data: { label: `n-ghostNode`, ghost: true, img: `${selectedService.image}`} , type: 'imageNode', measured: { width: 1, height: 1 }};
         setGhostNodes([newGhostNode]);
         
     }

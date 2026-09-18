@@ -13,7 +13,7 @@ export class SavePopUpController{
         this.setShowSavePopup(false);
     }
 
-    public handleSaveClick(stateLoadedSaveName: string | null){
+    public handleSaveClick(stateLoadedSaveName: string | null, ){
 
         //show popup that allows you to enter save file name
 
