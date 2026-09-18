@@ -63,9 +63,9 @@ export default function Layout() {
                     <SavePopUp 
                         setShowSavePopup={setShowSavePopup}
                         stateLoadedSaveName={stateLoadedSaveName}
+                        setLoadedSaveName={setLoadedSaveName}
                         stateNodes={stateNodes}
                         stateEdges={stateEdges}
-
                     />
                 }
 

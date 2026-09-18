@@ -23,20 +23,25 @@ export class SavePopUpController{
 
     }
 
-    public handleSaveAsClick(stateNodes: Node[], stateEdges: Edge[]){
+    public handleSaveAsClick(stateNodes: Node[], stateEdges: Edge[], setLoadedSaveName: React.Dispatch<React.SetStateAction<string | null>>){
 
         const saveName = window.prompt("Enter a name for this save:");
-        this.save(saveName, stateNodes, stateEdges);
+        const saveSuccessful = this.save(saveName, stateNodes, stateEdges);
+
+        if(saveSuccessful){
+            setLoadedSaveName(saveName!);
+        }
+
         this.setShowSavePopup(false);
 
     }
 
 
-    private save(saveName: string | null, stateNodes: Node[], stateEdges: Edge[]): void{
+    private save(saveName: string | null, stateNodes: Node[], stateEdges: Edge[]): boolean{
 
         if(saveName === "" || saveName === null || saveName === undefined){
             this.showNotification(false, "Error - invalid save name");
-            return;
+            return false;
         }
 
         const save = {
@@ -53,11 +58,12 @@ export class SavePopUpController{
 
             console.log(error);
             this.showNotification(false, "Error saving " + saveName);
-            return;
+            return false;
 
         }
 
         this.showNotification(true, saveName + " saved successfully");
+        return true;
 
     }
 

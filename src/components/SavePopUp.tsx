@@ -5,7 +5,7 @@ import { SavePopUpController } from '../Controllers/SavePopUpController';
 import '../styles/SavePopUp.css'
 import RoundedButton from '../Components/RoundedButton'
 
-export default function SavePopUp({ setShowSavePopup, stateLoadedSaveName, stateNodes, stateEdges }: {setShowSavePopup: React.Dispatch<React.SetStateAction<boolean>>; stateLoadedSaveName: string | null; stateNodes: Node[], stateEdges: Edge[]}){
+export default function SavePopUp({ setShowSavePopup, stateLoadedSaveName, setLoadedSaveName, stateNodes, stateEdges }: {setShowSavePopup: React.Dispatch<React.SetStateAction<boolean>>; stateLoadedSaveName: string | null; setLoadedSaveName: React.Dispatch<React.SetStateAction<string | null>>; stateNodes: Node[], stateEdges: Edge[]}){
 
     const showNotification = useNotification();
     const [stateSelectedSave, setSelectedSave] = useState<string | null>(null);
@@ -34,7 +34,7 @@ export default function SavePopUp({ setShowSavePopup, stateLoadedSaveName, state
                 }
 
                 <RoundedButton
-                    onClickHandler={() => stateSavePopUpController.handleSaveAsClick(stateNodes, stateEdges)}
+                    onClickHandler={() => stateSavePopUpController.handleSaveAsClick(stateNodes, stateEdges, setLoadedSaveName)}
                     buttonText='Save As'
                 />
 

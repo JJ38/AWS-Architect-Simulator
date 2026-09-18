@@ -69,7 +69,6 @@ export class LoadSavePopUpController{
 
         }
 
-
         this.setEdges(edges);
         this.setNodes(nodes);
 
