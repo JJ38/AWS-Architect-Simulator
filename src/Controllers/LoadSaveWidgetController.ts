@@ -6,14 +6,16 @@ export class LoadSaveWidgetController{
     public model = new LoadSaveWidgetModel();
     private setShowLoadWidget: React.Dispatch<React.SetStateAction<boolean>> | null = null;
     private showNotification: (success: boolean, message: string) => void;
+    private showConfirmation: () => void;
     private setEdges: React.Dispatch<React.SetStateAction<Edge[]>>;
     private setNodes: React.Dispatch<React.SetStateAction<Node[]>>;
     private setLoadedSaveName: React.Dispatch<React.SetStateAction<string | null>>;
 
 
-    public constructor(setShowLoadWidget: React.Dispatch<React.SetStateAction<boolean>>, showNotification: (success: boolean, message: string) => void, setEdges: React.Dispatch<React.SetStateAction<Edge[]>>, setNodes: React.Dispatch<React.SetStateAction<Node[]>>, setLoadedSaveName: React.Dispatch<React.SetStateAction<string | null>>){
+    public constructor(setShowLoadWidget: React.Dispatch<React.SetStateAction<boolean>>, showNotification: (success: boolean, message: string) => void, showConfirmation: () => void, setEdges: React.Dispatch<React.SetStateAction<Edge[]>>, setNodes: React.Dispatch<React.SetStateAction<Node[]>>, setLoadedSaveName: React.Dispatch<React.SetStateAction<string | null>>){
         this.setShowLoadWidget = setShowLoadWidget;
         this.showNotification = showNotification;
+        this.showConfirmation = showConfirmation;
         this.setEdges = setEdges;
         this.setNodes = setNodes;
         this.setLoadedSaveName = setLoadedSaveName;
@@ -29,6 +31,16 @@ export class LoadSaveWidgetController{
         this.setShowLoadWidget(false);
     }
 
+    public handleDeleteClick (stateSelectedSave: string | null){
+
+        if(stateSelectedSave == null){ 
+            this.showNotification(false, "Select a save to delete it")
+            return;
+        }
+
+        this.showConfirmation();
+    }
+
     public handleLoadClick (stateSelectedSave: string | null){
 
         if(this.setShowLoadWidget == null){
@@ -36,7 +48,7 @@ export class LoadSaveWidgetController{
         }
 
         if(stateSelectedSave == null){ 
-            this.showNotification(false, "Select a save to load it")
+            this.showNotification(false, "Select a save to load it");
             return;
         }
 
