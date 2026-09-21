@@ -15,7 +15,7 @@ export default function Layout() {
 
     const [stateCanvasController] = useState(() => new CanvasController())
 
-    const [selectedService, setSelectedService] = useState<Service | null>(null);
+    const [stateSelectedService, setSelectedService] = useState<Service | null>(null);
     const [stateNodes, setNodes] = useState<Node[]>(stateCanvasController.model.nodes);
     const [stateEdges, setEdges] = useState<Edge[]>(stateCanvasController.model.edges);
     const [stateShowLoadWidget, setShowLoadWidget] = useState<boolean>(false);
@@ -29,7 +29,7 @@ export default function Layout() {
             <ConfirmationProvider>
                 <div className="layout">
                     <Sidebar 
-                        selectedService={selectedService} 
+                        stateSelectedService={stateSelectedService} 
                         setSelectedService={setSelectedService}
                         setShowLoadWidget={setShowLoadWidget}
                         setShowSaveWidget={setShowSaveWidget}
@@ -37,7 +37,7 @@ export default function Layout() {
                     />
                     <ReactFlowProvider>
                         <Canvas 
-                            selectedService={selectedService} 
+                            stateSelectedService={stateSelectedService} 
                             setSelectedService={setSelectedService}
                             stateCanvasController={stateCanvasController} 
                             stateNodes={stateNodes}
