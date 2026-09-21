@@ -1,4 +1,5 @@
 import type { Edge, Node } from "@xyflow/react";
+import { TerraformConverter } from "../Models/TerraformConverter.ts";
 
 export class TerraformWidgetController{
 
@@ -6,24 +7,55 @@ export class TerraformWidgetController{
     public setNodes: React.Dispatch<React.SetStateAction<Node[]>>;
     public setEdge: React.Dispatch<React.SetStateAction<Edge[]>>;
     public showNotification: (success: boolean, message: string) => void;
+    public setShowDownloadTerraformForm: React.Dispatch<React.SetStateAction<boolean>>
 
-    public constructor(setShowTerraformWidget: React.Dispatch<React.SetStateAction<boolean>>, showNotification: (success: boolean, message: string) => void, setNodes: React.Dispatch<React.SetStateAction<Node[]>>, setEdges: React.Dispatch<React.SetStateAction<Edge[]>>){
+    public constructor(setShowTerraformWidget: React.Dispatch<React.SetStateAction<boolean>>, showNotification: (success: boolean, message: string) => void, setNodes: React.Dispatch<React.SetStateAction<Node[]>>, setEdges: React.Dispatch<React.SetStateAction<Edge[]>>, setShowDownloadTerraformForm: React.Dispatch<React.SetStateAction<boolean>>){
         this.setShowTerraformWidget = setShowTerraformWidget;
         this.setNodes = setNodes;
         this.setEdge = setEdges;
         this.showNotification = showNotification;
+        this.setShowDownloadTerraformForm = setShowDownloadTerraformForm;
     }   
 
     public handleCancelClick(){
         this.setShowTerraformWidget(false);
     }
 
-    public handleUploadClick(){
+    public handleUploadClick(){ 
 
     }
 
-    public handleDownloadClick(stateNodes: Node[], stateEdges: Edge[]){
+    public handleDownloadClick(stateNodes: Node[]){
+
+
+        if(stateNodes.length == 0){
+            this.showNotification(false, "Add a service to convert it to terraform");
+            return;    
+        }
+
+        //Get provider and backend state store info from user
+        this.setShowDownloadTerraformForm(true);
         
+    }
+
+    public handleConvertToTerraform(stateNodes: Node[], stateEdges: Edge[]){
+
+        //create resource of each node.
+        const terraformConverter = new TerraformConverter({stateNodes: stateNodes, stateEdges: stateEdges});
+
+        const success = terraformConverter.diagramToTerraform();
+
+        if(success){
+            this.showNotification(true, "Successfully converted to terraform");
+            return;
+        } 
+
+        this.showNotification(true, "Error - conversion failed");
+        
+    }
+
+    public handleCancelDownloadClick(){
+        this.setShowDownloadTerraformForm(false);
     }
 
 

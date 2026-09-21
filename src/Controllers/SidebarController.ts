@@ -18,7 +18,6 @@ export class SidebarController{
         this.showNotification = showNotification;
     }
 
-  
     public handleSaveButtonClick(): void{
 
         this.setShowSaveWidget(true);

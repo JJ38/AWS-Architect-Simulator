@@ -1,0 +1,11 @@
+.formSection{
+
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+}
+
+.formSection h5{
+    margin: 0px;
+}

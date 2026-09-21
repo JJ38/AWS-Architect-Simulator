@@ -23,12 +23,7 @@ architectures is a stretch goal, separate from Terraform-for-hosting.
 - [x] Delete node/edge (keyboard delete, right-click context menu)
 - [ ] Wire canvas to a zustand store (addNode, addEdge, updateNode, removeNode,
       selection state) instead of prop-drilling
-- [ ] Export architecture to JSON (download)
-- [ ] Import architecture from JSON (upload, repopulate canvas)
 - [ ] Autosave/restore from localStorage
-- [ ] A couple of preset/starter architectures (e.g. "3-tier web app",
-      "serverless API") loadable from the palette — useful now as fixed shapes
-      to sanity-check the schema against, and later to calibrate the simulator
 - [ ] Undo/redo (nice-to-have once the above is stable)
 
 ## Track 1 — App: Simulation (later)
