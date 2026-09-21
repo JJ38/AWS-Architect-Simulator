@@ -16,7 +16,15 @@ export class CanvasController{
     private placeNode(selectedService: Service, setSelectedService: (service: Service | null) => void, stateNodes: any[], setNodes: any, setGhostNodes: (nodes: any[]) => void, position: XYPosition | null): void{
 
         const nodeID = crypto.randomUUID()
-        const newNode = { id: `n-${nodeID}`, position: position, data: { label: `n-${nodeID}`, ghost: false, img: `${selectedService.image}`} , type: 'imageNode', measured: { width: 1, height: 1 } };
+        const newNode = { 
+            id: `n-${nodeID}`, position: position, 
+            data: { 
+                label: `n-${nodeID}`, 
+                ghost: false, 
+                img: `${selectedService.image}`} , 
+            type: 'imageNode', 
+            measured: { width: 1, height: 1 }
+        };
 
         setNodes([...stateNodes, newNode]);
         setGhostNodes([]);

@@ -317,3 +317,36 @@ side-effecting work inside only ever runs once. This is React's "lazy
 initial state" pattern: reach for the function form whenever the initial
 value is expensive to compute or, as here, is itself a `new` call with
 constructor side effects.
+
+## 18. Terraform `resource` block template
+
+```hcl
+resource "<PROVIDER_TYPE>" "<LOCAL_NAME>" {
+  argument_1 = value_1
+  argument_2 = value_2
+}
+```
+
+```hcl
+resource "aws_s3_bucket" "app_storage" {
+  bucket = "my-unique-bucket-name"
+}
+```
+
+The two strings after `resource` mean different things. `"aws_s3_bucket"` is
+the **resource type** — fixed by the provider, and it determines the whole
+schema (which arguments exist, which are required). `"app_storage"` is a
+**local name** you choose yourself — it never reaches AWS, it's just how this
+config refers to the resource internally.
+
+Reference one resource from another via `type.local_name.attribute`:
+
+```hcl
+resource "aws_eip" "web_ip" {
+  instance = aws_instance.web.id
+}
+```
+
+Some attributes (`id`, `arn`) are only known after the resource is actually
+created — Terraform infers the dependency from the reference itself and
+orders creation accordingly, no explicit ordering needed.
