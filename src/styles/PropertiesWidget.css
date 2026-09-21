@@ -1,0 +1,22 @@
+.propertiesWidgetWrapper{
+    position: absolute;
+    left: 15px;
+    top: 15px;
+    border-radius: 5px;
+    border: 2px solid rgb(20, 20, 20);
+    padding: 10px;
+    width: 200px;
+    height: 200px;
+    background-color: rgb(60, 60, 60);
+    color: white;
+}
+
+.propertyInfo{
+    font-size: 0.8rem;
+    margin: 0px;
+}
+
+.checkboxWrapper{
+    display: flex;
+    flex-direction: row;
+}

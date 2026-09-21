@@ -9,7 +9,7 @@ import '../styles/Sidebar.css';
 
 export default function Sidebar(
     {
-        selectedService,
+        stateSelectedService,
         setSelectedService,
         setShowLoadWidget,
         setShowSaveWidget,
@@ -17,7 +17,7 @@ export default function Sidebar(
     }
         :
     {
-        selectedService: Service | null;
+        stateSelectedService: Service | null;
         setSelectedService: React.Dispatch<React.SetStateAction<Service | null>>;
         setShowLoadWidget: React.Dispatch<React.SetStateAction<boolean>>;
         setShowSaveWidget: React.Dispatch<React.SetStateAction<boolean>>;
@@ -26,7 +26,7 @@ export default function Sidebar(
 ){
 
     const showNotification = useNotification();
-    const [stateSidebarController] = useState(() => new SidebarController(setShowLoadWidget, setShowSaveWidget, selectedService, setSelectedService, setShowTerraformWidget, showNotification));
+    const [stateSidebarController] = useState(() => new SidebarController(setShowLoadWidget, setShowSaveWidget, stateSelectedService, setSelectedService, setShowTerraformWidget, showNotification));
 
 
     return <div className="sidebar">
@@ -39,7 +39,7 @@ export default function Sidebar(
                             serviceDescription={service.description} 
                             serviceImg={service.icon} 
                             key={service.name} 
-                            isSelected={selectedService?.name === service.name}
+                            isSelected={stateSelectedService?.name === service.name}
                             onClick={() => stateSidebarController.handleSidebarButtonClick(service)}
                         />
                     ))

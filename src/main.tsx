@@ -5,8 +5,8 @@ import Layout from './Components/Layout.tsx'
 
 createRoot(document.getElementById('root')!).render(
 
-
   <StrictMode>
     <Layout/>
   </StrictMode>,
+  
 )
