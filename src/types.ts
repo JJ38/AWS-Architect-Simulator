@@ -1,4 +1,6 @@
 import type Resource from "./Models/Resource";
+import { type Node } from '@xyflow/react';
+
 
 export type Service = {
     name: string;
@@ -16,3 +18,14 @@ export type ValidationResult = {
     valid: boolean;
     errors: string[];
 }
+
+export type ResourceNodeData = {
+    kind: 'resource',
+    label: string, 
+    ghost: boolean, 
+    img: string,
+    terraformType: string | null,
+    resource: Resource | null
+}
+
+export type AppNode = Node<ResourceNodeData>;

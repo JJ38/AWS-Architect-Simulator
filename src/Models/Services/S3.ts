@@ -6,12 +6,15 @@ export default class S3 implements Resource{
     public id: string;
     public service: Service;
 
-    public bucket: string;
-    public properties: Record<string, unknown> = {}
+    public properties: Record<string, unknown> = {
+        "bucket": null,
+        "buck_prefix": null,
+        "force_destroy": false,
+        "tags": null
+    }
 
     public constructor({ id, service }: { id: string, service: Service }){
         this.id = id;
-        this.bucket = id;
         this.service = service;
 
         this.properties['bucket'] = id;

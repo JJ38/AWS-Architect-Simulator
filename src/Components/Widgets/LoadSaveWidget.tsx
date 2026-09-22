@@ -6,8 +6,9 @@ import '../../styles/LoadSaveWidget.css'
 import RoundedButton from '../Buttons/RoundedButton'
 import SavePill from '../SavePill';
 import { useConfirmation } from '../../Providers/ConfirmationProvider';
+import type { AppNode } from '../../types';
 
-export default function LoadSavePopUp({ setShowLoadWidget, setEdges, setNodes, setLoadedSaveName }: {setShowLoadWidget: React.Dispatch<React.SetStateAction<boolean>>; setEdges: React.Dispatch<React.SetStateAction<Edge[]>>; setNodes: React.Dispatch<React.SetStateAction<Node[]>>; setLoadedSaveName: React.Dispatch<React.SetStateAction<string | null>>}){
+export default function LoadSavePopUp({ setShowLoadWidget, setEdges, setNodes, setLoadedSaveName }: {setShowLoadWidget: React.Dispatch<React.SetStateAction<boolean>>; setEdges: React.Dispatch<React.SetStateAction<Edge[]>>; setNodes: React.Dispatch<React.SetStateAction<AppNode[]>>; setLoadedSaveName: React.Dispatch<React.SetStateAction<string | null>>}){
 
     const showNotification = useNotification();
     const showConfirmation = useConfirmation();

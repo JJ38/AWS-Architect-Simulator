@@ -375,3 +375,27 @@ a `Record<string, V>`).
 > just the object's own ones. `Object.keys`/`values`/`entries` only return
 > own properties; prefer those unless you specifically need prototype-chain
 > traversal (rare).
+
+## 20. Two different `Node`s — a global-scope name collision
+
+`tsconfig.app.json` sets `"lib": ["ES2023", "DOM"]`. The DOM lib declares a
+**global ambient interface called `Node`** — the base type `Element`,
+`Text`, etc. all extend — available in every `.ts`/`.tsx` file with no
+import needed. `@xyflow/react` also exports a type named `Node`, but that
+one is generic (`Node<NodeData, NodeType>`) and only shadows the DOM global
+in files that actually write `import type { Node } from '@xyflow/react'`.
+
+Same identifier, two unrelated types, picked by whatever's in scope. Write
+`Node<ServiceNodeData>` in a file missing that import, and TS silently
+resolves `Node` to the DOM version instead — which takes no type parameter
+— so it correctly (if confusingly) errors "Type 'Node' is not generic."
+Nothing about that message hints at the real cause: a forgotten import, not
+a misunderstanding of generics.
+
+> **Gotcha:** this only bites in files where the import is missing — so a
+> project can have the same type name working in one file and failing in
+> another, purely based on which imports happen to be present.
+
+Fix: import explicitly wherever `Node` is used, or remove the ambiguity for
+good by aliasing it — `import type { Node as FlowNode } from '@xyflow/react'`
+— so there's never a chance of silently picking up the DOM global.

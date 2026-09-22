@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { ReactFlow, applyNodeChanges, applyEdgeChanges, addEdge, useReactFlow, type Node, type Edge } from '@xyflow/react';
-import type { Service } from '../types.ts';
+import type { AppNode, Service } from '../types.ts';
 import { CanvasController } from '../Controllers/CanvasController.ts';
 import '@xyflow/react/dist/style.css';
 import '../styles/Canvas.css'; 
@@ -21,15 +21,15 @@ export default function Canvas(
     stateSelectedService: Service | null;
     setSelectedService: (service: Service | null) => void;
     stateCanvasController: CanvasController;
-    stateNodes: Node[];
-    setNodes: React.Dispatch<React.SetStateAction<Node[]>>;
+    stateNodes: AppNode[];
+    setNodes: React.Dispatch<React.SetStateAction<AppNode[]>>;
     stateEdges: Edge[];
     setEdges: React.Dispatch<React.SetStateAction<Edge[]>>;
   }
 ){
 
-  const [stateGhostNodes, setGhostNodes] = useState(stateCanvasController.model.ghostNodes);
-  const [stateSelectedNode, setSelectedNode] = useState<Node | null>(null);
+  const [stateGhostNodes, setGhostNodes] = useState<AppNode[]>([]);
+  const [stateSelectedNode, setSelectedNode] = useState<AppNode | null>(null);
   const { screenToFlowPosition } = useReactFlow();
 
   stateCanvasController.screenToFlowPosition = screenToFlowPosition
@@ -56,7 +56,7 @@ export default function Canvas(
         snapGrid={[20,20]}
         colorMode='system'
       />
-      <PropertiesWidget stateSelectedNode={stateSelectedNode} stateSelectedService={stateSelectedService} stateNodes={stateNodes} stateEdges={stateEdges}>
+      <PropertiesWidget stateSelectedNode={stateSelectedNode} stateSelectedService={stateSelectedService} >
       </PropertiesWidget>
     </div>
   );

@@ -5,6 +5,7 @@ export default class APIGatewayV2 implements Resource{
 
     public id: string;
     public service: Service;
+    public properties: Record<string, unknown> = {}
 
     public constructor({ id, service }: { id: string, service: Service }){
         this.id = id;

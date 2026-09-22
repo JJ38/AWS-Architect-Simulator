@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { ReactFlowProvider, type Edge, type Node } from '@xyflow/react';
-import type { Service } from '../types.ts';
+import type { AppNode, Service } from '../types.ts';
 import { CanvasController } from '../Controllers/CanvasController.ts';
 import Sidebar from './Sidebar.tsx';
 import Canvas from './Canvas.tsx';
@@ -16,8 +16,8 @@ export default function Layout() {
     const [stateCanvasController] = useState(() => new CanvasController())
 
     const [stateSelectedService, setSelectedService] = useState<Service | null>(null);
-    const [stateNodes, setNodes] = useState<Node[]>(stateCanvasController.model.nodes);
-    const [stateEdges, setEdges] = useState<Edge[]>(stateCanvasController.model.edges);
+    const [stateNodes, setNodes] = useState<AppNode[]>([]);
+    const [stateEdges, setEdges] = useState<Edge[]>([]);
     const [stateShowLoadWidget, setShowLoadWidget] = useState<boolean>(false);
     const [stateShowSaveWidget, setShowSaveWidget] = useState<boolean>(false);
     const [stateShowTerraformWidget, setShowTerraformWidget] = useState<boolean>(false);

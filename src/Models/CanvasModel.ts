@@ -3,14 +3,14 @@ import ImageNode from "../Components/ImageNode";
 
 export class CanvasModel{
 
-    public nodes = [
+    // public nodes = [
 
-    //   { id: 'n3', position: { x: 0, y: 200 }, data: { label: 'Node 3', img: 'serviceImages/Arch_Amazon-EC2_64.svg' }, type: 'imageNode' },
-    ];
+    // //   { id: 'n3', position: { x: 0, y: 200 }, data: { label: 'Node 3', img: 'serviceImages/Arch_Amazon-EC2_64.svg' }, type: 'imageNode' },
+    // ];
 
-    public edges = [
-        // { id: 'n1-n2', source: 'n1', target: 'n2', type: 'animatedSvg' }
-    ];
+    // public edges = [
+    //     // { id: 'n1-n2', source: 'n1', target: 'n2', type: 'animatedSvg' }
+    // ];
 
     public nodeTypes = {
         imageNode: ImageNode,
@@ -20,7 +20,7 @@ export class CanvasModel{
         animatedSvg: AnimatedSVGEdge,
     };
     
-    public ghostNodes: { id: string; position: { x: number; y: number; }; data: { label: string; img: string }, type: string }[] = [];
+    // public ghostNodes: { id: string; position: { x: number; y: number; }; data: { label: string; img: string }, type: string }[] = [];
     
     public constructor(){
         console.log("Created canvas model")

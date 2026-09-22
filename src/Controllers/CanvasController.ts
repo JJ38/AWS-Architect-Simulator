@@ -1,5 +1,5 @@
 import type { XYPosition, Node, ViewportHelperFunctions } from "@xyflow/react";
-import type { Service } from "../types";
+import type { AppNode, Service } from "../types";
 import { CanvasModel } from "../Models/CanvasModel.ts";
 import { serviceImageSize } from "../constants.ts";
 import type Resource from "../Models/Resource.ts";
@@ -14,7 +14,7 @@ export class CanvasController{
         console.log("Created canvas controller")
     }
 
-    private placeNode(selectedService: Service, setSelectedService: (service: Service | null) => void, stateNodes: any[], setNodes: any, setGhostNodes: (nodes: any[]) => void, position: XYPosition | null): void{
+    private placeNode(selectedService: Service, setSelectedService: (service: Service | null) => void, stateNodes: AppNode[], setNodes: any, setGhostNodes: (nodes: AppNode[]) => void, position: XYPosition | null): void{
         
         const nodeID = `n-${crypto.randomUUID()}`
 
@@ -49,7 +49,7 @@ export class CanvasController{
 
     }
 
-    public handlePaneClick(event: React.MouseEvent, selectedService: Service | null, setSelectedService: (service: Service | null) => void, stateNodes: any[], setNodes: any, setGhostNodes: (nodes: any[]) => void, setSelectedNode: (node: Node | null) => void): void {
+    public handlePaneClick(event: React.MouseEvent, selectedService: Service | null, setSelectedService: (service: Service | null) => void, stateNodes: AppNode[], setNodes: any, setGhostNodes: (nodes: any[]) => void, setSelectedNode: (node: AppNode | null) => void): void {
 
         setSelectedNode(null);
 
@@ -78,7 +78,7 @@ export class CanvasController{
         
     }
 
-    public handleNodeClick(event: React.MouseEvent, node: Node, stateSelectedNode: Node | null, setSelectedNode: (node: Node | null) => void, selectedService: Service | null, setSelectedService: (service: Service | null) => void, stateNodes: any[], setNodes: any, setGhostNodes: (nodes: any[]) => void): void{
+    public handleNodeClick(event: React.MouseEvent, node: AppNode, stateSelectedNode: AppNode | null, setSelectedNode: (node: AppNode | null) => void, selectedService: Service | null, setSelectedService: (service: Service | null) => void, stateNodes: AppNode[], setNodes: any, setGhostNodes: (nodes: AppNode[]) => void): void{
 
         if(selectedService != null){
             const position = this.getCanvasPosition(event);

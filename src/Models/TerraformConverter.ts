@@ -27,7 +27,6 @@ export class TerraformConverter{
 
     public diagramToTerraform(): boolean{
 
-
         let resourceTerraform = "";
 
         //create resources for nodes
@@ -41,7 +40,6 @@ export class TerraformConverter{
             console.log(resource.service);
             console.log(resource.toTerraform());
         }
-        
 
         //identify any triggers in edges
 
