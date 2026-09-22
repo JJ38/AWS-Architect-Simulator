@@ -6,9 +6,15 @@ export default class S3 implements Resource{
     public id: string;
     public service: Service;
 
+    public bucket: string;
+    public properties: Record<string, unknown> = {}
+
     public constructor({ id, service }: { id: string, service: Service }){
         this.id = id;
+        this.bucket = id;
         this.service = service;
+
+        this.properties['bucket'] = id;
     }
 
     public validate(): ValidationResult {
@@ -28,7 +34,27 @@ export default class S3 implements Resource{
     }
 
     public toTerraform(): string {
+
+        let terraform: string = `resource ${this.service.providerType} ${this.id}{`;
+
+        for(const key of Object.keys(this.properties)){
+
+            const value = this.properties[key];
+
+            console.log(`key: ${key}, value: ${value}`);
+            terraform += this.propertyToTerraform(key, value);
+        }
+
+        terraform += "}"
+
         return "";
+    }
+
+    private propertyToTerraform(key: string, value: unknown): string{
+
+        const propertyTerraform = `${key} = ${value}`;
+
+        return propertyTerraform;
     }
 
 }

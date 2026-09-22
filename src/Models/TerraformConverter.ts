@@ -1,4 +1,5 @@
 import type { Edge, Node } from "@xyflow/react";
+import type Resource from "./Resource";
 
 
 export class TerraformConverter{
@@ -26,9 +27,19 @@ export class TerraformConverter{
 
     public diagramToTerraform(): boolean{
 
+
+        let resourceTerraform = "";
+
         //create resources for nodes
         for(let i = 0; i < this.stateNodes.length; i++){
-            this.generateResource(this.stateNodes[i]);
+            const resource = this.stateNodes[i].data.resource as Resource;
+
+            console.log(typeof resource);
+            console.log(resource.constructor.name);
+
+            console.log(resource.id);
+            console.log(resource.service);
+            console.log(resource.toTerraform());
         }
         
 
@@ -37,13 +48,5 @@ export class TerraformConverter{
         return true;
 
     }
-
-    private generateResource(node: Node){
-
-        console.log(node);
-
-    }
-
-
 
 }
