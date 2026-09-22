@@ -86,9 +86,6 @@ export class CanvasController{
 
         if(node.data !== stateSelectedNode?.data){
             setSelectedNode(node);
-        }else{
-            setSelectedNode(null);
-            return;
         }
 
         console.log(node);
