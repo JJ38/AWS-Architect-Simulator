@@ -350,3 +350,28 @@ resource "aws_eip" "web_ip" {
 Some attributes (`id`, `arn`) are only known after the resource is actually
 created — Terraform infers the dependency from the reference itself and
 orders creation accordingly, no explicit ordering needed.
+
+## 19. Looping through a `Record`
+
+`Record<K, V>` is a TypeScript-only type — it erases to nothing at compile
+time and is just shorthand for `{ [key: K]: V }`. At runtime it's an
+ordinary object, so it loops like any object, no special API:
+
+```ts
+const properties: Record<string, unknown> = { bucket: 'my-bucket' };
+
+for (const key of Object.keys(properties)) { /* key only */ }
+for (const value of Object.values(properties)) { /* value only */ }
+for (const [key, value] of Object.entries(properties)) { /* both */ }
+```
+
+`Object.entries()` is usually the right pick when you need both — it hands
+you `[key, value]` pairs directly instead of re-indexing (`properties[key]`)
+inside the loop, and TS carries the value type through (`[string, V][]` for
+a `Record<string, V>`).
+
+> **Gotcha:** `for...in` also loops an object's keys, but walks the
+> prototype chain too — it picks up inherited enumerable properties, not
+> just the object's own ones. `Object.keys`/`values`/`entries` only return
+> own properties; prefer those unless you specifically need prototype-chain
+> traversal (rare).

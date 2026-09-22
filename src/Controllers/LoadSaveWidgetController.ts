@@ -1,5 +1,8 @@
 import type { Edge, Node } from "@xyflow/react";
 import { LoadSaveWidgetModel } from "../Models/LoadSaveWidgetModel";
+import S3 from "../Models/Services/S3";
+import { services } from "../constants";
+import type Resource from "../Models/Resource";
 
 export class LoadSaveWidgetController{
 
@@ -73,6 +76,18 @@ export class LoadSaveWidgetController{
                 return;
             }
 
+
+            for(let i = 0; i < nodes.length; i++){
+
+                if(nodes[i].data.terraformType == "resource"){
+
+                    const nodeName = nodes[i].data.resource.service.name;
+                    const nodeResource = services[nodeName]['resource'];
+                    Object.setPrototypeOf(nodes[i].data.resource, nodeResource?.prototype); //rehydrating the resource as prototype chain (methods) are lost when stringifying and then parsing an object instance.
+
+                }
+            }
+
         }catch(error){
 
             console.log(error);
@@ -80,6 +95,8 @@ export class LoadSaveWidgetController{
             return;
 
         }
+
+        
 
         this.setEdges(edges);
         this.setNodes(nodes);

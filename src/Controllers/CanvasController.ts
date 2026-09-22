@@ -25,6 +25,7 @@ export class CanvasController{
                 label: `${selectedService.description}`, 
                 ghost: false, 
                 img: `${selectedService.image}`,
+                terraformType: selectedService.terraformType,
                 resource: null as Resource | null
             } , 
             type: 'imageNode', 

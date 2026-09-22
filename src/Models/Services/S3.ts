@@ -47,7 +47,7 @@ export default class S3 implements Resource{
 
         terraform += "}"
 
-        return "";
+        return terraform;
     }
 
     private propertyToTerraform(key: string, value: unknown): string{
@@ -56,5 +56,6 @@ export default class S3 implements Resource{
 
         return propertyTerraform;
     }
+
 
 }

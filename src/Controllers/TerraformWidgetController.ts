@@ -47,12 +47,13 @@ export class TerraformWidgetController{
 
         if(!validDiagram){
             this.showNotification(false, "Error - invalid diagram");
+            return;
         }
 
         const successfulConversion = terraformConverter.diagramToTerraform();
 
         if(!successfulConversion){
-            this.showNotification(true, "Error - conversion failed");
+            this.showNotification(false, "Error - conversion failed");
             return;
         } 
 

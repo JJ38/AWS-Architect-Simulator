@@ -33,14 +33,16 @@ export default function Sidebar(
             <div>
 
                 {
-                    services.map((service) => (
+
+        
+                    Object.keys(services).map((key) => (
                         <SidebarButton 
-                            serviceName={service.name} 
-                            serviceDescription={service.description} 
-                            serviceImg={service.icon} 
-                            key={service.name} 
-                            isSelected={stateSelectedService?.name === service.name}
-                            onClick={() => stateSidebarController.handleSidebarButtonClick(service)}
+                            serviceName={services[key].name} 
+                            serviceDescription={services[key].description} 
+                            serviceImg={services[key].icon} 
+                            key={services[key].name} 
+                            isSelected={stateSelectedService?.name === services[key].name}
+                            onClick={() => stateSidebarController.handleSidebarButtonClick(services[key])}
                         />
                     ))
                 }
