@@ -12,6 +12,18 @@ export class TerraformConverter{
         this.stateEdges = stateEdges;
     }    
 
+    public validateDiagram(): boolean{
+
+        //check if each node has required info
+        for(let i = 0; i < this.stateNodes.length; i++){
+            // const resource = this.stateNodes[i].resource;
+        }
+        
+
+        return true;
+
+    }
+
     public diagramToTerraform(): boolean{
 
         //create resources for nodes

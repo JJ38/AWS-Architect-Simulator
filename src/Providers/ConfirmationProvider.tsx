@@ -14,14 +14,19 @@ export default function ConfirmationProvider({ children }: {children: React.Reac
 
     }
 
+    const onNoClick = () => {
+        setShowConfirmationWidget(false);
+    }
+
     return( 
         <ConfirmationContext.Provider value={showNotification}>
             {children}
-            {stateShowConfirmationWidget && <ConfirmationWidget message="Are you sure you want to delete this save?"/>}
+            {stateShowConfirmationWidget && <ConfirmationWidget message="Are you sure you want to delete this save?" onNoClick={onNoClick} onYesClick={() => {}}/> }
         </ConfirmationContext.Provider>
     );
 
 }
+
 
 //use so you dont have to import both use context and the Notification Context. This acts as a wrapper so only one import is need as well as doing a null check.
 export function useConfirmation(){

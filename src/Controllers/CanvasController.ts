@@ -2,6 +2,7 @@ import type { XYPosition, Node, ViewportHelperFunctions } from "@xyflow/react";
 import type { Service } from "../types";
 import { CanvasModel } from "../Models/CanvasModel.ts";
 import { serviceImageSize } from "../constants.ts";
+import type Resource from "../Models/Resource.ts";
 
 export class CanvasController{
 
@@ -14,9 +15,31 @@ export class CanvasController{
     }
 
     private placeNode(selectedService: Service, setSelectedService: (service: Service | null) => void, stateNodes: any[], setNodes: any, setGhostNodes: (nodes: any[]) => void, position: XYPosition | null): void{
+        
+        const nodeID = `n-${crypto.randomUUID()}`
 
-        const nodeID = crypto.randomUUID()
-        const newNode = { id: `n-${nodeID}`, position: position, data: { label: `${selectedService.description}`, ghost: false, img: `${selectedService.image}`} , type: 'imageNode', measured: { width: 1, height: 1 } };
+        const newNode = { 
+            id: nodeID, 
+            position: position, 
+            data: { 
+                label: `${selectedService.description}`, 
+                ghost: false, 
+                img: `${selectedService.image}`,
+                resource: null as Resource | null
+            } , 
+            type: 'imageNode', 
+            measured: { width: 1, height: 1 },
+        };
+
+        if(selectedService.terraformType == "resource"){
+
+            if(selectedService.resource != null){
+
+                const resourceConstructor = selectedService!.resource
+                newNode['data']['resource'] = new resourceConstructor({id: nodeID, service: selectedService});
+
+            }
+        }
 
         setNodes([...stateNodes, newNode]);
         setGhostNodes([]);
@@ -54,7 +77,7 @@ export class CanvasController{
         
     }
 
-    public handleNodeClick(event: React.MouseEvent, node: Node, stateSelectedNode : Node | null, setSelectedNode: (node: Node | null) => void, selectedService: Service | null, setSelectedService: (service: Service | null) => void, stateNodes: any[], setNodes: any, setGhostNodes: (nodes: any[]) => void): void{
+    public handleNodeClick(event: React.MouseEvent, node: Node, stateSelectedNode: Node | null, setSelectedNode: (node: Node | null) => void, selectedService: Service | null, setSelectedService: (service: Service | null) => void, stateNodes: any[], setNodes: any, setGhostNodes: (nodes: any[]) => void): void{
 
         if(selectedService != null){
             const position = this.getCanvasPosition(event);
@@ -67,6 +90,10 @@ export class CanvasController{
             setSelectedNode(null);
             return;
         }
+
+        console.log(node);
+        console.log(node?.data.resource);
+
 
     }
 

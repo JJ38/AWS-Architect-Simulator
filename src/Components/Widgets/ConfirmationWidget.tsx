@@ -4,12 +4,11 @@ import { useNotification } from '../../Providers/NotificationProvider';
 import '../../styles/ConfirmationWidget.css'
 import RoundedButton from '../Buttons/RoundedButton'
 
-export default function ConfirmationWidget({ message }: { message: string }){
+export default function ConfirmationWidget({ message, onNoClick, onYesClick }: { message: string; onNoClick: () => void, onYesClick: () => void }){
 
     const showNotification = useNotification();
 
-    const [stateConfirmationWidgetController] = useState<ConfirmationWidgetController>(() => new ConfirmationWidgetController());
-
+    // const [stateConfirmationWidgetController] = useState<ConfirmationWidgetController>(() => new ConfirmationWidgetController());
 
     return(
 
@@ -20,12 +19,12 @@ export default function ConfirmationWidget({ message }: { message: string }){
             <div className="saveWidgetButtonWrapper">
 
                 <RoundedButton
-                    onClickHandler={() => stateConfirmationWidgetController.handleYesClick()}
+                    onClickHandler={onYesClick}
                     buttonText='Yes'
                 />
                 
                <RoundedButton
-                    onClickHandler={() => stateConfirmationWidgetController.handleNoClick()}
+                    onClickHandler={onNoClick}
                     buttonText='No'
                 />
 

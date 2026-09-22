@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { PropertiesWidgetController } from '../../Controllers/PropertiesWidgetController';
 import type { Edge, Node } from '@xyflow/react';
-import '../../styles/PropertiesWidget.css'
 import type { Service } from '../../types';
+import '../../styles/PropertiesWidget.css'
 
 export default function PropertiesWidget({ stateSelectedNode, stateSelectedService }: { stateSelectedNode: Node | null, stateSelectedService: Service | null, stateNodes: Node[], stateEdges: Edge[]}){
 

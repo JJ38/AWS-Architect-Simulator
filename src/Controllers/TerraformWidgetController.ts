@@ -43,14 +43,21 @@ export class TerraformWidgetController{
         //create resource of each node.
         const terraformConverter = new TerraformConverter({stateNodes: stateNodes, stateEdges: stateEdges});
 
-        const success = terraformConverter.diagramToTerraform();
+        const validDiagram = terraformConverter.validateDiagram();
 
-        if(success){
-            this.showNotification(true, "Successfully converted to terraform");
+        if(!validDiagram){
+            this.showNotification(false, "Error - invalid diagram");
+        }
+
+        const successfulConversion = terraformConverter.diagramToTerraform();
+
+        if(!successfulConversion){
+            this.showNotification(true, "Error - conversion failed");
             return;
         } 
 
-        this.showNotification(true, "Error - conversion failed");
+        this.showNotification(true, "Successfully converted to terraform");
+
         
     }
 
