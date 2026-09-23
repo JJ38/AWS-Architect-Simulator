@@ -10,7 +10,6 @@ export class PropertiesWidgetController{
 
     public stringOnChange(event: React.ChangeEvent<HTMLInputElement, HTMLInputElement>, nodeProperty: NodeProperty<any>, stateSelectedNode: AppNode | null, inputName: string){
         
-        console.log(event.target.value);
         if(nodeProperty == undefined){
             console.log("node properties undefined");
             return;
@@ -19,11 +18,8 @@ export class PropertiesWidgetController{
         const newNodeProperty = structuredClone(nodeProperty);
         newNodeProperty.value = event.target.value;
 
-        console.log(stateSelectedNode);
         const newStateSelectedNode = structuredClone(stateSelectedNode);
         newStateSelectedNode!.data.resourceData!.properties[inputName] = newNodeProperty;
-
-        
 
         this.setSelectedNode(newStateSelectedNode);
     
