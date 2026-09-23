@@ -11,7 +11,7 @@ export class PropertiesWidgetController{
         this.setNodes = setNodes;
     }
 
-    public stringOnChange(event: React.ChangeEvent<HTMLInputElement, HTMLInputElement>, nodeProperty: NodeProperty<any>, inputName: string, stateSelectedNode: AppNode | null, stateNodes: AppNode[]){
+    public stringOnChange(event: React.ChangeEvent<HTMLInputElement, HTMLInputElement>, nodeProperty: NodeProperty<any>, inputName: string, stateSelectedNode: AppNode | null){
         
         if(nodeProperty == undefined){
             console.log("node properties undefined");

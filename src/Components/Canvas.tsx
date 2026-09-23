@@ -59,7 +59,6 @@ export default function Canvas(
       <PropertiesWidget 
         stateSelectedNode={stateSelectedNode} 
         setSelectedNode={setSelectedNode} 
-        stateNodes={stateNodes}
         setNodes={setNodes}
         stateEdges={stateEdges}
       >
