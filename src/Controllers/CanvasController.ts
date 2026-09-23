@@ -1,8 +1,7 @@
 import type { XYPosition, Node, ViewportHelperFunctions } from "@xyflow/react";
 import type { AppNode, Service } from "../types";
 import { CanvasModel } from "../Models/CanvasModel.ts";
-import { serviceImageSize } from "../constants.ts";
-import type Resource from "../Models/Resource.ts";
+import { resourceContainer, serviceImageSize } from "../constants.ts";
 
 export class CanvasController{
 
@@ -14,35 +13,31 @@ export class CanvasController{
         console.log("Created canvas controller")
     }
 
-    private placeNode(selectedService: Service, setSelectedService: (service: Service | null) => void, stateNodes: AppNode[], setNodes: any, setGhostNodes: (nodes: AppNode[]) => void, position: XYPosition | null): void{
+    private placeNode(selectedService: Service, setSelectedService: (service: Service | null) => void, stateNodes: AppNode[], setNodes: any, setGhostNodes: (nodes: AppNode[]) => void, position: XYPosition | null, setSelectedNode: (node: AppNode | null) => void): void{
         
         const nodeID = `n-${crypto.randomUUID()}`
 
-        const newNode = { 
+        const newNode: Node = { 
             id: nodeID, 
-            position: position, 
+            position: position ?? {x:0, y:0}, 
             data: { 
-                label: `${selectedService.description}`, 
-                ghost: false, 
-                img: `${selectedService.image}`,
-                terraformType: selectedService.terraformType,
-                resource: null as Resource | null
+                service: selectedService,
+                ghost: false,              
+                resourceData: null as Record<string, any> | null
             } , 
             type: 'imageNode', 
             measured: { width: 1, height: 1 },
         };
 
-        if(selectedService.terraformType == "resource"){
+        if(selectedService.terraformType == "resource"){   
 
-            if(selectedService.resource != null){
+            const resourceFactory = resourceContainer[selectedService.providerType!];
+            newNode['data']['resourceData'] = resourceFactory(nodeID, selectedService);
 
-                const resourceConstructor = selectedService!.resource
-                newNode['data']['resource'] = new resourceConstructor({id: nodeID, service: selectedService});
-
-            }
         }
 
         setNodes([...stateNodes, newNode]);
+        setSelectedNode(newNode as AppNode);
         setGhostNodes([]);
 
         setSelectedService(null);
@@ -59,7 +54,7 @@ export class CanvasController{
 
         const position = this.getCanvasPosition(event);
 
-        this.placeNode(selectedService, setSelectedService, stateNodes, setNodes, setGhostNodes, position);
+        this.placeNode(selectedService, setSelectedService, stateNodes, setNodes, setGhostNodes, position, setSelectedNode);
     
     }
 
@@ -73,7 +68,7 @@ export class CanvasController{
 
         const position: XYPosition | null = this.getCanvasPosition(event);
 
-        const newGhostNode = { id: `n-ghostNode`, position: position, data: { label: `n-ghostNode`, ghost: true, img: `${selectedService.image}`} , type: 'imageNode', measured: { width: 1, height: 1 }};
+        const newGhostNode = { id: `n-ghostNode`, position: position, data: { ghost: true, service: selectedService} , type: 'imageNode', measured: { width: 1, height: 1 }};
         setGhostNodes([newGhostNode]);
         
     }
@@ -82,16 +77,13 @@ export class CanvasController{
 
         if(selectedService != null){
             const position = this.getCanvasPosition(event);
-            this.placeNode(selectedService, setSelectedService, stateNodes, setNodes, setGhostNodes, position);
+            this.placeNode(selectedService, setSelectedService, stateNodes, setNodes, setGhostNodes, position, setSelectedNode);
+            return;
         }
 
         if(node.data !== stateSelectedNode?.data){
             setSelectedNode(node);
         }
-
-        console.log(node);
-        console.log(node?.data.resource);
-
 
     }
 

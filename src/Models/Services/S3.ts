@@ -1,23 +1,45 @@
 import type Resource from "../Resource";
 import type { Service, ValidationResult, NodeProperty } from "../../types.ts";
 
+
+export interface S3Data{
+
+    id: string;
+    service: Service;
+    properties: Record<string, NodeProperty<any>>;
+    
+}
+
+
 export default class S3 implements Resource{
 
     public id: string;
     public service: Service;
+    public properties: Record<string, NodeProperty<any>>;
 
-    public properties: Record<string, NodeProperty<any>> = {
-        "bucket": { value: null, type: "string"},
-        "buck_prefix": { value: null, type: "string"},
-        "force_destroy": { value: false, type: "boolean"},
-        "tags": { value: {}, type: "tags"}
+
+    public static create(id: string, service: Service): Record<string, any>{
+
+        return {
+
+            id: id,
+            service: service,
+            properties: {
+                "bucket": { value: null, type: "string"},
+                "bucket_prefix": { value: null, type: "string"},
+                "force_destroy": { value: false, type: "boolean"},
+                "tags": { value: {}, type: "tags"}
+            }
+
+        }
+
     }
 
-    public constructor({ id, service }: { id: string, service: Service }){
-        this.id = id;
-        this.service = service;
 
-        this.properties.bucket.value = id;
+    public constructor(data: S3Data){
+        this.id = data.id;
+        this.service = data.service;
+        this.properties = data.properties;
     }
 
     public validate(): ValidationResult {
@@ -38,7 +60,7 @@ export default class S3 implements Resource{
 
     public toTerraform(): string {
 
-        let terraform: string = `resource ${this.service.providerType} ${this.id}{`;
+        let terraform: string = `resource ${this.service.providerType} ${this.properties.bucket.value}{`;
 
         for(const key of Object.keys(this.properties)){
 

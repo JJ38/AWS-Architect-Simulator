@@ -56,7 +56,7 @@ export default function Canvas(
         snapGrid={[20,20]}
         colorMode='system'
       />
-      <PropertiesWidget stateSelectedNode={stateSelectedNode} >
+      <PropertiesWidget stateSelectedNode={stateSelectedNode} setSelectedNode={setSelectedNode} >
       </PropertiesWidget>
     </div>
   );

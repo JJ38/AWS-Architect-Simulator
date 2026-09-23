@@ -80,10 +80,7 @@ export class LoadSaveWidgetController{
 
                 if(nodes[i].data.terraformType == "resource"){
 
-                    const nodeName = nodes[i].data.resource.service.name;
-                    const nodeResource = services[nodeName]['resource'];
-                    Object.setPrototypeOf(nodes[i].data.resource, nodeResource?.prototype); //rehydrating the resource as prototype chain (methods) are lost when stringifying and then parsing an object instance.
-
+              
                 }
             }
 

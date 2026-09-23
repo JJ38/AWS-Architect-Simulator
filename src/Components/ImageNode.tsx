@@ -2,6 +2,7 @@ import { Handle, Position } from '@xyflow/react';
 import '../styles/ImageNode.css';
 
 function imageNode({ data, isConnectable }: { data: any; isConnectable: boolean }) {
+
     return (
         <>
             <Handle
@@ -10,7 +11,7 @@ function imageNode({ data, isConnectable }: { data: any; isConnectable: boolean 
                 onConnect={(params) => console.log('handle onConnect', params)}
                 isConnectable={isConnectable}
             />
-                <img src={data.img} alt={data.label} />
+                <img src={data.service.image} alt={data.service.description} />
 
             <Handle type="source" position={Position.Right} isConnectable={isConnectable} />
         </>

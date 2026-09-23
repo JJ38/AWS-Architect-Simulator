@@ -31,14 +31,16 @@ export class TerraformConverter{
 
         //create resources for nodes
         for(let i = 0; i < this.stateNodes.length; i++){
-            const resource = this.stateNodes[i].data.resource as Resource;
+            const resourceData = this.stateNodes[i].data.resourceData;
 
-            console.log(typeof resource);
-            console.log(resource.constructor.name);
+            // const resource = new Lambda
 
-            console.log(resource.id);
-            console.log(resource.service);
-            console.log(resource.toTerraform());
+            // console.log(typeof resource);
+            // console.log(resource.constructor.name);
+
+            // console.log(resource.id);
+            // console.log(resource.service);
+            // console.log(resource.toTerraform());
         }
 
         //identify any triggers in edges

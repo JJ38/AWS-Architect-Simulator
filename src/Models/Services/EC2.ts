@@ -1,15 +1,42 @@
 import type Resource from "../Resource";
-import type { Service, ValidationResult } from "../../types.ts";
+import type { NodeProperty, Service, ValidationResult } from "../../types.ts";
+
+
+export interface EC2Data{
+
+    id: string;
+    service: Service;
+    properties: Record<string, NodeProperty<any>>;
+    
+}
 
 export default class EC2 implements Resource{
 
     public id: string;
     public service: Service;
-    public properties: Record<string, unknown> = {}
+    public properties: Record<string, NodeProperty<any>>;
 
-    public constructor({ id, service }: { id: string, service: Service }){
-        this.id = id;
-        this.service = service;
+
+    public static create(id: string, service: Service): Record<string, any>{
+
+        return {
+
+            id: id,
+            service: service,
+            properties: {
+                "test": {value: null, type: "string"},
+                "number": {value: null, type: "number"},
+            }
+
+        }
+
+    }
+
+    
+    public constructor(data: EC2Data){
+        this.id = data.id;
+        this.service = data.service;
+        this.properties = data.properties;
     }
 
     public validate(): ValidationResult {

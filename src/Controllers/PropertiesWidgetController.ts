@@ -1,8 +1,32 @@
+import type { AppNode, NodeProperty } from "../types";
+
 export class PropertiesWidgetController{
 
-    public constructor(){
+    private setSelectedNode: React.Dispatch<React.SetStateAction<AppNode | null>>;
+
+    public constructor(setSelectedNode: React.Dispatch<React.SetStateAction<AppNode | null>>){
+        this.setSelectedNode = setSelectedNode;
+    }
+
+    public stringOnChange(event: React.ChangeEvent<HTMLInputElement, HTMLInputElement>, nodeProperty: NodeProperty<any>, stateSelectedNode: AppNode | null, inputName: string){
+        
+        console.log(event.target.value);
+        if(nodeProperty == undefined){
+            console.log("node properties undefined");
+            return;
+        }
+
+        const newNodeProperty = structuredClone(nodeProperty);
+        newNodeProperty.value = event.target.value;
+
+        console.log(stateSelectedNode);
+        const newStateSelectedNode = structuredClone(stateSelectedNode);
+        newStateSelectedNode!.data.resourceData!.properties[inputName] = newNodeProperty;
 
         
+
+        this.setSelectedNode(newStateSelectedNode);
+    
     }
 
 }
