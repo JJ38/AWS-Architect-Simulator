@@ -25,7 +25,7 @@ export default class S3 implements Resource{
             id: id,
             service: service,
             properties: {
-                "bucket": { value: null, type: "string"},
+                "bucket": { value: id, type: "string"},
                 "bucket_prefix": { value: null, type: "string"},
                 "force_destroy": { value: false, type: "boolean"},
                 "tags": { value: {}, type: "tags"}

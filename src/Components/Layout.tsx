@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ReactFlowProvider, type Edge, type Node } from '@xyflow/react';
+import { ReactFlowProvider, type Edge } from '@xyflow/react';
 import type { AppNode, Service } from '../types.ts';
 import { CanvasController } from '../Controllers/CanvasController.ts';
 import Sidebar from './Sidebar.tsx';

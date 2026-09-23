@@ -2,11 +2,12 @@ import { memo, useState } from 'react';
 import { PropertiesWidgetController } from '../../Controllers/PropertiesWidgetController';
 import type { AppNode, NodeProperty } from '../../types';
 import '../../styles/PropertiesWidget.css'
+import type { Edge } from '@xyflow/react';
 
 
-function PropertiesWidget({ stateSelectedNode, setSelectedNode }: { stateSelectedNode: AppNode | null, setSelectedNode: React.Dispatch<React.SetStateAction<AppNode | null>> }){
-
-    const [statePropertiesWidgetController] = useState(() => new PropertiesWidgetController(setSelectedNode));
+function PropertiesWidget({ stateSelectedNode, setSelectedNode, stateNodes, setNodes, stateEdges }: { stateSelectedNode: AppNode | null, setSelectedNode: React.Dispatch<React.SetStateAction<AppNode | null>>, stateNodes: AppNode[], setNodes: React.Dispatch<React.SetStateAction<AppNode[]>>, stateEdges: Edge[] }){
+ 
+    const [statePropertiesWidgetController] = useState(() => new PropertiesWidgetController(setSelectedNode, setNodes));
 
     const nodeProperties: Record<string, NodeProperty<any>> | undefined = stateSelectedNode?.data.resourceData?.properties;
     console.log(stateSelectedNode);
@@ -43,7 +44,7 @@ function PropertiesWidget({ stateSelectedNode, setSelectedNode }: { stateSelecte
 
                         return <div className='propertyInputWrapper' key={inputName} >
                             <p className='propertyName'>{inputName}</p>
-                            {getPropertyInput(statePropertiesWidgetController, nodeProperties[inputName], inputName, stateSelectedNode, setSelectedNode)}
+                            {getPropertyInput(statePropertiesWidgetController, nodeProperties[inputName], inputName, stateSelectedNode, stateNodes)}
                         </div>
 
                     })
@@ -56,14 +57,13 @@ function PropertiesWidget({ stateSelectedNode, setSelectedNode }: { stateSelecte
 
             </div>
 
-
         </div>
     );
 
 }
 
 
-function getPropertyInput(propertiesWidgetController: PropertiesWidgetController, nodeProperty: NodeProperty<any>, inputName: string, stateSelectedNode: AppNode | null, setSelectedNode: React.Dispatch<React.SetStateAction<AppNode | null>>){
+function getPropertyInput(propertiesWidgetController: PropertiesWidgetController, nodeProperty: NodeProperty<any>, inputName: string, stateSelectedNode: AppNode | null, stateNodes: AppNode[]){
     
     console.log(nodeProperty);
     const inputType = nodeProperty.type;
@@ -72,7 +72,7 @@ function getPropertyInput(propertiesWidgetController: PropertiesWidgetController
 
         case "string":{
 
-            const input = <input className="propertyInput" id={`${inputName}`} type="text" name={`${inputName}`} value={nodeProperty.value ?? ""} onChange={(event) => {propertiesWidgetController.stringOnChange(event, nodeProperty, stateSelectedNode, inputName)}}/>
+            const input = <input className="propertyInput" id={`${inputName}`} type="text" name={`${inputName}`} value={nodeProperty.value ?? ""} onChange={(event) => {propertiesWidgetController.stringOnChange(event, nodeProperty, inputName, stateSelectedNode, stateNodes)}}/>
             
             return input;
         }
