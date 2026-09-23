@@ -5,10 +5,12 @@
     border-radius: 5px;
     border: 2px solid rgb(20, 20, 20);
     padding: 10px;
-    width: 200px;
-    height: 200px;
+    min-width: 200px;
+    max-width: 250px;
+    max-height: 80%;
     background-color: rgb(60, 60, 60);
     color: white;
+    overflow-y: auto;
 }
 
 .propertyInfo{
@@ -23,5 +25,24 @@
 
 .propertiesWrapper{
 
-    
+    /* overflow-y: scroll; */
+
+}
+
+.propertyInputWrapper{
+
+    display: flex;
+    gap: 5px;
+    flex-direction: row;
+    align-items: baseline;
+
+}
+
+.propertyInput{
+    flex: 1;
+    max-width: 50%
+}
+
+.propertyName{
+    flex: 1;
 }

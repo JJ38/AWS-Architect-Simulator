@@ -29,3 +29,19 @@ export type ResourceNodeData = {
 }
 
 export type AppNode = Node<ResourceNodeData>;
+
+export interface NodeProperty<T>{
+
+    value: T,
+    type: PropertyType
+
+}
+
+//union type. Similar to an enum but more lightweight
+export type PropertyType =
+| "string"
+| "boolean"
+| "number"
+| "tags"
+| "checkbox"
+| "radio";

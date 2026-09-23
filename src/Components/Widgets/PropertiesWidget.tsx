@@ -1,27 +1,16 @@
-import { useState } from 'react';
+import { memo, useState } from 'react';
 import { PropertiesWidgetController } from '../../Controllers/PropertiesWidgetController';
-import type { Edge, Node } from '@xyflow/react';
-import type { AppNode, Service } from '../../types';
+import type { AppNode, NodeProperty } from '../../types';
 import '../../styles/PropertiesWidget.css'
 
-export default function PropertiesWidget({ stateSelectedNode, stateSelectedService }: { stateSelectedNode: AppNode | null, stateSelectedService: Service | null }){
 
-
-    //Expected, and worth fixing before you build the form. Dragging any node updates stateNodes in Layout.tsx every frame → cascades down through Canvas → PropertiesWidget, even though the props PropertiesWidget actually reads (stateSelectedNode, stateSelectedService) haven't changed — this is entry 14 in react-concepts.md, the default "parent re-renders, every descendant re-renders" cascade.
-
-    // Good news: stateSelectedNode is a separate state var, only updated on click, so its reference stays stable through a drag even if you're dragging the selected node itself. That means React.memo is a clean, complete fix here, not a partial one:
-
-    // export default memo(function PropertiesWidget({ stateSelectedNode, stateSelectedService }: {...}) {
-    //   ...
-    // });
-
-    // Worth adding now, before the form exists — a form re-mounting every drag frame would be a real bug (lost focus/cursor position on any input being typed into), not just wasted work.
+function PropertiesWidget({ stateSelectedNode }: { stateSelectedNode: AppNode | null }){
 
     const [statePropertiesWidgetController] = useState(() => new PropertiesWidgetController());
 
     const label: any = stateSelectedNode?.['data']['label'];
 
-    // const nodeProperties = stateSelectedNode?.data.resource.properties;
+    const nodeProperties: Record<string, NodeProperty<any>> | undefined = stateSelectedNode?.data.resource?.properties;
     console.log(stateSelectedNode?.data.resource?.properties);
     //get data for selected node from stateNodes
     return(
@@ -45,23 +34,56 @@ export default function PropertiesWidget({ stateSelectedNode, stateSelectedServi
                     </div>            
             
             }
+            
+            <div className="propertiesWrapper">
 
+            {
 
-            {/* {
+                nodeProperties != null && nodeProperties != undefined? 
 
-                Object.keys(nodeProperties).map((key) => {
+                    Object.keys(nodeProperties).map((inputName) => {
 
-                    return <div>
-                        <p>{key}</p>
-                        <p>{nodeProperties[key]}</p>
-                    </div>
+                        return <div className='propertyInputWrapper' key={inputName} >
+                            <p className='propertyName'>{inputName}</p>
+                            {getPropertyInput(nodeProperties[inputName], inputName)}
+                        </div>
 
-                })
+                    })
 
-            } */}
+                :
+
+                    <></>
+
+            }
+
+            </div>
 
 
         </div>
     );
 
 }
+
+
+function getPropertyInput(nodeProperty: NodeProperty<any>, inputName: string){
+    console.log(nodeProperty)
+    const inputType = nodeProperty.type;
+
+    switch(inputType){
+
+        case "string":
+            return <input className="propertyInput" id={`${inputName}`} type="text" name={`${inputName}`}/>
+
+        case "boolean":
+            return <input className="propertyInput" id={`${inputName}`} type="checkbox" name={`${inputName}`}/>
+
+         case "tags":
+            return <textarea className="propertyInput" id={`${inputName}`} name={`${inputName}`}/>
+
+    }
+
+    return <div>input</div>
+
+}
+
+export default memo(PropertiesWidget)

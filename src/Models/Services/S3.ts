@@ -1,23 +1,23 @@
 import type Resource from "../Resource";
-import type { Service, ValidationResult } from "../../types.ts";
+import type { Service, ValidationResult, NodeProperty } from "../../types.ts";
 
 export default class S3 implements Resource{
 
     public id: string;
     public service: Service;
 
-    public properties: Record<string, unknown> = {
-        "bucket": null,
-        "buck_prefix": null,
-        "force_destroy": false,
-        "tags": null
+    public properties: Record<string, NodeProperty<any>> = {
+        "bucket": { value: null, type: "string"},
+        "buck_prefix": { value: null, type: "string"},
+        "force_destroy": { value: false, type: "boolean"},
+        "tags": { value: {}, type: "tags"}
     }
 
     public constructor({ id, service }: { id: string, service: Service }){
         this.id = id;
         this.service = service;
 
-        this.properties['bucket'] = id;
+        this.properties.bucket.value = id;
     }
 
     public validate(): ValidationResult {
@@ -53,9 +53,9 @@ export default class S3 implements Resource{
         return terraform;
     }
 
-    private propertyToTerraform(key: string, value: unknown): string{
+    private propertyToTerraform(key: string, nodeProperty: NodeProperty<any>): string{
 
-        const propertyTerraform = `${key} = ${value}`;
+        const propertyTerraform = `${key} = ${nodeProperty.value}`;
 
         return propertyTerraform;
     }
