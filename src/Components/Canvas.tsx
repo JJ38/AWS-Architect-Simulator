@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { ReactFlow, applyNodeChanges, applyEdgeChanges, addEdge, useReactFlow, type Node, type Edge } from '@xyflow/react';
 import type { AppNode, Service } from '../types.ts';
 import { CanvasController } from '../Controllers/CanvasController.ts';
@@ -45,6 +45,28 @@ export default function Canvas(
     data: { ...node.data, isSelected: node.id === stateSelectedNodeID }
   }));
 
+  useEffect(() => {
+    console.log("handleKeyDown useEffect");
+    
+    function handleKeyDown(event: KeyboardEvent){
+      console.log("handleKeyDown");
+      if(event.key !== "Delete") {
+        return;
+      }
+
+      if(stateSelectedNodeID == null){
+        return;
+      }
+
+      setNodes((nodes: AppNode[]) => nodes.filter((node: AppNode) => node.id != stateSelectedNodeID));
+
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+
+  }, [stateSelectedNodeID, setNodes]);
+
   return (
     <div className="reactFlowWrapper">
       <ReactFlow
@@ -59,7 +81,6 @@ export default function Canvas(
         fitView
         // onPaneClick={(event) => stateCanvasController.handlePaneClick(event, stateSelectedService, setSelectedService, stateNodes, setNodes, setGhostNodes, setSelectedNode)}
         onPaneMouseMove={(event) => stateCanvasController.handlePaneMouseMove(event, stateSelectedService)}
-        deleteKeyCode={["Delete"]}
         snapGrid={[20,20]}
         colorMode='system'
         elementsSelectable={false}
