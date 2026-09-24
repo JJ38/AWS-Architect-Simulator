@@ -22,21 +22,27 @@ export class PropertiesWidgetController{
             console.log("stateSelectedNodeID is null");
             return;
         }
- // const newStateSelectedNode = structuredClone(selectedNode);
-        // newStateSelectedNode!.data.resourceData!.properties[inputName] = newNodeProperty;
 
-        // console.log(newStateSelectedNode)
-
-        // this.setNodes(nodes => nodes.map(
-        //     node => node.id === newStateSelectedNode!.id ? newStateSelectedNode! : node
-        // ))
-        // const selectedNode = {}
-
+        console.log(nodeProperty);
 
         const newNodeProperty = structuredClone(nodeProperty);
         newNodeProperty.value = event.target.value;
 
-       
+        this.setNodes((nodes: AppNode[]) => nodes.map((node: AppNode) => {
+
+            if(node.id !== stateSelectedNodeID){
+                return node;
+            }
+
+            const newNode = structuredClone(node);
+
+            if(newNode.data.resourceData == null){
+                return newNode;
+            }
+
+            newNode.data.resourceData.properties[inputName] = newNodeProperty;
+            return newNode;
+        }));
     
     }
 

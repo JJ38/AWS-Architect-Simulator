@@ -29,8 +29,6 @@ function PropertiesWidget(
 
     const nodeProperties: Record<string, NodeProperty<any>> | undefined = selectedNode?.data.resourceData?.properties;
     
-    console.log("PropertiesWidget");
-
     return(
 
         <div className="propertiesWidgetWrapper">
@@ -41,7 +39,7 @@ function PropertiesWidget(
 
                     <div>
                         <p className="propertyInfo">Node ID: {selectedNode.id}</p>
-                        {/* <p className="propertyInfo">Description: {selectedNode?.data.service.description}</p>  */}
+                        <p className="propertyInfo">Description: {selectedNode?.data.service.description}</p> 
                     </div>
                 
                 : 

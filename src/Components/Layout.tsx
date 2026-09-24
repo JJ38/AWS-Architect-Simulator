@@ -12,7 +12,6 @@ import ConfirmationProvider from '../Providers/ConfirmationProvider.tsx';
 
 export default function Layout() {
 
-
     const [stateSelectedService, setSelectedService] = useState<Service | null>(null);
     const [stateNodes, setNodes] = useState<AppNode[]>([]);
     const [stateEdges, setEdges] = useState<Edge[]>([]);
@@ -26,6 +25,7 @@ export default function Layout() {
         <NotificationProvider>
             <ConfirmationProvider>
                 <div className="layout">
+
                     <Sidebar 
                         stateSelectedService={stateSelectedService} 
                         setSelectedService={setSelectedService}
@@ -37,7 +37,6 @@ export default function Layout() {
                         <Canvas 
                             stateSelectedService={stateSelectedService} 
                             setSelectedService={setSelectedService}
-                            // stateCanvasController={stateCanvasController} 
                             stateNodes={stateNodes}
                             setNodes={setNodes}
                             stateEdges={stateEdges}
