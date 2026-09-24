@@ -10,7 +10,6 @@ export default function Canvas(
   {
     stateSelectedService,
     setSelectedService,
-    stateCanvasController,
     stateNodes,
     setNodes,
     stateEdges,
@@ -19,8 +18,7 @@ export default function Canvas(
     :
   {
     stateSelectedService: Service | null;
-    setSelectedService: (service: Service | null) => void;
-    stateCanvasController: CanvasController;
+    setSelectedService: React.Dispatch<React.SetStateAction<Service | null>>;
     stateNodes: AppNode[];
     setNodes: React.Dispatch<React.SetStateAction<AppNode[]>>;
     stateEdges: Edge[];
@@ -28,11 +26,14 @@ export default function Canvas(
   }
 ){
 
+
   const [stateGhostNodes, setGhostNodes] = useState<AppNode[]>([]);
-  const [stateSelectedNode, setSelectedNode] = useState<AppNode | null>(null);
+  const [stateSelectedNodeID, setSelectedNodeID] = useState<string | null>(null);
   const { screenToFlowPosition } = useReactFlow();
 
-  stateCanvasController.screenToFlowPosition = screenToFlowPosition
+
+  const [stateCanvasController] = useState(() => new CanvasController(screenToFlowPosition, setGhostNodes, setNodes, setSelectedNodeID, setSelectedService))
+
  
   const onNodesChange = useCallback((changes: any) => setNodes((nodesSnapshot) => applyNodeChanges(changes, nodesSnapshot)), []);
   const onEdgesChange = useCallback((changes: any) => setEdges((edgesSnapshot) => applyEdgeChanges(changes, edgesSnapshot)), []);
@@ -45,20 +46,20 @@ export default function Canvas(
         edges={stateEdges}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
-        onNodeClick={(event, node) => stateCanvasController.handleNodeClick(event, node, stateSelectedNode, setSelectedNode, stateSelectedService, setSelectedService, stateNodes, setNodes, setGhostNodes)}
+        onNodeClick={(event, node) => stateCanvasController.handleNodeClick(event, node, stateSelectedNodeID, stateSelectedService, stateNodes)}
         onConnect={onConnect}
         nodeTypes={stateCanvasController.model.nodeTypes}
         edgeTypes={stateCanvasController.model.edgeTypes}
         fitView
-        onPaneClick={(event) => stateCanvasController.handlePaneClick(event, stateSelectedService, setSelectedService, stateNodes, setNodes, setGhostNodes, setSelectedNode)}
-        onPaneMouseMove={(event) => stateCanvasController.handlePaneMouseMove(event, stateSelectedService, setGhostNodes)}
+        // onPaneClick={(event) => stateCanvasController.handlePaneClick(event, stateSelectedService, setSelectedService, stateNodes, setNodes, setGhostNodes, setSelectedNode)}
+        onPaneMouseMove={(event) => stateCanvasController.handlePaneMouseMove(event, stateSelectedService)}
         deleteKeyCode={["Delete"]}
         snapGrid={[20,20]}
         colorMode='system'
       />
       <PropertiesWidget 
-        stateSelectedNode={stateSelectedNode} 
-        setSelectedNode={setSelectedNode} 
+        stateSelectedNodeID={stateSelectedNodeID} 
+        setSelectedNodeID={setSelectedNodeID} 
         setNodes={setNodes}
         stateEdges={stateEdges}
       >

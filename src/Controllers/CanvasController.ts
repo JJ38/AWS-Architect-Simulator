@@ -7,13 +7,28 @@ export class CanvasController{
 
     public model: CanvasModel = new CanvasModel;
 
-    public screenToFlowPosition: ViewportHelperFunctions['screenToFlowPosition'] | null = null;
+    private screenToFlowPosition: ViewportHelperFunctions['screenToFlowPosition'];
+    private setGhostNodes: React.Dispatch<React.SetStateAction<AppNode[]>>;
+    private setNodes: React.Dispatch<React.SetStateAction<AppNode[]>>; 
+    private setSelectedNodeID: React.Dispatch<React.SetStateAction<string | null>>
+    private setSelectedService: React.Dispatch<React.SetStateAction<Service | null>>
+     
 
-    public constructor(){
-        console.log("Created canvas controller")
+    public constructor(
+        screenToFlowPosition: ViewportHelperFunctions['screenToFlowPosition'], 
+        setGhostNodes: React.Dispatch<React.SetStateAction<AppNode[]>>,
+        setNodes: React.Dispatch<React.SetStateAction<AppNode[]>>, 
+        setSelectedNodeID: React.Dispatch<React.SetStateAction<string | null>>,
+        setSelectedService: React.Dispatch<React.SetStateAction<Service | null>>
+    ){
+        this.screenToFlowPosition = screenToFlowPosition;
+        this.setGhostNodes = setGhostNodes;
+        this.setNodes = setNodes;
+        this.setSelectedNodeID = setSelectedNodeID;
+        this.setSelectedService = setSelectedService;
     }
 
-    private placeNode(selectedService: Service, setSelectedService: (service: Service | null) => void, stateNodes: AppNode[], setNodes: any, setGhostNodes: (nodes: AppNode[]) => void, position: XYPosition | null, setSelectedNode: (node: AppNode | null) => void): void{
+    private placeNode(selectedService: Service, stateNodes: AppNode[], position: XYPosition | null): void{
         
         const nodeID = `n-${crypto.randomUUID()}`
 
@@ -33,20 +48,19 @@ export class CanvasController{
 
             const resourceFactory = resourceContainer[selectedService.providerType!];
             newNode['data']['resourceData'] = resourceFactory(nodeID, selectedService);
-
         }
 
-        setNodes([...stateNodes, newNode]);
-        setSelectedNode(newNode as AppNode);
-        setGhostNodes([]);
+        this.setNodes([...stateNodes, newNode as AppNode]);
+        this.setSelectedNodeID(nodeID);
+        this.setGhostNodes([]);
 
-        setSelectedService(null);
+        this.setSelectedService(null);
 
     }
 
-    public handlePaneClick(event: React.MouseEvent, selectedService: Service | null, setSelectedService: (service: Service | null) => void, stateNodes: AppNode[], setNodes: any, setGhostNodes: (nodes: any[]) => void, setSelectedNode: (node: AppNode | null) => void): void {
+    public handlePaneClick(event: React.MouseEvent, selectedService: Service | null, stateNodes: AppNode[]): void {
 
-        setSelectedNode(null);
+        this.setSelectedNodeID(null);
 
         if(selectedService == null) {
             return;
@@ -54,11 +68,11 @@ export class CanvasController{
 
         const position = this.getCanvasPosition(event);
 
-        this.placeNode(selectedService, setSelectedService, stateNodes, setNodes, setGhostNodes, position, setSelectedNode);
+        this.placeNode(selectedService, stateNodes, position);
     
     }
 
-    public handlePaneMouseMove(event: React.MouseEvent, selectedService: Service | null, setGhostNodes: (nodes: any[]) => void): void{
+    public handlePaneMouseMove(event: React.MouseEvent, selectedService: Service | null): void{
 
         //when deselecting a service without placing the icon still shows
 
@@ -68,21 +82,24 @@ export class CanvasController{
 
         const position: XYPosition | null = this.getCanvasPosition(event);
 
-        const newGhostNode = { id: `n-ghostNode`, position: position, data: { ghost: true, service: selectedService} , type: 'imageNode', measured: { width: 1, height: 1 }};
-        setGhostNodes([newGhostNode]);
+        const newGhostNode: AppNode = { id: `n-ghostNode`, position: position, data: { ghost: true, service: selectedService} , type: 'imageNode', measured: { width: 1, height: 1 }} as AppNode;
+        this.setGhostNodes([newGhostNode]);
         
     }
 
-    public handleNodeClick(event: React.MouseEvent, node: AppNode, stateSelectedNode: AppNode | null, setSelectedNode: (node: AppNode | null) => void, selectedService: Service | null, setSelectedService: (service: Service | null) => void, stateNodes: AppNode[], setNodes: any, setGhostNodes: (nodes: AppNode[]) => void): void{
+    public handleNodeClick(event: React.MouseEvent, node: AppNode, stateSelectedNodeID: string | null, selectedService: Service | null, stateNodes: AppNode[]): void{
+
+        console.log("node clicked");
 
         if(selectedService != null){
             const position = this.getCanvasPosition(event);
-            this.placeNode(selectedService, setSelectedService, stateNodes, setNodes, setGhostNodes, position, setSelectedNode);
+            this.placeNode(selectedService, stateNodes, position);
             return;
         }
 
-        if(node.data !== stateSelectedNode?.data){
-            setSelectedNode(node);
+        if(node.id !== stateSelectedNodeID){
+            this.setSelectedNodeID(node.id);
+            this.selectNode(node.id, stateNodes);
         }
 
     }
@@ -96,6 +113,12 @@ export class CanvasController{
         const flowPosition = this.screenToFlowPosition({ x: event.clientX, y: event.clientY});
         const position: XYPosition = { x: flowPosition.x - (serviceImageSize.width / 2), y: flowPosition.y - (serviceImageSize.height / 2)}
         return position;
+    }
+
+    private selectNode(node: string, stateNodes: AppNode[]){
+
+        
+
     }
 
 }

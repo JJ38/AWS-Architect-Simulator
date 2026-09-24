@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { ReactFlowProvider, type Edge } from '@xyflow/react';
 import type { AppNode, Service } from '../types.ts';
-import { CanvasController } from '../Controllers/CanvasController.ts';
 import Sidebar from './Sidebar.tsx';
 import Canvas from './Canvas.tsx';
 import LoadWidget from './Widgets/LoadSaveWidget.tsx';
@@ -13,7 +12,6 @@ import ConfirmationProvider from '../Providers/ConfirmationProvider.tsx';
 
 export default function Layout() {
 
-    const [stateCanvasController] = useState(() => new CanvasController())
 
     const [stateSelectedService, setSelectedService] = useState<Service | null>(null);
     const [stateNodes, setNodes] = useState<AppNode[]>([]);
@@ -39,7 +37,7 @@ export default function Layout() {
                         <Canvas 
                             stateSelectedService={stateSelectedService} 
                             setSelectedService={setSelectedService}
-                            stateCanvasController={stateCanvasController} 
+                            // stateCanvasController={stateCanvasController} 
                             stateNodes={stateNodes}
                             setNodes={setNodes}
                             stateEdges={stateEdges}

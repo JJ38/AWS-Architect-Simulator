@@ -11,7 +11,7 @@ function imageNode({ data, isConnectable }: { data: any; isConnectable: boolean 
                 onConnect={(params) => console.log('handle onConnect', params)}
                 isConnectable={isConnectable}
             />
-                <img src={data.service.image} alt={data.service.description} />
+                <img src={data.service?.image} alt={data.service?.description} />
 
             <Handle type="source" position={Position.Right} isConnectable={isConnectable} />
         </>
