@@ -5,16 +5,29 @@ import '../../styles/PropertiesWidget.css'
 import type { Edge } from '@xyflow/react';
 
 
-function PropertiesWidget({ stateSelectedNodeID, setSelectedNodeID, setNodes, stateEdges }: { stateSelectedNodeID: string | null, setSelectedNodeID: React.Dispatch<React.SetStateAction<string | null>>, setNodes: React.Dispatch<React.SetStateAction<AppNode[]>>, stateEdges: Edge[] }){
+function PropertiesWidget(
+    { 
+        stateSelectedNodeID, 
+        setSelectedNodeID, 
+        stateNodes, 
+        setNodes, 
+        stateEdges, 
+        selectedNode 
+    }
+        : 
+    { 
+        stateSelectedNodeID: string | null, 
+        setSelectedNodeID: React.Dispatch<React.SetStateAction<string | null>>, 
+        stateNodes: AppNode[], 
+        setNodes: React.Dispatch<React.SetStateAction<AppNode[]>>, 
+        stateEdges: Edge[],
+        selectedNode: AppNode | undefined
+    }
+){
  
     const [statePropertiesWidgetController] = useState(() => new PropertiesWidgetController(setSelectedNodeID, setNodes));
 
-    //find node by id
-
-    // const selectedNode = 
-
-    // const nodeProperties: Record<string, NodeProperty<any>> | undefined = selectedNode?.data.resourceData?.properties;
-    const nodeProperties = undefined;
+    const nodeProperties: Record<string, NodeProperty<any>> | undefined = selectedNode?.data.resourceData?.properties;
     
     console.log("PropertiesWidget");
 
@@ -24,10 +37,10 @@ function PropertiesWidget({ stateSelectedNodeID, setSelectedNodeID, setNodes, st
 
             {
 
-                stateSelectedNodeID != null ?
+                selectedNode != undefined ?
 
                     <div>
-                        <p className="propertyInfo">Node ID: {stateSelectedNodeID}</p>
+                        <p className="propertyInfo">Node ID: {selectedNode.id}</p>
                         {/* <p className="propertyInfo">Description: {selectedNode?.data.service.description}</p>  */}
                     </div>
                 
@@ -50,7 +63,7 @@ function PropertiesWidget({ stateSelectedNodeID, setSelectedNodeID, setNodes, st
 
                         return <div className='propertyInputWrapper' key={inputName} >
                             <p className='propertyName'>{inputName}</p>
-                            {getPropertyInput(statePropertiesWidgetController, nodeProperties[inputName], inputName, stateSelectedNodeID)}
+                            {getPropertyInput(statePropertiesWidgetController, nodeProperties[inputName], inputName, selectedNode?.id == undefined ? null : selectedNode.id)}
                         </div>
 
                     })

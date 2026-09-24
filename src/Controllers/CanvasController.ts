@@ -45,7 +45,6 @@ export class CanvasController{
         };
 
         if(selectedService.terraformType == "resource"){   
-
             const resourceFactory = resourceContainer[selectedService.providerType!];
             newNode['data']['resourceData'] = resourceFactory(nodeID, selectedService);
         }

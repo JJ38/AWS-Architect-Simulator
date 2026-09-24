@@ -34,15 +34,21 @@ export default function Canvas(
 
   const [stateCanvasController] = useState(() => new CanvasController(screenToFlowPosition, setGhostNodes, setNodes, setSelectedNodeID, setSelectedService))
 
- 
+  const selectedNode = stateNodes.find((node: AppNode) => node.id == stateSelectedNodeID);
+   
   const onNodesChange = useCallback((changes: any) => setNodes((nodesSnapshot) => applyNodeChanges(changes, nodesSnapshot)), []);
   const onEdgesChange = useCallback((changes: any) => setEdges((edgesSnapshot) => applyEdgeChanges(changes, edgesSnapshot)), []);
   const onConnect = useCallback(() => (params: any) => setEdges((edgesSnapshot) => addEdge(params, edgesSnapshot)), []);
 
+  const nodesWithSelection = stateNodes.map((node) => ({
+    ...node,
+    data: { ...node.data, isSelected: node.id === stateSelectedNodeID }
+  }));
+
   return (
     <div className="reactFlowWrapper">
       <ReactFlow
-        nodes={[...stateNodes, ...stateGhostNodes]}
+        nodes={[...nodesWithSelection, ...stateGhostNodes]}
         edges={stateEdges}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
@@ -56,12 +62,15 @@ export default function Canvas(
         deleteKeyCode={["Delete"]}
         snapGrid={[20,20]}
         colorMode='system'
+        elementsSelectable={false}
       />
       <PropertiesWidget 
         stateSelectedNodeID={stateSelectedNodeID} 
         setSelectedNodeID={setSelectedNodeID} 
+        stateNodes={stateNodes}
         setNodes={setNodes}
         stateEdges={stateEdges}
+        selectedNode={selectedNode}
       >
       </PropertiesWidget>
     </div>
