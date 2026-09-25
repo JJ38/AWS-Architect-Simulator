@@ -20,6 +20,14 @@ free tier terms periodically (e.g. CloudFront and EFS both moved from
 way this project treats simulated cost — illustrative, not authoritative —
 and confirm anything load-bearing against AWS's current pricing page.
 
+Each section also lists valid **edge types** for that service — `sync`
+(caller blocks for a response), `async` (fire-and-forget trigger), `pull`
+(downstream service polls at its own pace) — split into what it accepts
+**as source** and **as target**. This mirrors the canvas's edge-type model:
+it drives which options the edge type picker offers for a given connection,
+and later which Terraform resources the converter emits for it (e.g. a
+`pull` edge into Lambda implies an `aws_lambda_event_source_mapping`).
+
 ## `aws_instance` (EC2)
 
 ```hcl
@@ -53,6 +61,11 @@ resource "aws_instance" "example" {
 
 `ami` is region- and OS-specific — there's no universal default, the
 diagram would need to carry (or default to) one per region/OS choice.
+
+**Edge types**
+- As source: `sync` (calls out to RDS/DynamoDB/other APIs and waits), `pull`
+  (app code on the instance polling SQS/Kinesis)
+- As target: `sync` only (ALB/NLB routes a request to it and waits)
 
 ## `aws_s3_bucket` (S3)
 
@@ -95,6 +108,10 @@ If the diagram only has one "S3" node, decide now whether that node emits
 just `aws_s3_bucket`, or a bundle including a sane-default
 `aws_s3_bucket_public_access_block` (blocking public access is the safe
 default almost everyone wants).
+
+**Edge types**
+- As source: `async` only (object-created/removed event notifications)
+- As target: `sync` only (SDK `GetObject`/`PutObject`, CloudFront origin fetch)
 
 ## `aws_lambda_function` (Lambda)
 
@@ -141,6 +158,13 @@ not something that appears on the canvas as its own node. The converter
 will likely need to synthesize a minimal `aws_iam_role` +
 `aws_iam_role_policy_attachment` (basic execution policy) per Lambda node
 rather than expecting the user to draw one.
+
+**Edge types**
+- As source: `sync` (SDK calls to DynamoDB/RDS/other services), `async`
+  (invoking another Lambda asynchronously, publishing to SNS/EventBridge)
+- As target: `sync` (API Gateway or a direct invoke), `async` (S3/SNS/
+  EventBridge triggers), `pull` (SQS/Kinesis/DynamoDB Streams event source
+  mappings — Lambda's poller is doing the pulling under the hood)
 
 ## `aws_apigatewayv2_api` (API Gateway — HTTP API)
 
@@ -203,6 +227,12 @@ default route + `$default` stage into one field — worth considering as the
 converter's first pass for an API-Gateway-node-connected-to-a-Lambda-node
 edge, before building the full four-resource version above.
 
+**Edge types**
+- As source: `sync` (default proxy integration — request/response), `async`
+  (Lambda `Event` invocation type override — uncommon)
+- As target: `sync` only — this is the diagram's external entry point;
+  nothing else drawn on the canvas calls into it
+
 ## Beyond the current 4 — AWS Free Tier services
 
 Scoped to services you'd plausibly draw as a *node* on an architecture
@@ -236,6 +266,10 @@ resource "aws_dynamodb_table" "example" {
 }
 ```
 
+**Edge types**
+- As source: `async` only (DynamoDB Streams triggering a Lambda)
+- As target: `sync` only (`GetItem`/`PutItem`/`Query`)
+
 #### `aws_db_instance` (RDS) — 12-months-free: 750 hrs/month on `db.t3.micro`/`db.t4g.micro`
 
 ```hcl
@@ -260,6 +294,10 @@ resource "aws_db_instance" "example" {
 }
 ```
 
+**Edge types**
+- As source: none — doesn't originate calls to other AWS services in this model
+- As target: `sync` only (DB connection/query — always blocks for a result)
+
 #### `aws_elasticache_cluster` (ElastiCache) — Always Free: `cache.t2.micro`/`cache.t3.micro`, 750 hrs/month
 
 ```hcl
@@ -279,6 +317,10 @@ resource "aws_elasticache_cluster" "example" {
 }
 ```
 
+**Edge types**
+- As source: none
+- As target: `sync` only (cache client `GET`/`SET`)
+
 ### Storage
 
 #### `aws_efs_file_system` (EFS) — Always Free: ~5 GB storage
@@ -296,6 +338,10 @@ resource "aws_efs_file_system" "example" {
   }
 }
 ```
+
+**Edge types**
+- As source: none
+- As target: `sync` only (mounted filesystem read/write)
 
 ### Networking
 
@@ -337,6 +383,9 @@ service icon of its own. Worth deciding whether a "VPC" node emits this
 bundle with sane subnet/IGW defaults, or whether it's implicit and every
 other resource just gets a default `vpc_id`/`subnet_id` wired in behind the
 scenes.
+
+**Edge types:** N/A — this is the boundary box, not a traffic participant;
+no source/target edge types apply.
 
 #### `aws_cloudfront_distribution` (CloudFront) — Always Free: ~1 TB data transfer out + 10M requests/month
 
@@ -381,6 +430,10 @@ resource "aws_cloudfront_distribution" "example" {
 }
 ```
 
+**Edge types**
+- As source: `sync` only (forwards a request to its origin and waits to cache the response)
+- As target: `sync` only (external entry point for client requests)
+
 ### Messaging & integration
 
 #### `aws_sns_topic` (SNS) — Always Free: ~1M publishes/month
@@ -394,6 +447,10 @@ resource "aws_sns_topic" "example" {
   }
 }
 ```
+
+**Edge types**
+- As source: `async` only (fan-out delivery to subscribers is fire-and-forget)
+- As target: `sync` only (`Publish` call accepts the message synchronously)
 
 #### `aws_sqs_queue` (SQS) — Always Free: ~1M requests/month
 
@@ -410,6 +467,10 @@ resource "aws_sqs_queue" "example" {
   }
 }
 ```
+
+**Edge types**
+- As source: `pull` only (consumers poll the queue at their own pace)
+- As target: `sync` only (`SendMessage` call accepts synchronously)
 
 #### `aws_sfn_state_machine` (Step Functions) — Always Free: ~4,000 state transitions/month
 
@@ -433,6 +494,12 @@ resource "aws_sfn_state_machine" "example" {
 }
 ```
 
+**Edge types**
+- As source: `sync`, `async` — same target, different integration pattern per
+  state (`.sync` waits for the result; the default doesn't)
+- As target: `sync` (Express workflows / `StartSyncExecution`), `async`
+  (Standard workflows / `StartExecution`, fire-and-forget)
+
 #### `aws_cloudwatch_event_rule` + `aws_cloudwatch_event_target` (EventBridge default bus)
 
 ```hcl
@@ -454,6 +521,11 @@ resource "aws_cloudwatch_event_target" "example" {
 Same "no node for the plumbing" issue as API Gateway → Lambda: a rule
 without a target does nothing, so these two resources are really one unit
 from the diagram's perspective.
+
+**Edge types**
+- As source: `async` only (dispatches to targets like Lambda without waiting)
+- As target: `async` only (`PutEvents` — publishers fire an event and don't
+  wait for downstream processing)
 
 ### Security & identity
 
@@ -480,6 +552,12 @@ resource "aws_cognito_user_pool_client" "example" {
 }
 ```
 
+**Edge types**
+- As source: `sync` — auth-flow Lambda triggers (e.g. `PostConfirmation`) are
+  called synchronously; Cognito waits on the response to continue the auth
+  flow, unlike most trigger-style edges
+- As target: `sync` only (sign-up/sign-in API calls)
+
 #### `aws_kms_key` (KMS) — Always Free: ~20,000 requests/month (the key itself has a small monthly charge, not free)
 
 ```hcl
@@ -493,6 +571,10 @@ resource "aws_kms_key" "example" {
   }
 }
 ```
+
+**Edge types**
+- As source: none
+- As target: `sync` only (`Encrypt`/`Decrypt` calls)
 
 #### `aws_secretsmanager_secret` (Secrets Manager) — **30-day trial only, not Always Free** — flagging because it's easy to assume it's free like the rest of this list
 
@@ -510,6 +592,11 @@ resource "aws_secretsmanager_secret_version" "example" {
   secret_string = jsonencode({ username = "admin", password = "changeme" }) # common
 }
 ```
+
+**Edge types**
+- As source: `sync` (invokes a rotation Lambda synchronously per rotation
+  step, if rotation is configured)
+- As target: `sync` only (`GetSecretValue`)
 
 ### Monitoring
 
@@ -540,6 +627,12 @@ resource "aws_cloudwatch_metric_alarm" "example" {
   }
 }
 ```
+
+**Edge types**
+- As source: `async` only (an alarm firing an action — SNS notification, Auto
+  Scaling policy — is fire-and-forget)
+- As target: `async` only (every other service ships logs/metrics to it as a
+  side effect, not waiting on any response)
 
 ### Compute — the one with a real caveat
 
@@ -585,6 +678,11 @@ resource "aws_ecs_service" "example" {
   }
 }
 ```
+
+**Edge types**
+- As source: `sync` (calls to RDS/DynamoDB/other APIs), `pull` (task code
+  polling SQS/Kinesis) — same profile as EC2
+- As target: `sync` only (ALB routes requests to a task and waits)
 
 **Caveat:** Fargate compute itself is not in AWS's free tier — this is the
 one entry here that doesn't actually belong on a strict "free tier

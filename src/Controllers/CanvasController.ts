@@ -1,4 +1,4 @@
-import type { XYPosition, Node, ViewportHelperFunctions } from "@xyflow/react";
+import type { XYPosition, Node, ViewportHelperFunctions, Edge } from "@xyflow/react";
 import type { AppNode, Service } from "../types";
 import { CanvasModel } from "../Models/CanvasModel.ts";
 import { resourceContainer, serviceImageSize } from "../constants.ts";
@@ -10,7 +10,9 @@ export class CanvasController{
     private screenToFlowPosition: ViewportHelperFunctions['screenToFlowPosition'];
     private setGhostNodes: React.Dispatch<React.SetStateAction<AppNode[]>>;
     private setNodes: React.Dispatch<React.SetStateAction<AppNode[]>>; 
+    private setEdges: React.Dispatch<React.SetStateAction<Edge[]>>; 
     private setSelectedNodeID: React.Dispatch<React.SetStateAction<string | null>>
+    private setSelectedEdgeID: React.Dispatch<React.SetStateAction<string | null>>
     private setSelectedService: React.Dispatch<React.SetStateAction<Service | null>>
      
 
@@ -18,17 +20,21 @@ export class CanvasController{
         screenToFlowPosition: ViewportHelperFunctions['screenToFlowPosition'], 
         setGhostNodes: React.Dispatch<React.SetStateAction<AppNode[]>>,
         setNodes: React.Dispatch<React.SetStateAction<AppNode[]>>, 
+        setEdges: React.Dispatch<React.SetStateAction<Edge[]>>, 
         setSelectedNodeID: React.Dispatch<React.SetStateAction<string | null>>,
+        setSelectedEdgeID: React.Dispatch<React.SetStateAction<string | null>>,
         setSelectedService: React.Dispatch<React.SetStateAction<Service | null>>
     ){
         this.screenToFlowPosition = screenToFlowPosition;
         this.setGhostNodes = setGhostNodes;
         this.setNodes = setNodes;
+        this.setEdges = setEdges;
         this.setSelectedNodeID = setSelectedNodeID;
+        this.setSelectedEdgeID = setSelectedEdgeID;
         this.setSelectedService = setSelectedService;
     }
 
-    private placeNode(selectedService: Service, stateNodes: AppNode[], position: XYPosition | null): void{
+    private placeNode(selectedService: Service, position: XYPosition | null): void{
         
         const nodeID = `n-${crypto.randomUUID()}`
 
@@ -49,7 +55,8 @@ export class CanvasController{
             newNode['data']['resourceData'] = resourceFactory(nodeID, selectedService);
         }
 
-        this.setNodes([...stateNodes, newNode as AppNode]);
+        this.setNodes((stateNodes: AppNode[]) => [...stateNodes, newNode as AppNode]);
+ 
         this.setSelectedNodeID(nodeID);
         this.setGhostNodes([]);
 
@@ -67,7 +74,7 @@ export class CanvasController{
 
         const position = this.getCanvasPosition(event);
 
-        this.placeNode(selectedService, stateNodes, position);
+        this.placeNode(selectedService, position);
     
     }
 
@@ -86,24 +93,23 @@ export class CanvasController{
         
     }
 
-    public handleNodeClick(event: React.MouseEvent, node: AppNode, stateSelectedNodeID: string | null, selectedService: Service | null, stateNodes: AppNode[]): void{
+    public handleNodeClick(event: React.MouseEvent, node: AppNode, stateSelectedService: Service | null, stateSelectedNodeID: string | null): void{
 
         console.log("node clicked");
 
-        if(selectedService != null){
+        if(stateSelectedService != null){
             const position = this.getCanvasPosition(event);
-            this.placeNode(selectedService, stateNodes, position);
+            this.placeNode(stateSelectedService, position);
             return;
         }
 
         if(node.id !== stateSelectedNodeID){
             this.setSelectedNodeID(node.id);
-            this.selectNode(node.id, stateNodes);
         }
 
     }
 
-    public getCanvasPosition = (event: React.MouseEvent): XYPosition | null => {
+    public getCanvasPosition = (event: React.MouseEvent<Element, MouseEvent>): XYPosition | null => {
 
         if(this.screenToFlowPosition == null){
             return null;
@@ -114,10 +120,13 @@ export class CanvasController{
         return position;
     }
 
-    private selectNode(node: string, stateNodes: AppNode[]){
+    public handleEdgeClick(edge: Edge, stateSelectedEdgeID: string | null){
 
-        
+        console.log(edge);
+     
+        if(edge.id !== stateSelectedEdgeID){
+            this.setSelectedEdgeID(edge.id);
+        }
 
     }
-
 }

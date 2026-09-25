@@ -1,5 +1,6 @@
-import { AnimatedSVGEdge } from "../Components/AnimatedSVGEdge";
-import ImageNode from "../Components/ImageNode";
+import { AnimatedSVGEdge } from "../Components/Edges/AnimatedSVGEdge";
+import { StandardEdge } from "../Components/Edges/StandardEdge";
+import ImageNode from "../Components/Nodes/ImageNode";
 
 export class CanvasModel{
 
@@ -8,6 +9,7 @@ export class CanvasModel{
     };
 
     public edgeTypes = {
+        standardEdge: StandardEdge,
         animatedSvg: AnimatedSVGEdge,
     };
         

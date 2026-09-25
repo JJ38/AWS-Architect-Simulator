@@ -29,16 +29,21 @@ export default function Canvas(
 
   const [stateGhostNodes, setGhostNodes] = useState<AppNode[]>([]);
   const [stateSelectedNodeID, setSelectedNodeID] = useState<string | null>(null);
+  const [stateSelectedEdgeID, setSelectedEdgeID] = useState<string | null>(null);
   const { screenToFlowPosition } = useReactFlow();
 
 
-  const [stateCanvasController] = useState(() => new CanvasController(screenToFlowPosition, setGhostNodes, setNodes, setSelectedNodeID, setSelectedService))
+  const [stateCanvasController] = useState(() => new CanvasController(screenToFlowPosition, setGhostNodes, setNodes, setEdges, setSelectedNodeID, setSelectedEdgeID, setSelectedService))
 
   const selectedNode = stateNodes.find((node: AppNode) => node.id == stateSelectedNodeID);
    
   const onNodesChange = useCallback((changes: any) => setNodes((nodesSnapshot) => applyNodeChanges(changes, nodesSnapshot)), []);
   const onEdgesChange = useCallback((changes: any) => setEdges((edgesSnapshot) => applyEdgeChanges(changes, edgesSnapshot)), []);
-  const onConnect = useCallback((params: any) => setEdges((edgesSnapshot) => addEdge(params, edgesSnapshot)), []);
+  const onConnect = useCallback((params: any) => {
+    console.log(params);
+    params['type'] = "standardEdge";
+    setEdges((edgesSnapshot) => addEdge(params, edgesSnapshot))
+  }, []);
 
   const nodesWithSelection = stateNodes.map((node) => ({
     ...node,
@@ -53,18 +58,23 @@ export default function Canvas(
         return;
       }
 
-      if(stateSelectedNodeID == null){
+      if(stateSelectedNodeID != null){
+        setNodes((nodes: AppNode[]) => nodes.filter((node: AppNode) => node.id != stateSelectedNodeID));
         return;
       }
 
-      setNodes((nodes: AppNode[]) => nodes.filter((node: AppNode) => node.id != stateSelectedNodeID));
+      if(stateSelectedEdgeID != null){
+        setEdges((edges: Edge[]) => edges.filter((edge: Edge) => edge.id != stateSelectedEdgeID));
+        return;
+      }
+
 
     }
 
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
 
-  }, [stateSelectedNodeID, setNodes]);
+  }, [stateSelectedNodeID, setNodes, stateSelectedEdgeID, setEdges]);
 
   return (
     <div className="reactFlowWrapper">
@@ -73,7 +83,9 @@ export default function Canvas(
         edges={stateEdges}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
-        onNodeClick={(event, node) => stateCanvasController.handleNodeClick(event, node, stateSelectedNodeID, stateSelectedService, stateNodes)}
+        onNodeClick={(event, node) => stateCanvasController.handleNodeClick(event, node, stateSelectedService, stateSelectedNodeID)}
+        onEdgeClick={(event, edge) => stateCanvasController.handleEdgeClick(edge, stateSelectedEdgeID)}
+        edgesFocusable={true}
         onConnect={onConnect}
         nodeTypes={stateCanvasController.model.nodeTypes}
         edgeTypes={stateCanvasController.model.edgeTypes}
