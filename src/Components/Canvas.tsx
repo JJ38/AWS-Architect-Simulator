@@ -41,9 +41,10 @@ export default function Canvas(
   const onNodesChange = useCallback((changes: any) => setNodes((nodesSnapshot) => applyNodeChanges(changes, nodesSnapshot)), []);
   const onEdgesChange = useCallback((changes: any) => setEdges((edgesSnapshot) => applyEdgeChanges(changes, edgesSnapshot)), []);
   const onConnect = useCallback((params: any) => {
-    console.log(params);
+
     params['type'] = "standardEdge";
     params['data'] = {
+      edgeType: "sync", //"async", "pull", "sync"
       properties: {
         "test": { value: null, type: "string", }
       }

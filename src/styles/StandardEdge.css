@@ -14,11 +14,36 @@
   stroke-width: 2;
   fill: none;
   stroke-dasharray: 8 24;      /* 8px visible dash, 24px gap — repeats along the whole path */
-  animation: standardEdgePulse 1s linear infinite;
 }
 
-@keyframes standardEdgePulse {
+.standardEdge-sync{
+  animation: standardEdgeSync 1s linear infinite alternate;
+}
+
+.standardEdge-async{
+  animation: standardEdgeAsync 1s linear infinite;
+}
+
+.standardEdge-pull{
+  animation: standardEdgePull 1s linear infinite;
+}
+
+@keyframes standardEdgeSync {
   to {
-    stroke-dashoffset: -32;    /* one full dasharray cycle (8 + 24) */
+    stroke-dashoffset: -32;
+  }
+}
+
+
+@keyframes standardEdgeAsync {
+  to {
+    stroke-dashoffset: 32;  
+  }
+}
+
+
+@keyframes standardEdgePull {
+  to {
+    stroke-dashoffset: -32; 
   }
 }
