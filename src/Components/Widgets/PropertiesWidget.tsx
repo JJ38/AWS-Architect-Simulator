@@ -1,61 +1,57 @@
 import { memo, useState } from 'react';
 import { PropertiesWidgetController } from '../../Controllers/PropertiesWidgetController';
-import type { AppEdge, AppNode, Property } from '../../types';
+import type { AppEdge, AppNode, EdgeData, Property, ResourceNodeData } from '../../types';
 import '../../styles/PropertiesWidget.css'
-import type { Edge } from '@xyflow/react';
 
 
 function PropertiesWidget(
     { 
         stateSelectedNodeID, 
         setSelectedNodeID, 
-        stateNodes, 
         setNodes, 
-        stateEdges, 
-        selectedNode,
-        selectedEdge 
+        selectedNodeData,
+        selectedEdgeData, 
+        stateSelectedEdgeID, 
     }
         : 
     { 
         stateSelectedNodeID: string | null, 
         setSelectedNodeID: React.Dispatch<React.SetStateAction<string | null>>, 
-        stateNodes: AppNode[], 
         setNodes: React.Dispatch<React.SetStateAction<AppNode[]>>, 
-        stateEdges: Edge[],
-        selectedNode: AppNode | undefined,
-        selectedEdge: AppEdge | undefined
+        selectedNodeData: ResourceNodeData | undefined,
+        selectedEdgeData: EdgeData | undefined,
+        stateSelectedEdgeID: string | null
     }
 ){
  
     const [statePropertiesWidgetController] = useState(() => new PropertiesWidgetController(setSelectedNodeID, setNodes));
 
 
-    const selectedComponent = selectedNode != undefined ? selectedNode : selectedEdge != null ? selectedEdge : null;
-    const componentProperties: Record<string, Property<any>> | undefined = selectedComponent != null ? selectedComponent?.data?.properties : undefined;
+    const selectedComponent = selectedNodeData != undefined ? selectedNodeData : selectedEdgeData != null ? selectedEdgeData : null;
+    const componentProperties: Record<string, Property<any>> | undefined = selectedComponent != null ? selectedComponent?.properties : undefined;
 
     console.log(selectedComponent);
     console.log(componentProperties);
 
-    console.log(selectedEdge);
 
     return(
 
         <div className="propertiesWidgetWrapper">
 
             {
-                selectedNode != null &&
+                selectedNodeData != null &&
 
                     <div>
-                        <p className="propertyInfo">Node ID`: {selectedNode.id}</p>
-                        <p className="propertyInfo">Description: {selectedNode?.data?.service.description}</p> 
+                        <p className="propertyInfo">Node ID`: {stateSelectedNodeID}</p>
+                        <p className="propertyInfo">Description: {selectedNodeData?.service.description}</p> 
                     </div>         
             }
 
             {
-                selectedEdge != null &&
+                selectedEdgeData != null &&
 
                     <div>
-                        <p className="propertyInfo">Node ID`: {selectedEdge.id}</p>
+                        <p className="propertyInfo">Node ID`: {stateSelectedEdgeID}</p>
                     </div>
             }
 
@@ -79,7 +75,7 @@ function PropertiesWidget(
                         
                         return <div className='propertyInputWrapper' key={inputName} >
                             <p className='propertyName'>{inputName}</p>
-                            {getPropertyInput(statePropertiesWidgetController, componentProperties[inputName], inputName, selectedNode?.id == undefined ? null : selectedNode.id)}
+                            {getPropertyInput(statePropertiesWidgetController, componentProperties[inputName], inputName, stateSelectedNodeID)}
                         </div>
 
                     })
