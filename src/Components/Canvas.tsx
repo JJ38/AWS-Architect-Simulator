@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
-import { ReactFlow, applyNodeChanges, applyEdgeChanges, addEdge, useReactFlow, type Node, type Edge } from '@xyflow/react';
+import { ReactFlow, applyNodeChanges, applyEdgeChanges, addEdge, useReactFlow, type Edge } from '@xyflow/react';
 import type { AppNode, Service } from '../types.ts';
 import { CanvasController } from '../Controllers/CanvasController.ts';
 import '@xyflow/react/dist/style.css';
@@ -38,7 +38,7 @@ export default function Canvas(
    
   const onNodesChange = useCallback((changes: any) => setNodes((nodesSnapshot) => applyNodeChanges(changes, nodesSnapshot)), []);
   const onEdgesChange = useCallback((changes: any) => setEdges((edgesSnapshot) => applyEdgeChanges(changes, edgesSnapshot)), []);
-  const onConnect = useCallback(() => (params: any) => setEdges((edgesSnapshot) => addEdge(params, edgesSnapshot)), []);
+  const onConnect = useCallback((params: any) => setEdges((edgesSnapshot) => addEdge(params, edgesSnapshot)), []);
 
   const nodesWithSelection = stateNodes.map((node) => ({
     ...node,
@@ -46,10 +46,9 @@ export default function Canvas(
   }));
 
   useEffect(() => {
-    console.log("handleKeyDown useEffect");
     
     function handleKeyDown(event: KeyboardEvent){
-      console.log("handleKeyDown");
+
       if(event.key !== "Delete") {
         return;
       }
@@ -79,7 +78,7 @@ export default function Canvas(
         nodeTypes={stateCanvasController.model.nodeTypes}
         edgeTypes={stateCanvasController.model.edgeTypes}
         fitView
-        // onPaneClick={(event) => stateCanvasController.handlePaneClick(event, stateSelectedService, setSelectedService, stateNodes, setNodes, setGhostNodes, setSelectedNode)}
+        onPaneClick={(event) => stateCanvasController.handlePaneClick(event, stateSelectedService, stateNodes)}
         onPaneMouseMove={(event) => stateCanvasController.handlePaneMouseMove(event, stateSelectedService)}
         snapGrid={[20,20]}
         colorMode='system'
