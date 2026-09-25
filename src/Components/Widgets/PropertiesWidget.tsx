@@ -29,45 +29,57 @@ function PropertiesWidget(
  
     const [statePropertiesWidgetController] = useState(() => new PropertiesWidgetController(setSelectedNodeID, setNodes));
 
-    const nodeProperties: Record<string, Property<any>> | undefined = selectedNode?.data?.properties;
-    const edgeProperties: Record<string, Property<any>> | undefined = selectedEdge?.data?.properties;
 
-    console.log(nodeProperties);
-    console.log(selectedNode);
+    const selectedComponent = selectedNode != undefined ? selectedNode : selectedEdge != null ? selectedEdge : null;
+    const componentProperties: Record<string, Property<any>> | undefined = selectedComponent != null ? selectedComponent?.data?.properties : undefined;
+
+    console.log(selectedComponent);
+    console.log(componentProperties);
+
+    console.log(selectedEdge);
 
     return(
 
         <div className="propertiesWidgetWrapper">
 
             {
-
-                selectedNode != undefined ?
+                selectedNode != null &&
 
                     <div>
                         <p className="propertyInfo">Node ID`: {selectedNode.id}</p>
-                        <p className="propertyInfo">Description: {selectedNode?.data.service.description}</p> 
-                    </div>
-                
-                : 
+                        <p className="propertyInfo">Description: {selectedNode?.data?.service.description}</p> 
+                    </div>         
+            }
 
-                    <div className="checkboxWrapper">
-                        <input type="checkbox" id="snapgridCheckbox" name="snapgridCheckbox"/>
-                        <label htmlFor="snapgridCheckbox">Snap Grid</label>
-                    </div>            
-            
+            {
+                selectedEdge != null &&
+
+                    <div>
+                        <p className="propertyInfo">Node ID`: {selectedEdge.id}</p>
+                    </div>
+            }
+
+            {
+
+                selectedComponent == undefined &&
+
+                <div className="checkboxWrapper">
+                    <input type="checkbox" id="snapgridCheckbox" name="snapgridCheckbox"/>
+                    <label htmlFor="snapgridCheckbox">Snap Grid</label>
+                </div> 
             }
             
             <div className="propertiesWrapper">
 
             {
 
-                nodeProperties != null && nodeProperties != undefined? 
+                componentProperties != null && componentProperties != undefined? 
 
-                    Object.keys(nodeProperties).map((inputName) => {
-
+                    Object.keys(componentProperties).map((inputName) => {
+                        
                         return <div className='propertyInputWrapper' key={inputName} >
                             <p className='propertyName'>{inputName}</p>
-                            {getPropertyInput(statePropertiesWidgetController, nodeProperties[inputName], inputName, selectedNode?.id == undefined ? null : selectedNode.id)}
+                            {getPropertyInput(statePropertiesWidgetController, componentProperties[inputName], inputName, selectedNode?.id == undefined ? null : selectedNode.id)}
                         </div>
 
                     })

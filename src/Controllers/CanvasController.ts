@@ -103,6 +103,7 @@ export class CanvasController{
 
         if(node.id !== stateSelectedNodeID){
             this.setSelectedNodeID(node.id);
+            this.setSelectedEdgeID(null);
         }
 
     }
@@ -124,6 +125,7 @@ export class CanvasController{
      
         if(edge.id !== stateSelectedEdgeID){
             this.setSelectedEdgeID(edge.id);
+            this.setSelectedNodeID(null);
         }
 
     }

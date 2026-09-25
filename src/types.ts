@@ -1,6 +1,5 @@
 import { type Edge, type Node } from '@xyflow/react';
 
-
 export type Service = {
     name: string;
     description: string;

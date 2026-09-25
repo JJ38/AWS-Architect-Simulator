@@ -44,16 +44,13 @@ export default function Canvas(
     console.log(params);
     params['type'] = "standardEdge";
     params['data'] = {
-      edgeData: {
-        properties: {
-          "test": { value: null, type: "string", }
-        }
+      properties: {
+        "test": { value: null, type: "string", }
       }
     };
 
-  
-
     setEdges((edgesSnapshot) => addEdge(params, edgesSnapshot))
+
   }, []);
 
   const nodesWithSelection = stateNodes.map((node) => ({
