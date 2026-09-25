@@ -8,23 +8,25 @@ function PropertiesWidget(
     { 
         stateSelectedNodeID, 
         setSelectedNodeID, 
-        setNodes, 
         selectedNodeData,
+        setNodes, 
+        stateSelectedEdgeID,
         selectedEdgeData, 
-        stateSelectedEdgeID, 
+        setEdges,
     }
         : 
     { 
         stateSelectedNodeID: string | null, 
         setSelectedNodeID: React.Dispatch<React.SetStateAction<string | null>>, 
-        setNodes: React.Dispatch<React.SetStateAction<AppNode[]>>, 
         selectedNodeData: ResourceNodeData | undefined,
+        setNodes: React.Dispatch<React.SetStateAction<AppNode[]>>, 
+        stateSelectedEdgeID: string | null,
         selectedEdgeData: EdgeData | undefined,
-        stateSelectedEdgeID: string | null
+        setEdges: React.Dispatch<React.SetStateAction<AppEdge[]>>, 
     }
 ){
  
-    const [statePropertiesWidgetController] = useState(() => new PropertiesWidgetController(setSelectedNodeID, setNodes));
+    const [statePropertiesWidgetController] = useState(() => new PropertiesWidgetController(setNodes, setEdges));
 
 
     const selectedComponent = selectedNodeData != undefined ? selectedNodeData : selectedEdgeData != null ? selectedEdgeData : null;

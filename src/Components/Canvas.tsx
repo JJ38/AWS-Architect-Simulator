@@ -107,12 +107,13 @@ export default function Canvas(
       <PropertiesWidget 
         stateSelectedNodeID={stateSelectedNodeID} 
         setSelectedNodeID={setSelectedNodeID} 
+        selectedNodeData={selectedNode?.data}
         // stateNodes={stateNodes}
         setNodes={setNodes}
         // stateEdges={stateEdges}
-        selectedNodeData={selectedNode?.data}
         selectedEdgeData={selectedEdge?.data}
         stateSelectedEdgeID={stateSelectedEdgeID}
+        setEdges={setEdges}
       >
       </PropertiesWidget>
     </div>

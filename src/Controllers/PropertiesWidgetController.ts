@@ -1,17 +1,29 @@
-import type { AppNode, Property } from "../types";
+import type { AppEdge, AppNode, Property } from "../types";
 
 export class PropertiesWidgetController{
 
-    private setSelectedNodeID: React.Dispatch<React.SetStateAction<string | null>>;
+
     private setNodes: React.Dispatch<React.SetStateAction<AppNode[]>>;
+    private setEdges: React.Dispatch<React.SetStateAction<AppEdge[]>>;
 
 
-    public constructor(setSelectedNodeID: React.Dispatch<React.SetStateAction<string | null>>, setNodes: React.Dispatch<React.SetStateAction<AppNode[]>>){
-        this.setSelectedNodeID = setSelectedNodeID;
+    public constructor(
+        setNodes: React.Dispatch<React.SetStateAction<AppNode[]>>, 
+        setEdges: React.Dispatch<React.SetStateAction<AppEdge[]>>
+    ){
+        this.setEdges = setEdges;
         this.setNodes = setNodes;
     }
 
-    public stringOnChange(event: React.ChangeEvent<HTMLInputElement, HTMLInputElement>, nodeProperty: Property<any>, inputName: string, stateSelectedNodeID: string | null){
+
+    //make generic and pass in setter
+    public stringOnChange(
+        event: React.ChangeEvent<HTMLInputElement, 
+        HTMLInputElement>, nodeProperty: Property<any>, 
+        inputName: string, 
+        stateSelectedNodeID: string | null,
+
+    ){
         
         if(nodeProperty == undefined){
             console.log("node properties undefined");
