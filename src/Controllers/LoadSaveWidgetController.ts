@@ -1,7 +1,7 @@
 import type { Edge, Node } from "@xyflow/react";
 import { LoadSaveWidgetModel } from "../Models/LoadSaveWidgetModel";
 import { services } from "../constants";
-import type { AppNode } from "../types";
+import type { AppEdge, AppNode } from "../types";
 
 export class LoadSaveWidgetController{
 
@@ -9,12 +9,19 @@ export class LoadSaveWidgetController{
     private setShowLoadWidget: React.Dispatch<React.SetStateAction<boolean>> | null = null;
     private showNotification: (success: boolean, message: string) => void;
     private showConfirmation: () => void;
-    private setEdges: React.Dispatch<React.SetStateAction<Edge[]>>;
+    private setEdges: React.Dispatch<React.SetStateAction<AppEdge[]>>;
     private setNodes: React.Dispatch<React.SetStateAction<AppNode[]>>;
     private setLoadedSaveName: React.Dispatch<React.SetStateAction<string | null>>;
 
 
-    public constructor(setShowLoadWidget: React.Dispatch<React.SetStateAction<boolean>>, showNotification: (success: boolean, message: string) => void, showConfirmation: () => void, setEdges: React.Dispatch<React.SetStateAction<Edge[]>>, setNodes: React.Dispatch<React.SetStateAction<AppNode[]>>, setLoadedSaveName: React.Dispatch<React.SetStateAction<string | null>>){
+    public constructor(
+        setShowLoadWidget: React.Dispatch<React.SetStateAction<boolean>>, 
+        showNotification: (success: boolean, message: string) => void,
+        showConfirmation: () => void, 
+        setEdges: React.Dispatch<React.SetStateAction<AppEdge[]>>,
+        setNodes: React.Dispatch<React.SetStateAction<AppNode[]>>, 
+        setLoadedSaveName: React.Dispatch<React.SetStateAction<string | null>>
+    ){
         this.setShowLoadWidget = setShowLoadWidget;
         this.showNotification = showNotification;
         this.showConfirmation = showConfirmation;

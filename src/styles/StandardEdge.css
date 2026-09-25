@@ -1,6 +1,6 @@
 .standardEdge{
 
-    color: rgb(250, 0, 196);
+    stroke: rgb(139, 167, 219) !important;
 
 }
 
@@ -10,7 +10,7 @@
 
 
 .standardEdge-pulse {
-  stroke: #ff0073 !important;
+  stroke: #1a59b8 !important;
   stroke-width: 2;
   fill: none;
   stroke-dasharray: 8 24;      /* 8px visible dash, 24px gap — repeats along the whole path */

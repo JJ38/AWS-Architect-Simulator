@@ -1,16 +1,22 @@
 import type { Edge, Node } from "@xyflow/react";
 import { TerraformConverter } from "../Models/TerraformConverter.ts";
-import type { AppNode } from "../types.ts";
+import type { AppEdge, AppNode } from "../types.ts";
 
 export class TerraformWidgetController{
 
     public setShowTerraformWidget: React.Dispatch<React.SetStateAction<boolean>>;
     public setNodes: React.Dispatch<React.SetStateAction<AppNode[]>>;
-    public setEdge: React.Dispatch<React.SetStateAction<Edge[]>>;
+    public setEdge: React.Dispatch<React.SetStateAction<AppEdge[]>>;
     public showNotification: (success: boolean, message: string) => void;
     public setShowDownloadTerraformForm: React.Dispatch<React.SetStateAction<boolean>>
 
-    public constructor(setShowTerraformWidget: React.Dispatch<React.SetStateAction<boolean>>, showNotification: (success: boolean, message: string) => void, setNodes: React.Dispatch<React.SetStateAction<AppNode[]>>, setEdges: React.Dispatch<React.SetStateAction<Edge[]>>, setShowDownloadTerraformForm: React.Dispatch<React.SetStateAction<boolean>>){
+    public constructor(
+        setShowTerraformWidget: React.Dispatch<React.SetStateAction<boolean>>, 
+        showNotification: (success: boolean, message: string) => void, 
+        setNodes: React.Dispatch<React.SetStateAction<AppNode[]>>, 
+        setEdges: React.Dispatch<React.SetStateAction<AppEdge[]>>, 
+        setShowDownloadTerraformForm: React.Dispatch<React.SetStateAction<boolean>>
+    ){
         this.setShowTerraformWidget = setShowTerraformWidget;
         this.setNodes = setNodes;
         this.setEdge = setEdges;

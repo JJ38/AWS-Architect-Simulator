@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
 import { ReactFlow, applyNodeChanges, applyEdgeChanges, addEdge, useReactFlow, type Edge } from '@xyflow/react';
-import type { AppNode, Service } from '../types.ts';
+import type { AppEdge, AppNode, EdgeData, Property, Service } from '../types.ts';
 import { CanvasController } from '../Controllers/CanvasController.ts';
 import '@xyflow/react/dist/style.css';
 import '../styles/Canvas.css'; 
@@ -21,8 +21,8 @@ export default function Canvas(
     setSelectedService: React.Dispatch<React.SetStateAction<Service | null>>;
     stateNodes: AppNode[];
     setNodes: React.Dispatch<React.SetStateAction<AppNode[]>>;
-    stateEdges: Edge[];
-    setEdges: React.Dispatch<React.SetStateAction<Edge[]>>;
+    stateEdges: AppEdge[];
+    setEdges: React.Dispatch<React.SetStateAction<AppEdge[]>>;
   }
 ){
 
@@ -36,12 +36,23 @@ export default function Canvas(
   const [stateCanvasController] = useState(() => new CanvasController(screenToFlowPosition, setGhostNodes, setNodes, setEdges, setSelectedNodeID, setSelectedEdgeID, setSelectedService))
 
   const selectedNode = stateNodes.find((node: AppNode) => node.id == stateSelectedNodeID);
+  const selectedEdge = stateEdges.find((edge: AppEdge) => edge.id == stateSelectedEdgeID);
    
   const onNodesChange = useCallback((changes: any) => setNodes((nodesSnapshot) => applyNodeChanges(changes, nodesSnapshot)), []);
   const onEdgesChange = useCallback((changes: any) => setEdges((edgesSnapshot) => applyEdgeChanges(changes, edgesSnapshot)), []);
   const onConnect = useCallback((params: any) => {
     console.log(params);
     params['type'] = "standardEdge";
+    params['data'] = {
+      edgeData: {
+        properties: {
+          "test": { value: null, type: "string", }
+        }
+      }
+    };
+
+  
+
     setEdges((edgesSnapshot) => addEdge(params, edgesSnapshot))
   }, []);
 
@@ -64,7 +75,7 @@ export default function Canvas(
       }
 
       if(stateSelectedEdgeID != null){
-        setEdges((edges: Edge[]) => edges.filter((edge: Edge) => edge.id != stateSelectedEdgeID));
+        setEdges((edges: AppEdge[]) => edges.filter((edge: AppEdge) => edge.id != stateSelectedEdgeID));
         return;
       }
 
@@ -103,6 +114,7 @@ export default function Canvas(
         setNodes={setNodes}
         stateEdges={stateEdges}
         selectedNode={selectedNode}
+        selectedEdge={selectedEdge}
       >
       </PropertiesWidget>
     </div>

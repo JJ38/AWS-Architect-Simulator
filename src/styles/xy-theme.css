@@ -4,7 +4,7 @@
   /* Custom Variables */
   --xy-theme-selected: #f57dbd;
   --xy-theme-hover: #c5c5c5;
-  --xy-theme-edge-hover: black;
+  --xy-theme-edge-hover: rgb(211, 13, 13);
   --xy-theme-color-focus: #e8e8e8;
  
   /* Built-in Variables see https://reactflow.dev/learn/customization/theming */
@@ -35,7 +35,7 @@
   --xy-handle-border-color-default: #5a5d66;
   --xy-edge-label-color-default: #e6e7ea;
   --xy-theme-hover: #7a7d86;
-  --xy-theme-edge-hover: #f3f4f6;
+  --xy-theme-edge-hover: #4b77cf;
   --xy-theme-panel-bg: #141519;
   --xy-theme-panel-text: #f3f4f6;
   --xy-theme-resize-handle-bg: #141519;

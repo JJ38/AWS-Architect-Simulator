@@ -1,5 +1,5 @@
 import type { XYPosition, Node, ViewportHelperFunctions, Edge } from "@xyflow/react";
-import type { AppNode, Service } from "../types";
+import type { AppEdge, AppNode, Service } from "../types";
 import { CanvasModel } from "../Models/CanvasModel.ts";
 import { resourceContainer, serviceImageSize } from "../constants.ts";
 
@@ -10,7 +10,7 @@ export class CanvasController{
     private screenToFlowPosition: ViewportHelperFunctions['screenToFlowPosition'];
     private setGhostNodes: React.Dispatch<React.SetStateAction<AppNode[]>>;
     private setNodes: React.Dispatch<React.SetStateAction<AppNode[]>>; 
-    private setEdges: React.Dispatch<React.SetStateAction<Edge[]>>; 
+    private setEdges: React.Dispatch<React.SetStateAction<AppEdge[]>>; 
     private setSelectedNodeID: React.Dispatch<React.SetStateAction<string | null>>
     private setSelectedEdgeID: React.Dispatch<React.SetStateAction<string | null>>
     private setSelectedService: React.Dispatch<React.SetStateAction<Service | null>>
@@ -20,7 +20,7 @@ export class CanvasController{
         screenToFlowPosition: ViewportHelperFunctions['screenToFlowPosition'], 
         setGhostNodes: React.Dispatch<React.SetStateAction<AppNode[]>>,
         setNodes: React.Dispatch<React.SetStateAction<AppNode[]>>, 
-        setEdges: React.Dispatch<React.SetStateAction<Edge[]>>, 
+        setEdges: React.Dispatch<React.SetStateAction<AppEdge[]>>, 
         setSelectedNodeID: React.Dispatch<React.SetStateAction<string | null>>,
         setSelectedEdgeID: React.Dispatch<React.SetStateAction<string | null>>,
         setSelectedService: React.Dispatch<React.SetStateAction<Service | null>>
@@ -41,18 +41,16 @@ export class CanvasController{
         const newNode: Node = { 
             id: nodeID, 
             position: position ?? {x:0, y:0}, 
-            data: { 
-                service: selectedService,
-                ghost: false,              
-                resourceData: null as Record<string, any> | null
-            } , 
+            data: {        
+                properties: null
+            },
             type: 'imageNode', 
             measured: { width: 1, height: 1 },
         };
 
         if(selectedService.terraformType == "resource"){   
             const resourceFactory = resourceContainer[selectedService.providerType!];
-            newNode['data']['resourceData'] = resourceFactory(nodeID, selectedService);
+            newNode['data'] = resourceFactory(nodeID, selectedService);
         }
 
         this.setNodes((stateNodes: AppNode[]) => [...stateNodes, newNode as AppNode]);

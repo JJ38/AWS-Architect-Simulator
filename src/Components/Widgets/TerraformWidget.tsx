@@ -4,11 +4,25 @@ import { useNotification } from "../../Providers/NotificationProvider";
 import type { Edge, Node } from "@xyflow/react";
 import RoundedButton from "../Buttons/RoundedButton";
 import '../../styles/TerraformWidget.css';
-import type { AppNode } from "../../types";
+import type { AppEdge, AppNode } from "../../types";
 
 
 
-export default function TerraformWidget({ setShowTerraformWidget, stateNodes, setNodes, stateEdges, setEdges }: { setShowTerraformWidget: React.Dispatch<React.SetStateAction<boolean>>, stateNodes: Node[] , setNodes: React.Dispatch<React.SetStateAction<AppNode[]>>, stateEdges: Edge[], setEdges: React.Dispatch<React.SetStateAction<Edge[]>> }){
+export default function TerraformWidget({ 
+        setShowTerraformWidget, 
+        stateNodes, 
+        setNodes, 
+        stateEdges, 
+        setEdges 
+    }
+        : 
+    { 
+        setShowTerraformWidget: React.Dispatch<React.SetStateAction<boolean>>, 
+        stateNodes: Node[], 
+        setNodes: React.Dispatch<React.SetStateAction<AppNode[]>>, 
+        stateEdges: Edge[], 
+        setEdges: React.Dispatch<React.SetStateAction<AppEdge[]>> 
+    }){
 
     const showNotification = useNotification();
     const [stateShowDownloadTerraformForm, setShowDownloadTerraformForm] = useState<boolean>(false);

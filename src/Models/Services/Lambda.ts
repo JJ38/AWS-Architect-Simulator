@@ -1,12 +1,12 @@
 import type Resource from "../Resource";
-import type { NodeProperty, Service, ValidationResult } from "../../types.ts";
+import type { Property, Service, ValidationResult } from "../../types.ts";
 
 
 export interface LambdaData{
 
     id: string;
     service: Service;
-    properties: Record<string, NodeProperty<any>>;
+    properties: Record<string, Property<any>>;
     
 }
 
@@ -14,20 +14,18 @@ export default class Lambda implements Resource{
 
     public id: string;
     public service: Service;
-    public properties: Record<string, NodeProperty<any>>;
+    public properties: Record<string, Property<any>>;
     
 
     public static create(id: string, service: Service): Record<string, any>{
 
         return {
-
             id: id,
             service: service,
             properties: {
                 "test": {value: null, type: "string"},
                 "number": {value: null, type: "number"},
             }
-
         }
 
     }

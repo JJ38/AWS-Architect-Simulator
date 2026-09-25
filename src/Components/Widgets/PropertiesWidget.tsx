@@ -1,6 +1,6 @@
 import { memo, useState } from 'react';
 import { PropertiesWidgetController } from '../../Controllers/PropertiesWidgetController';
-import type { AppNode, NodeProperty } from '../../types';
+import type { AppEdge, AppNode, Property } from '../../types';
 import '../../styles/PropertiesWidget.css'
 import type { Edge } from '@xyflow/react';
 
@@ -12,7 +12,8 @@ function PropertiesWidget(
         stateNodes, 
         setNodes, 
         stateEdges, 
-        selectedNode 
+        selectedNode,
+        selectedEdge 
     }
         : 
     { 
@@ -21,14 +22,19 @@ function PropertiesWidget(
         stateNodes: AppNode[], 
         setNodes: React.Dispatch<React.SetStateAction<AppNode[]>>, 
         stateEdges: Edge[],
-        selectedNode: AppNode | undefined
+        selectedNode: AppNode | undefined,
+        selectedEdge: AppEdge | undefined
     }
 ){
  
     const [statePropertiesWidgetController] = useState(() => new PropertiesWidgetController(setSelectedNodeID, setNodes));
 
-    const nodeProperties: Record<string, NodeProperty<any>> | undefined = selectedNode?.data.resourceData?.properties;
-    
+    const nodeProperties: Record<string, Property<any>> | undefined = selectedNode?.data?.properties;
+    const edgeProperties: Record<string, Property<any>> | undefined = selectedEdge?.data?.properties;
+
+    console.log(nodeProperties);
+    console.log(selectedNode);
+
     return(
 
         <div className="propertiesWidgetWrapper">
@@ -38,7 +44,7 @@ function PropertiesWidget(
                 selectedNode != undefined ?
 
                     <div>
-                        <p className="propertyInfo">Node ID: {selectedNode.id}</p>
+                        <p className="propertyInfo">Node ID`: {selectedNode.id}</p>
                         <p className="propertyInfo">Description: {selectedNode?.data.service.description}</p> 
                     </div>
                 
@@ -80,22 +86,22 @@ function PropertiesWidget(
 }
 
 
-function getPropertyInput(propertiesWidgetController: PropertiesWidgetController, nodeProperty: NodeProperty<any>, inputName: string, stateSelectedNodeID: string | null){
+function getPropertyInput(propertiesWidgetController: PropertiesWidgetController, Property: Property<any>, inputName: string, stateSelectedNodeID: string | null){
     
-    const inputType = nodeProperty.type;
+    const inputType = Property.type;
 
     switch(inputType){
 
         case "string":{
 
-            const input = <input className="propertyInput" id={`${inputName}`} type="text" name={`${inputName}`} value={nodeProperty.value ?? ""} onChange={(event) => {propertiesWidgetController.stringOnChange(event, nodeProperty, inputName, stateSelectedNodeID)}}/>
+            const input = <input className="propertyInput" id={`${inputName}`} type="text" name={`${inputName}`} value={Property.value ?? ""} onChange={(event) => {propertiesWidgetController.stringOnChange(event, Property, inputName, stateSelectedNodeID)}}/>
             
             return input;
         }
 
         case "number":{
 
-            const input = <input className="propertyInput" id={`${inputName}`} type="number" name={`${inputName}`} value={`${nodeProperty.value ?? ""}`}/>
+            const input = <input className="propertyInput" id={`${inputName}`} type="number" name={`${inputName}`} value={`${Property.value ?? ""}`}/>
             
             return input;
         }

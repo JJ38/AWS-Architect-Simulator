@@ -1,4 +1,4 @@
-import type { AppNode, NodeProperty } from "../types";
+import type { AppNode, Property } from "../types";
 
 export class PropertiesWidgetController{
 
@@ -11,7 +11,7 @@ export class PropertiesWidgetController{
         this.setNodes = setNodes;
     }
 
-    public stringOnChange(event: React.ChangeEvent<HTMLInputElement, HTMLInputElement>, nodeProperty: NodeProperty<any>, inputName: string, stateSelectedNodeID: string | null){
+    public stringOnChange(event: React.ChangeEvent<HTMLInputElement, HTMLInputElement>, nodeProperty: Property<any>, inputName: string, stateSelectedNodeID: string | null){
         
         if(nodeProperty == undefined){
             console.log("node properties undefined");
@@ -22,8 +22,6 @@ export class PropertiesWidgetController{
             console.log("stateSelectedNodeID is null");
             return;
         }
-
-        console.log(nodeProperty);
 
         const newNodeProperty = structuredClone(nodeProperty);
         newNodeProperty.value = event.target.value;
@@ -36,11 +34,11 @@ export class PropertiesWidgetController{
 
             const newNode = structuredClone(node);
 
-            if(newNode.data.resourceData == null){
+            if(newNode.data == null){
                 return newNode;
             }
 
-            newNode.data.resourceData.properties[inputName] = newNodeProperty;
+            newNode.data.properties[inputName] = newNodeProperty;
             return newNode;
         }));
     

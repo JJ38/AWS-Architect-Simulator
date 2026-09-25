@@ -1,5 +1,4 @@
-import type Resource from "./Models/Resource";
-import { type Node } from '@xyflow/react';
+import { type Edge, type Node } from '@xyflow/react';
 
 
 export type Service = {
@@ -21,14 +20,20 @@ export type ValidationResult = {
 export type ResourceNodeData = {
     kind: 'resource',
     id: string,
-    resourceData: Record<string, any> | null,
+    properties: Record<string, Property<any>>,
     service: Service,
     ghost: boolean,
 }
 
 export type AppNode = Node<ResourceNodeData>;
 
-export interface NodeProperty<T>{
+export type EdgeData = {
+    properties: Record<string, Property<any>>;
+}
+
+export type AppEdge = Edge<EdgeData>;
+
+export interface Property<T>{
 
     value: T,
     type: PropertyType
