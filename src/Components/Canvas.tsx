@@ -44,7 +44,7 @@ export default function Canvas(
 
     params['type'] = "standardEdge";
     params['data'] = {
-      edgeType: "sync", //"async", "pull", "sync"
+      edgeType: "pull", //"async", "pull", "sync"
       properties: {
         "test": { value: null, type: "string", }
       }

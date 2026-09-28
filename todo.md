@@ -2,8 +2,10 @@
 
 Learning project: TypeScript, React, AWS, Terraform. Illustrative accuracy is fine
 (±25% / ranges, not precision). Two loosely-coupled tracks — Track 1 (app) first,
-Track 2 (AWS hosting) once there's something to host. Terraform import/export of
-architectures is a stretch goal, separate from Terraform-for-hosting.
+Track 2 (AWS hosting) once there's something to host. Terraform export (diagram →
+HCL) is now an active near-term goal, not a stretch goal — see the new section
+below — separate from Terraform-for-hosting (Track 2). Terraform *import* (HCL →
+diagram) remains a stretch goal for now.
 
 ## Track 1 — App: Diagram Building (current focus)
 
@@ -19,7 +21,38 @@ architectures is a stretch goal, separate from Terraform-for-hosting.
 - [ ] Custom node component (icon, name, short config summary)
 - [x] Click-drag between nodes creates an edge (connection)
 - [ ] Node selection + properties panel (edit name, size/tier, config fields)
-- [ ] Edge selection + properties (label/protocol)
+- [ ] Edge selection + properties: `type` (sync/async/pull, restricted to the
+      valid intersection for that service pair — see edge-type sections in
+      `terraform-resource-templates.md`), a plain-English one-liner explaining
+      the selected type, plus a label field. Mockup:
+
+```
+┌─ Edge ──────────────────────────────────┐
+│  S3 (bucket-uploads)  →  Lambda (fn-x)  │
+│                                          │
+│  Type:  [ Async ▾ ]                     │
+│                                          │
+│   ⓘ Async — S3 fires an event and moves │
+│     on immediately. Lambda runs on its  │
+│     own schedule; S3 never waits for a  │
+│     result.                             │
+│                                          │
+│  Label: [______________________]       │
+│                                          │
+│  ── Terraform preview ────────────────  │
+│   resource "aws_s3_bucket_notification" │
+│   resource "aws_lambda_permission"      │
+└──────────────────────────────────────────┘
+```
+
+- [ ] Restrict valid edge types per service pair. Each service gets
+      `edgeRolesAsSource`/`edgeRolesAsTarget` lists (sync/async/pull). For a
+      given edge, valid types = source node's `asSource` list ∩ target node's
+      `asTarget` list. Two places this is used:
+      1. `isValidConnection` (React Flow prop) — rejects the connection at
+         drag-drop time if the intersection is empty (e.g. RDS → S3).
+      2. Edge properties widget — the `type` dropdown only lists the
+         intersection, not all three types unconditionally.
 - [x] Delete node/edge (keyboard delete, right-click context menu)
 - [ ] Wire canvas to a zustand store (addNode, addEdge, updateNode, removeNode,
       selection state) instead of prop-drilling
@@ -43,6 +76,24 @@ architectures is a stretch goal, separate from Terraform-for-hosting.
 Keep the simulation engine as plain framework-free TS functions (graph + traffic
 in, metrics out) — testable, and keeps sim logic out of components.
 
+## Track 1 — App: Terraform Export (prioritized, in progress)
+
+- [ ] Node properties widget: "Terraform preview" toggle — render the resource
+      block for the selected node from `terraform-resource-templates.md`'s
+      templates, filled in from the node's current property values. Smaller
+      first step than full export, and doubles as a learning aid.
+- [ ] Per-node Terraform resource generation (`diagramToTerrafrom`-style
+      converter): one node → its Terraform resource(s)
+- [ ] Companion resource handling (Lambda's IAM role, API Gateway's
+      integration/route/stage/permission bundle, etc.) — see "Cross-cutting
+      pattern for the converter" in `terraform-resource-templates.md`
+- [ ] Edge → Terraform mapping driven by edge `type` (sync/async/pull) — e.g.
+      sync API Gateway→Lambda emits the integration bundle, async S3→Lambda
+      emits `aws_s3_bucket_notification` + permission, pull SQS→Lambda emits
+      `aws_lambda_event_source_mapping`
+- [ ] Full diagram export: generate a complete `.tf` file from the node/edge
+      graph
+
 ## Track 2 — Host on AWS via Terraform (after Track 1 has something to deploy)
 
 - [x] Terraform remote state backend (S3 + DynamoDB lock) — done
@@ -54,5 +105,4 @@ in, metrics out) — testable, and keeps sim logic out of components.
 
 - [ ] Terraform import: parse HCL into the node/edge JSON schema (best-effort,
       read-only — not promising full round-trip sync)
-- [ ] Terraform export: generate HCL from the node/edge graph
 - [ ] Live AWS Pricing API integration (replace static pricing table)
