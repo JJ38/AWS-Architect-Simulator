@@ -15,8 +15,8 @@ export default class Lambda implements Resource{
     public id: string;
     public service: Service;
     public properties: Record<string, Property<any>>;
-    public sourceTypes: EdgeType[] = ["sync", "async"];
-    public targetTypes: EdgeType[] = ["sync", "async", "pull"]
+    public static sourceTypes: EdgeType[] = ["sync", "async"];
+    public static targetTypes: EdgeType[] = ["sync", "async", "pull"]
 
     public static create(id: string, service: Service): Record<string, any>{
 

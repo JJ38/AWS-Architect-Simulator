@@ -1,3 +1,5 @@
+import type { ResourceStatics } from "./Models/Resource";
+import type Resource from "./Models/Resource";
 import APIGatewayV2 from "./Models/Services/APIGatewayV2";
 import EC2 from "./Models/Services/EC2";
 import Lambda from "./Models/Services/Lambda";
@@ -14,11 +16,12 @@ export const services: Record<string, Service> = {
 }
 
 
-export const resourceContainer: Record<string, (id: string, service: Service) => Record<string, any>> = {
 
-    'aws_instance': EC2.create,
-    'aws_s3_bucket': S3.create,
-    "aws_lambda_function": Lambda.create,
-    "aws_apigatewayv2_api": APIGatewayV2.create
+export const resourceContainer: Record<string, ResourceStatics> = {
+
+    'aws_instance': EC2,
+    'aws_s3_bucket': S3,
+    "aws_lambda_function": Lambda,
+    "aws_apigatewayv2_api": APIGatewayV2
 
 }   

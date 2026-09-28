@@ -16,8 +16,8 @@ export default class S3 implements Resource{
     public id: string;
     public service: Service;
     public properties: Record<string, Property<any>>;
-    public sourceTypes: EdgeType[] = ["async"];
-    public targetTypes: EdgeType[] = ["sync"]
+    public static sourceTypes: EdgeType[] = ["async"];
+    public static targetTypes: EdgeType[] = ["sync"]
 
 
     public static create(id: string, service: Service): Record<string, any>{

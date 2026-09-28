@@ -15,8 +15,8 @@ export default class EC2 implements Resource{
     public id: string;
     public service: Service;
     public properties: Record<string, Property<any>>;
-    public sourceTypes: EdgeType[] = ["sync", "pull"];
-    public targetTypes: EdgeType[] = ["sync"]
+    public static sourceTypes: EdgeType[] = ["sync", "pull"];
+    public static targetTypes: EdgeType[] = ["sync"]
 
 
     public static create(id: string, service: Service): Record<string, any>{

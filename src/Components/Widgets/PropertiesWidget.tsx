@@ -1,6 +1,6 @@
 import { memo, useState } from 'react';
 import { PropertiesWidgetController } from '../../Controllers/PropertiesWidgetController';
-import type { AppEdge, AppNode, ComponentData, EdgeData, EdgeType, Property, ResourceNodeData } from '../../types';
+import type { AppEdge, AppNode, ComponentData, EdgeData, Property, ResourceNodeData } from '../../types';
 import '../../styles/PropertiesWidget.css'
 
 
@@ -31,8 +31,6 @@ function PropertiesWidget(
     const componentProperties: Record<string, Property<any>> | undefined = selectedComponentData != null ? selectedComponentData?.properties : undefined;
 
     console.log(selectedComponentData);
-    console.log(componentProperties);
-    console.log("PropertiesWidget");
 
     return(
 

@@ -14,8 +14,8 @@ export default class APIGatewayV2 implements Resource{
     public id: string;
     public service: Service;
     public properties: Record<string, Property<any>>;
-    public sourceTypes: EdgeType[] = ["sync", "async"];
-    public targetTypes: EdgeType[] = ["sync"]
+    public static sourceTypes: EdgeType[] = ["sync", "async"];
+    public static targetTypes: EdgeType[] = ["sync"]
 
 
     public static create(id: string, service: Service): Record<string, any>{

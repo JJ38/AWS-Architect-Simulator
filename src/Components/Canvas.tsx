@@ -1,10 +1,11 @@
 import { useState, useCallback, useEffect } from 'react';
-import { ReactFlow, applyNodeChanges, applyEdgeChanges, useReactFlow } from '@xyflow/react';
-import type { AppEdge, AppNode, Service } from '../types.ts';
+import { ReactFlow, applyNodeChanges, applyEdgeChanges, useReactFlow, addEdge } from '@xyflow/react';
+import type { AppEdge, AppNode, EdgeType, Service } from '../types.ts';
 import { CanvasController } from '../Controllers/CanvasController.ts';
 import '@xyflow/react/dist/style.css';
 import '../styles/Canvas.css'; 
 import PropertiesWidget from './Widgets/PropertiesWidget.tsx';
+import { resourceContainer } from '../constants.ts';
 
 export default function Canvas(
   {
@@ -40,7 +41,7 @@ export default function Canvas(
    
   const onNodesChange = useCallback((changes: any) => setNodes((nodesSnapshot) => applyNodeChanges(changes, nodesSnapshot)), []);
   const onEdgesChange = useCallback((changes: any) => setEdges((edgesSnapshot) => applyEdgeChanges(changes, edgesSnapshot)), []);
-  const onConnect = useCallback((params: any) => stateCanvasController.onConnect(params), []);
+  const onConnect = useCallback((params: any) => {stateCanvasController.onConnect(params, stateNodes)}, [stateNodes]);
 
   const nodesWithSelection = stateNodes.map((node) => ({
     ...node,
@@ -95,11 +96,9 @@ export default function Canvas(
       <PropertiesWidget 
         stateSelectedNodeID={stateSelectedNodeID} 
         selectedNodeData={selectedNode?.data}
-        stateNodes={stateNodes}
         setNodes={setNodes}
         selectedEdgeData={selectedEdge?.data}
         stateSelectedEdgeID={stateSelectedEdgeID}
-        stateEdges={stateEdges}
         setEdges={setEdges}
       >
       </PropertiesWidget>

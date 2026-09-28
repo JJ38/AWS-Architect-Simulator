@@ -1,7 +1,9 @@
 import { type XYPosition, type Node, type ViewportHelperFunctions, type Edge, addEdge } from "@xyflow/react";
-import type { AppEdge, AppNode, Service } from "../types";
+import type { AppEdge, AppNode, EdgeType, Service } from "../types";
 import { CanvasModel } from "../Models/CanvasModel.ts";
 import { resourceContainer, serviceImageSize } from "../constants.ts";
+import type Resource from "../Models/Resource.ts";
+import type { ResourceStatics } from "../Models/Resource.ts";
 
 export class CanvasController{
 
@@ -49,8 +51,8 @@ export class CanvasController{
         };
 
         if(selectedService.terraformType == "resource"){   
-            const resourceFactory = resourceContainer[selectedService.providerType!];
-            newNode['data'] = resourceFactory(nodeID, selectedService);
+            const resourceFactory: ResourceStatics = resourceContainer[selectedService.providerType!];
+            newNode['data'] = resourceFactory.create(nodeID, selectedService);
         }
 
         this.setNodes((stateNodes: AppNode[]) => [...stateNodes, newNode as AppNode]);
@@ -126,20 +128,38 @@ export class CanvasController{
 
     }
 
-    public onConnect(params: any){
-        
-        const validEdgeType = ["async", "sync", "pull"];
+    public onConnect(params: any, stateNodes: AppNode[]){
 
+        const sourceID = params.source;
+        const targetID = params.target;
+    
+        const sourceNode = stateNodes.find((node: AppNode) => node.id == sourceID);
+        const targetNode = stateNodes.find((node: AppNode) => node.id == targetID);
+        
+        const sourceProviderType = sourceNode?.data.service.providerType;
+        const targetProviderType = targetNode?.data.service.providerType;
+    
+        if(sourceProviderType == null || targetProviderType == null){
+            return;
+        }
+    
+        const sourceEdgeTypes = resourceContainer[sourceProviderType!].sourceTypes;
+        const targetEdgeTypes = resourceContainer[targetProviderType!].sourceTypes;
+    
+        const validEdgeType = sourceEdgeTypes.filter((edgeType: EdgeType) => targetEdgeTypes.includes(edgeType));
+    
         params['type'] = "standardEdge";
         params['data'] = {
-        edgeType: "sync", //"async", "pull", "sync"
-        properties: {
-            "test": { value: null, type: "string" },
-            "edgeType": { value: validEdgeType, type: "select" }
-        }
+            edgeType: "sync", //"async", "pull", "sync"
+            properties: {
+                "test": { value: null, type: "string" },
+                "edgeType": { value: validEdgeType, type: "select" }
+            }
         };
-
+    
         this.setEdges((edgesSnapshot) => addEdge(params, edgesSnapshot))
+    
 
     }
+
 }
