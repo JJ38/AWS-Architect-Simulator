@@ -399,3 +399,35 @@ a misunderstanding of generics.
 Fix: import explicitly wherever `Node` is used, or remove the ambiguity for
 good by aliasing it — `import type { Node as FlowNode } from '@xyflow/react'`
 — so there's never a chance of silently picking up the DOM global.
+
+## 21. `useCallback`'s deps array controls the closure, not just re-renders
+
+`useCallback(fn, deps)` doesn't just memoize a value — it memoizes the
+*function itself*. With `deps = []`, React builds `fn` once, on the very
+first render, and returns that exact same function reference forever after.
+But the function's *body* still closes over whatever variables were in scope
+when it was built — so it keeps reading whatever those variables were **at
+mount**, no matter how many times they change later.
+
+```ts
+const onConnect = useCallback((params) => {
+  console.log(stateNodes); // always the mount-time value — []
+}, []); // told React: never rebuild this
+```
+
+Every subsequent `setNodes` call produces a new `stateNodes` array at render
+time, but `onConnect` is never rebuilt to see it — the empty deps array told
+`useCallback` not to. Fix: list every reactive value the function reads —
+`}, [stateNodes]);` — so React rebuilds `onConnect` (a fresh closure over the
+current value) whenever `stateNodes` actually changes.
+
+This is the read-side counterpart to entry 12 (the `setState` updater form):
+that entry is about a stale value on the *write* path; this one is about a
+stale value on the *read* path, caused by under-declaring a hook's own deps
+array rather than by React's update batching.
+
+> **Gotcha:** an empty deps array reads as "this function never needs to
+> change," which is only true if its body touches nothing that varies across
+> renders. Reaching for `[]` out of habit (to "optimize" or because the linter
+> isn't configured to catch it) silently freezes every closed-over value at
+> whatever it was on the first render.

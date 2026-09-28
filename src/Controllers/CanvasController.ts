@@ -147,10 +147,12 @@ export class CanvasController{
         const targetEdgeTypes = resourceContainer[targetProviderType!].sourceTypes;
     
         const validEdgeType = sourceEdgeTypes.filter((edgeType: EdgeType) => targetEdgeTypes.includes(edgeType));
+
+        const defaultEdge = validEdgeType[0] ?? "";
     
         params['type'] = "standardEdge";
         params['data'] = {
-            edgeType: "sync", //"async", "pull", "sync"
+            edgeType: defaultEdge, //"async", "pull", "sync"
             properties: {
                 "test": { value: null, type: "string" },
                 "edgeType": { value: validEdgeType, type: "select" }
