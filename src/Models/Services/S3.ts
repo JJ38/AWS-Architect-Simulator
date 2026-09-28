@@ -1,12 +1,12 @@
 import type Resource from "../Resource";
-import type { Service, ValidationResult, NodeProperty } from "../../types.ts";
+import type { Service, ValidationResult, Property, EdgeType } from "../../types.ts";
 
 
 export interface S3Data{
 
     id: string;
     service: Service;
-    properties: Record<string, NodeProperty<any>>;
+    properties: Record<string, Property<any>>;
     
 }
 
@@ -15,7 +15,9 @@ export default class S3 implements Resource{
 
     public id: string;
     public service: Service;
-    public properties: Record<string, NodeProperty<any>>;
+    public properties: Record<string, Property<any>>;
+    public sourceTypes: EdgeType[] = ["async"];
+    public targetTypes: EdgeType[] = ["sync"]
 
 
     public static create(id: string, service: Service): Record<string, any>{
@@ -75,9 +77,9 @@ export default class S3 implements Resource{
         return terraform;
     }
 
-    private propertyToTerraform(key: string, nodeProperty: NodeProperty<any>): string{
+    private propertyToTerraform(key: string, Property: Property<any>): string{
 
-        const propertyTerraform = `${key} = ${nodeProperty.value}`;
+        const propertyTerraform = `${key} = ${Property.value}`;
 
         return propertyTerraform;
     }

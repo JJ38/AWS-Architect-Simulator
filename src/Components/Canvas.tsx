@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
-import { ReactFlow, applyNodeChanges, applyEdgeChanges, addEdge, useReactFlow, type Edge } from '@xyflow/react';
-import type { AppEdge, AppNode, EdgeData, Property, Service } from '../types.ts';
+import { ReactFlow, applyNodeChanges, applyEdgeChanges, useReactFlow } from '@xyflow/react';
+import type { AppEdge, AppNode, Service } from '../types.ts';
 import { CanvasController } from '../Controllers/CanvasController.ts';
 import '@xyflow/react/dist/style.css';
 import '../styles/Canvas.css'; 
@@ -40,19 +40,7 @@ export default function Canvas(
    
   const onNodesChange = useCallback((changes: any) => setNodes((nodesSnapshot) => applyNodeChanges(changes, nodesSnapshot)), []);
   const onEdgesChange = useCallback((changes: any) => setEdges((edgesSnapshot) => applyEdgeChanges(changes, edgesSnapshot)), []);
-  const onConnect = useCallback((params: any) => {
-
-    params['type'] = "standardEdge";
-    params['data'] = {
-      edgeType: "pull", //"async", "pull", "sync"
-      properties: {
-        "test": { value: null, type: "string", }
-      }
-    };
-
-    setEdges((edgesSnapshot) => addEdge(params, edgesSnapshot))
-
-  }, []);
+  const onConnect = useCallback((params: any) => stateCanvasController.onConnect(params), []);
 
   const nodesWithSelection = stateNodes.map((node) => ({
     ...node,
@@ -76,7 +64,6 @@ export default function Canvas(
         setEdges((edges: AppEdge[]) => edges.filter((edge: AppEdge) => edge.id != stateSelectedEdgeID));
         return;
       }
-
 
     }
 
@@ -107,13 +94,12 @@ export default function Canvas(
       />
       <PropertiesWidget 
         stateSelectedNodeID={stateSelectedNodeID} 
-        setSelectedNodeID={setSelectedNodeID} 
         selectedNodeData={selectedNode?.data}
-        // stateNodes={stateNodes}
+        stateNodes={stateNodes}
         setNodes={setNodes}
-        // stateEdges={stateEdges}
         selectedEdgeData={selectedEdge?.data}
         stateSelectedEdgeID={stateSelectedEdgeID}
+        stateEdges={stateEdges}
         setEdges={setEdges}
       >
       </PropertiesWidget>

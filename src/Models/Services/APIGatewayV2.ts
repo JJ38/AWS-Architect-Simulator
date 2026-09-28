@@ -1,11 +1,11 @@
 import type Resource from "../Resource";
-import type { NodeProperty, Service, ValidationResult } from "../../types.ts";
+import type { EdgeType, Property, Service, ValidationResult } from "../../types.ts";
 
 export interface APIGatewayV2Data{
 
     id: string;
     service: Service;
-    properties: Record<string, NodeProperty<any>>;
+    properties: Record<string, Property<any>>;
     
 }
 
@@ -13,7 +13,9 @@ export default class APIGatewayV2 implements Resource{
     
     public id: string;
     public service: Service;
-    public properties: Record<string, NodeProperty<any>>;
+    public properties: Record<string, Property<any>>;
+    public sourceTypes: EdgeType[] = ["sync", "async"];
+    public targetTypes: EdgeType[] = ["sync"]
 
 
     public static create(id: string, service: Service): Record<string, any>{
