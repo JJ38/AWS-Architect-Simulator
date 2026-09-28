@@ -100,9 +100,10 @@ export default function Canvas(
         selectedEdgeData={selectedEdge?.data}
         stateSelectedEdgeID={stateSelectedEdgeID}
         setEdges={setEdges}
+        title={stateCanvasController.getPropertiesWidgetTitle(selectedNode?.data, selectedEdge?.data)}
       >
       </PropertiesWidget>
     </div>
   );
-}
 
+}

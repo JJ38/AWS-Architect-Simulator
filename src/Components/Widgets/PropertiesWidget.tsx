@@ -12,6 +12,7 @@ function PropertiesWidget(
         stateSelectedEdgeID,
         selectedEdgeData, 
         setEdges,
+        title
     }
         : 
     { 
@@ -21,6 +22,7 @@ function PropertiesWidget(
         stateSelectedEdgeID: string | null,
         selectedEdgeData: EdgeData | undefined,
         setEdges: React.Dispatch<React.SetStateAction<AppEdge[]>>, 
+        title: string
     }
 ){
  
@@ -40,8 +42,9 @@ function PropertiesWidget(
                 selectedNodeData != null &&
 
                     <div>
-                        <p className="propertyInfo">Node ID`: {stateSelectedNodeID}</p>
-                        <p className="propertyInfo">Description: {selectedNodeData?.service.description}</p> 
+                        <p className='propertyInfo'>{title}</p>
+                        {/* <p className="propertyInfo">Node ID`: {stateSelectedNodeID}</p>
+                        <p className="propertyInfo">Description: {selectedNodeData?.service.description}</p>  */}
                     </div>         
             }
 
@@ -49,7 +52,7 @@ function PropertiesWidget(
                 selectedEdgeData != null &&
 
                     <div>
-                        <p className="propertyInfo">Node ID`: {stateSelectedEdgeID}</p>
+                        <p>title</p>                       
                     </div>
             }
 
@@ -120,9 +123,8 @@ function getPropertyInput(propertiesWidgetController: PropertiesWidgetController
         case "select":{
 
             const edgeData = selectedComponentData as EdgeData;
-            console.log(edgeData.edgeType); 
-
-            return <select name="edgeType" id="select_edge_type" onChange={(event) => {propertiesWidgetController.onSelectChange(event, edgeData, stateSelectedEdgeID)}}>
+            
+            return <select name="edgeType" id="select_edge_type" onChange={(event) => {propertiesWidgetController.onSelectChange(event, stateSelectedEdgeID)}}>
                 {property.value.map((option: string) => {
                     return <option value={`${option}`} selected={option == edgeData.edgeType}>{option}</option>
                 })}

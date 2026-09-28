@@ -57,7 +57,6 @@ export class PropertiesWidgetController{
 
     public onSelectChange(
         event: React.ChangeEvent<HTMLSelectElement, HTMLSelectElement>,
-        selectedComponentData: EdgeData,
         stateSelectedEdgeID: string | null,
     ){
 

@@ -28,6 +28,17 @@ it drives which options the edge type picker offers for a given connection,
 and later which Terraform resources the converter emits for it (e.g. a
 `pull` edge into Lambda implies an `aws_lambda_event_source_mapping`).
 
+**The `sync`/`async` split as target is about what the ack means, not
+whether the underlying HTTP call blocks** — every AWS API call blocks
+briefly for a response, so that alone can't be the criterion. Ask instead:
+when the caller gets its response back, is the thing it asked for actually
+*done* (`sync` — a query result, a stored/confirmed write, an encrypted
+blob), or has the caller only handed off a message/event for a decoupled
+continuation it doesn't wait for (`async` — enqueued, published, matched,
+ingested, but not yet delivered/processed/consumed)? `SendMessage`,
+`Publish`, and `PutEvents` are the same shape under this rule and must land
+on the same side.
+
 ## `aws_instance` (EC2)
 
 ```hcl
@@ -63,8 +74,10 @@ resource "aws_instance" "example" {
 diagram would need to carry (or default to) one per region/OS choice.
 
 **Edge types**
-- As source: `sync` (calls out to RDS/DynamoDB/other APIs and waits), `pull`
-  (app code on the instance polling SQS/Kinesis)
+- As source: `sync` (calls out to RDS/DynamoDB/other APIs and waits), `async`
+  (SDK `Invoke` with `InvocationType=Event`, or publishing to SNS/SQS/
+  EventBridge — any AWS API caller can choose this, EC2 isn't restricted to
+  sync), `pull` (app code on the instance polling SQS/Kinesis)
 - As target: `sync` only (ALB/NLB routes a request to it and waits)
 
 ## `aws_s3_bucket` (S3)
@@ -450,7 +463,9 @@ resource "aws_sns_topic" "example" {
 
 **Edge types**
 - As source: `async` only (fan-out delivery to subscribers is fire-and-forget)
-- As target: `sync` only (`Publish` call accepts the message synchronously)
+- As target: `async` only — `Publish` returns as soon as SNS accepts the
+  message, before any subscriber is notified; the ack confirms hand-off, not
+  completion, same shape as EventBridge's `PutEvents` below
 
 #### `aws_sqs_queue` (SQS) — Always Free: ~1M requests/month
 
@@ -470,7 +485,8 @@ resource "aws_sqs_queue" "example" {
 
 **Edge types**
 - As source: `pull` only (consumers poll the queue at their own pace)
-- As target: `sync` only (`SendMessage` call accepts synchronously)
+- As target: `async` only — `SendMessage` returns once the message is
+  enqueued, before any consumer has picked it up; same reasoning as SNS above
 
 #### `aws_sfn_state_machine` (Step Functions) — Always Free: ~4,000 state transitions/month
 
@@ -680,7 +696,9 @@ resource "aws_ecs_service" "example" {
 ```
 
 **Edge types**
-- As source: `sync` (calls to RDS/DynamoDB/other APIs), `pull` (task code
+- As source: `sync` (calls to RDS/DynamoDB/other APIs), `async` (same
+  reasoning as EC2 — an async SDK invoke or SNS/SQS/EventBridge publish is
+  just a caller choice, not restricted by compute type), `pull` (task code
   polling SQS/Kinesis) — same profile as EC2
 - As target: `sync` only (ALB routes requests to a task and waits)
 

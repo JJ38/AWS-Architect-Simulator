@@ -1,5 +1,5 @@
 import { type XYPosition, type Node, type ViewportHelperFunctions, type Edge, addEdge } from "@xyflow/react";
-import type { AppEdge, AppNode, EdgeType, Service } from "../types";
+import type { AppEdge, AppNode, EdgeData, EdgeType, ResourceNodeData, Service } from "../types";
 import { CanvasModel } from "../Models/CanvasModel.ts";
 import { resourceContainer, serviceImageSize } from "../constants.ts";
 import type Resource from "../Models/Resource.ts";
@@ -162,6 +162,27 @@ export class CanvasController{
         this.setEdges((edgesSnapshot) => addEdge(params, edgesSnapshot))
     
 
+    }
+
+    public getPropertiesWidgetTitle(selectedNodeData: ResourceNodeData | undefined, selectedEdgeData: EdgeData | undefined): string{
+
+        let title = "";
+
+        console.log(selectedNodeData)
+
+        if(selectedNodeData != undefined){
+            title += selectedNodeData.service.description;
+            title += ": ";
+            title += selectedNodeData.id;
+        }
+
+         if(selectedEdgeData != undefined){
+            // title += stateSelectedEdgeData.data.id;
+        }
+
+        console.log(title);
+
+        return title;
     }
 
 }
