@@ -1,4 +1,4 @@
-import type { AppEdge, AppNode, Property } from "../types";
+import type { AppEdge, AppNode, EdgeData, EdgeType, Property } from "../types";
 
 export class PropertiesWidgetController{
 
@@ -18,11 +18,10 @@ export class PropertiesWidgetController{
 
     //make generic and pass in setter
     public stringOnChange(
-        event: React.ChangeEvent<HTMLInputElement, 
-        HTMLInputElement>, nodeProperty: Property<any>, 
+        event: React.ChangeEvent<HTMLInputElement, HTMLInputElement>, 
+        nodeProperty: Property<any>, 
         inputName: string, 
         stateSelectedNodeID: string | null,
-
     ){
         
         if(nodeProperty == undefined){
@@ -54,6 +53,35 @@ export class PropertiesWidgetController{
             return newNode;
         }));
     
+    }
+
+    public onSelectChange(
+        event: React.ChangeEvent<HTMLSelectElement, HTMLSelectElement>,
+        selectedComponentData: EdgeData,
+        stateSelectedEdgeID: string | null,
+    ){
+
+        if(stateSelectedEdgeID == null){
+            console.log("stateSelectedEdgeID is null");
+            return;
+        }
+
+        this.setEdges((edges: AppEdge[]) => edges.map((edge: AppEdge) => {
+
+            if(edge.id !== stateSelectedEdgeID){
+                return edge;
+            }
+
+            const newEdge = structuredClone(edge);
+
+            if(newEdge.data == null){
+                return newEdge;
+            }
+
+            newEdge.data.edgeType = event.target.value as EdgeType;
+            return newEdge;
+        }));
+
     }
 
 }

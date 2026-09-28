@@ -1,5 +1,5 @@
 import type Resource from "../Resource";
-import type { Property, Service, ValidationResult } from "../../types.ts";
+import type { EdgeType, Property, Service, ValidationResult } from "../../types.ts";
 
 
 export interface LambdaData{
@@ -15,7 +15,8 @@ export default class Lambda implements Resource{
     public id: string;
     public service: Service;
     public properties: Record<string, Property<any>>;
-    
+    public sourceTypes: EdgeType[] = ["sync", "async"];
+    public targetTypes: EdgeType[] = ["sync", "async", "pull"]
 
     public static create(id: string, service: Service): Record<string, any>{
 

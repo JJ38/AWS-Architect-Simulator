@@ -1,13 +1,12 @@
 import { memo, useState } from 'react';
 import { PropertiesWidgetController } from '../../Controllers/PropertiesWidgetController';
-import type { AppEdge, AppNode, EdgeData, Property, ResourceNodeData } from '../../types';
+import type { AppEdge, AppNode, ComponentData, EdgeData, EdgeType, Property, ResourceNodeData } from '../../types';
 import '../../styles/PropertiesWidget.css'
 
 
 function PropertiesWidget(
     { 
         stateSelectedNodeID, 
-        setSelectedNodeID, 
         selectedNodeData,
         setNodes, 
         stateSelectedEdgeID,
@@ -17,7 +16,6 @@ function PropertiesWidget(
         : 
     { 
         stateSelectedNodeID: string | null, 
-        setSelectedNodeID: React.Dispatch<React.SetStateAction<string | null>>, 
         selectedNodeData: ResourceNodeData | undefined,
         setNodes: React.Dispatch<React.SetStateAction<AppNode[]>>, 
         stateSelectedEdgeID: string | null,
@@ -29,12 +27,12 @@ function PropertiesWidget(
     const [statePropertiesWidgetController] = useState(() => new PropertiesWidgetController(setNodes, setEdges));
 
 
-    const selectedComponent = selectedNodeData != undefined ? selectedNodeData : selectedEdgeData != null ? selectedEdgeData : null;
-    const componentProperties: Record<string, Property<any>> | undefined = selectedComponent != null ? selectedComponent?.properties : undefined;
+    const selectedComponentData = selectedNodeData != undefined ? selectedNodeData : selectedEdgeData != null ? selectedEdgeData : null;
+    const componentProperties: Record<string, Property<any>> | undefined = selectedComponentData != null ? selectedComponentData?.properties : undefined;
 
-    console.log(selectedComponent);
+    console.log(selectedComponentData);
     console.log(componentProperties);
-
+    console.log("PropertiesWidget");
 
     return(
 
@@ -59,13 +57,14 @@ function PropertiesWidget(
 
             {
 
-                selectedComponent == undefined &&
+                selectedComponentData == undefined &&
 
                 <div className="checkboxWrapper">
                     <input type="checkbox" id="snapgridCheckbox" name="snapgridCheckbox"/>
                     <label htmlFor="snapgridCheckbox">Snap Grid</label>
                 </div> 
             }
+
             
             <div className="propertiesWrapper">
 
@@ -77,7 +76,7 @@ function PropertiesWidget(
                         
                         return <div className='propertyInputWrapper' key={inputName} >
                             <p className='propertyName'>{inputName}</p>
-                            {getPropertyInput(statePropertiesWidgetController, componentProperties[inputName], inputName, stateSelectedNodeID)}
+                            {getPropertyInput(statePropertiesWidgetController, selectedComponentData, componentProperties[inputName], inputName, stateSelectedNodeID, stateSelectedEdgeID)}
                         </div>
 
                     })
@@ -96,32 +95,45 @@ function PropertiesWidget(
 }
 
 
-function getPropertyInput(propertiesWidgetController: PropertiesWidgetController, Property: Property<any>, inputName: string, stateSelectedNodeID: string | null){
+function getPropertyInput(propertiesWidgetController: PropertiesWidgetController, selectedComponentData: ComponentData | null, property: Property<any>, inputName: string, stateSelectedNodeID: string | null,  stateSelectedEdgeID: string | null){
     
-    const inputType = Property.type;
+    const inputType = property.type;
 
     switch(inputType){
 
         case "string":{
 
-            const input = <input className="propertyInput" id={`${inputName}`} type="text" name={`${inputName}`} value={Property.value ?? ""} onChange={(event) => {propertiesWidgetController.stringOnChange(event, Property, inputName, stateSelectedNodeID)}}/>
+            const input = <input className="propertyInput" id={`${inputName}`} type="text" name={`${inputName}`} value={property.value ?? ""} onChange={(event) => {propertiesWidgetController.stringOnChange(event, property, inputName, stateSelectedNodeID)}}/>
             
             return input;
         }
 
         case "number":{
 
-            const input = <input className="propertyInput" id={`${inputName}`} type="number" name={`${inputName}`} value={`${Property.value ?? ""}`}/>
+            const input = <input className="propertyInput" id={`${inputName}`} type="number" name={`${inputName}`} value={`${property.value ?? ""}`}/>
             
             return input;
         }
 
-        case "boolean":
+        case "boolean":{
             return <input className="propertyInput" id={`${inputName}`} type="checkbox" name={`${inputName}`}/>
+        }
 
-         case "tags":
+        case "select":{
+
+            const edgeData = selectedComponentData as EdgeData;
+            console.log(edgeData.edgeType); 
+
+            return <select name="edgeType" id="select_edge_type" onChange={(event) => {propertiesWidgetController.onSelectChange(event, edgeData, stateSelectedEdgeID)}}>
+                {property.value.map((option: string) => {
+                    return <option value={`${option}`} selected={option == edgeData.edgeType}>{option}</option>
+                })}
+            </select>
+        }
+
+        case "tags":{
             return <textarea className="propertyInput" id={`${inputName}`} name={`${inputName}`}/>
-
+        }
     }
 
     return <div>input</div>

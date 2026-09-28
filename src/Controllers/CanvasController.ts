@@ -1,4 +1,4 @@
-import type { XYPosition, Node, ViewportHelperFunctions, Edge } from "@xyflow/react";
+import { type XYPosition, type Node, type ViewportHelperFunctions, type Edge, addEdge } from "@xyflow/react";
 import type { AppEdge, AppNode, Service } from "../types";
 import { CanvasModel } from "../Models/CanvasModel.ts";
 import { resourceContainer, serviceImageSize } from "../constants.ts";
@@ -93,8 +93,6 @@ export class CanvasController{
 
     public handleNodeClick(event: React.MouseEvent, node: AppNode, stateSelectedService: Service | null, stateSelectedNodeID: string | null): void{
 
-        console.log("node clicked");
-
         if(stateSelectedService != null){
             const position = this.getCanvasPosition(event);
             this.placeNode(stateSelectedService, position);
@@ -120,13 +118,28 @@ export class CanvasController{
     }
 
     public handleEdgeClick(edge: Edge, stateSelectedEdgeID: string | null){
-
-        console.log(edge);
      
         if(edge.id !== stateSelectedEdgeID){
             this.setSelectedEdgeID(edge.id);
             this.setSelectedNodeID(null);
         }
+
+    }
+
+    public onConnect(params: any){
+        
+        const validEdgeType = ["async", "sync", "pull"];
+
+        params['type'] = "standardEdge";
+        params['data'] = {
+        edgeType: "sync", //"async", "pull", "sync"
+        properties: {
+            "test": { value: null, type: "string" },
+            "edgeType": { value: validEdgeType, type: "select" }
+        }
+        };
+
+        this.setEdges((edgesSnapshot) => addEdge(params, edgesSnapshot))
 
     }
 }

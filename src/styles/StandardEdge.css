@@ -11,7 +11,7 @@
 
 .standardEdge-pulse {
   stroke: #1a59b8 !important;
-  stroke-width: 2;
+  stroke-width: 10;
   fill: none;
   stroke-dasharray: 8 24;      /* 8px visible dash, 24px gap — repeats along the whole path */
 }
@@ -37,13 +37,13 @@
 
 @keyframes standardEdgeAsync {
   to {
-    stroke-dashoffset: 32;  
+    stroke-dashoffset: -32;  
   }
 }
 
 
 @keyframes standardEdgePull {
   to {
-    stroke-dashoffset: -32; 
+    stroke-dashoffset: 32; 
   }
 }

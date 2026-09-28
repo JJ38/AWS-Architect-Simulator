@@ -16,18 +16,23 @@ export type ValidationResult = {
     errors: string[];
 }
 
-export type ResourceNodeData = {
+export type ComponentData = ResourceNodeData | EdgeData;
+
+type BaseComponentData = {
+    properties: Record<string, Property<any>>,
+}
+
+export type ResourceNodeData = BaseComponentData & {
     kind: 'resource',
     id: string,
-    properties: Record<string, Property<any>>,
     service: Service,
     ghost: boolean,
 }
 
 export type AppNode = Node<ResourceNodeData>;
 
-export type EdgeData = {
-    properties: Record<string, Property<any>>;
+export type EdgeData = BaseComponentData & {
+    edgeType: EdgeType
 }
 
 export type AppEdge = Edge<EdgeData>;
@@ -46,4 +51,7 @@ export type PropertyType =
 | "number"
 | "tags"
 | "checkbox"
+| "select"
 | "radio";
+
+export type EdgeType = "sync" | "async" | "pull"
