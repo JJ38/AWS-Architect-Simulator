@@ -32,8 +32,6 @@ function PropertiesWidget(
     const selectedComponentData = selectedNodeData != undefined ? selectedNodeData : selectedEdgeData != null ? selectedEdgeData : null;
     const componentProperties: Record<string, Property<any>> | undefined = selectedComponentData != null ? selectedComponentData?.properties : undefined;
 
-    console.log(selectedComponentData);
-
     return(
 
         <div className="propertiesWidgetWrapper">
@@ -52,12 +50,11 @@ function PropertiesWidget(
                 selectedEdgeData != null &&
 
                     <div>
-                        <p>title</p>                       
+                        <p className='propertyInfo'>{title}</p>                       
                     </div>
             }
 
             {
-
                 selectedComponentData == undefined &&
 
                 <div className="checkboxWrapper">

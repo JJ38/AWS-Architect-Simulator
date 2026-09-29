@@ -164,11 +164,9 @@ export class CanvasController{
 
     }
 
-    public getPropertiesWidgetTitle(selectedNodeData: ResourceNodeData | undefined, selectedEdgeData: EdgeData | undefined): string{
+    public getPropertiesWidgetTitle(selectedNodeData: ResourceNodeData | undefined, stateNodes: AppNode[], selectedEdge: AppEdge | undefined): string{
 
         let title = "";
-
-        console.log(selectedNodeData)
 
         if(selectedNodeData != undefined){
             title += selectedNodeData.service.description;
@@ -176,11 +174,19 @@ export class CanvasController{
             title += selectedNodeData.id;
         }
 
-         if(selectedEdgeData != undefined){
-            // title += stateSelectedEdgeData.data.id;
-        }
+         if(selectedEdge != undefined){
 
-        console.log(title);
+            const sourceNode = stateNodes.find((node) => node.id === selectedEdge?.source);
+            const targetNode = stateNodes.find((node) => node.id === selectedEdge?.target);
+            
+            const sourceNodeDescription = sourceNode?.data.service.description;
+            const targetNodeDescription = targetNode?.data.service.description;
+
+            title += sourceNodeDescription;
+            title += " -> ";
+            title += targetNodeDescription;
+
+        }
 
         return title;
     }

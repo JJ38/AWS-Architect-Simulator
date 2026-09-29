@@ -431,3 +431,43 @@ array rather than by React's update batching.
 > renders. Reaching for `[]` out of habit (to "optimize" or because the linter
 > isn't configured to catch it) silently freezes every closed-over value at
 > whatever it was on the first render.
+
+## 22. `useMemo` — same shallow-deps check as `useCallback`, for a value
+
+`useMemo(fn, deps)` is `useCallback`'s sibling: instead of memoizing a
+*function reference*, it memoizes whatever `fn` *returns*. The deps-array
+mechanics from entry 21 apply identically — React compares each entry in the
+new `deps` array against last render's, `Object.is`, shallow, no recursion
+into objects. All equal → skip calling `fn`, hand back the cached value. Any
+differ → call `fn` again, cache the new result.
+
+```ts
+const title = useMemo(
+  () => controller.getPropertiesWidgetTitle(selectedNode?.data, selectedEdge),
+  [selectedNode?.data, selectedEdge]
+);
+```
+
+This is what makes `memo` (entry 14) actually pay off. `Canvas` re-renders on
+every node-drag frame (each frame calls `setNodes`, and state lives one level
+up). Without `useMemo`, a `title` computed inline in JSX — `title={controller
+.getPropertiesWidgetTitle(...)}` — reruns on every one of those frames
+regardless of whether `PropertiesWidget` itself re-renders, because building
+the *prop value* happens in the parent's render, before React ever reaches
+the child's `memo` check. Wrapping it in `useMemo` skips that recomputation
+whenever the deps haven't changed — which, combined with `memo` on the child,
+means neither the title math nor the child's render happens on frames where
+nothing relevant moved.
+
+**The deps-array trap is sharper here than with `useCallback`:** it's tempting
+to list *every* value the function reads, the way entry 21 recommends for
+closures. But a value only belongs in the array if changing it should
+actually invalidate the cache — not just because the function happens to
+touch it. If the function's true reactive inputs are two stable-reference
+values (`selectedNode?.data`, `selectedEdge`) but it also reaches into a
+larger array (e.g. all nodes, to look up an edge's endpoints) that gets a new
+reference on every render for unrelated reasons, adding that array to the
+deps defeats the memoization entirely — it'll "recompute" on the exact frames
+you were trying to skip. The fix isn't a deps-array trick; it's narrowing the
+function's inputs so what it actually needs to read lines up with what's
+actually stable.

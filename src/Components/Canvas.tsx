@@ -5,7 +5,6 @@ import { CanvasController } from '../Controllers/CanvasController.ts';
 import '@xyflow/react/dist/style.css';
 import '../styles/Canvas.css'; 
 import PropertiesWidget from './Widgets/PropertiesWidget.tsx';
-import { resourceContainer } from '../constants.ts';
 
 export default function Canvas(
   {
@@ -38,7 +37,9 @@ export default function Canvas(
 
   const selectedNode = stateNodes.find((node: AppNode) => node.id == stateSelectedNodeID);
   const selectedEdge = stateEdges.find((edge: AppEdge) => edge.id == stateSelectedEdgeID);
-   
+
+  const title = stateCanvasController.getPropertiesWidgetTitle(selectedNode?.data, stateNodes, selectedEdge);
+
   const onNodesChange = useCallback((changes: any) => setNodes((nodesSnapshot) => applyNodeChanges(changes, nodesSnapshot)), []);
   const onEdgesChange = useCallback((changes: any) => setEdges((edgesSnapshot) => applyEdgeChanges(changes, edgesSnapshot)), []);
   const onConnect = useCallback((params: any) => {stateCanvasController.onConnect(params, stateNodes)}, [stateNodes]);
@@ -100,10 +101,11 @@ export default function Canvas(
         selectedEdgeData={selectedEdge?.data}
         stateSelectedEdgeID={stateSelectedEdgeID}
         setEdges={setEdges}
-        title={stateCanvasController.getPropertiesWidgetTitle(selectedNode?.data, selectedEdge?.data)}
+        title={title}
       >
       </PropertiesWidget>
     </div>
+
   );
 
 }
