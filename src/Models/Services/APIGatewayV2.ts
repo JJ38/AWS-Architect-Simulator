@@ -1,5 +1,5 @@
 import type Resource from "../Resource";
-import type { EdgeType, Property, Service, ValidationResult } from "../../types.ts";
+import type { CodeChunk, EdgeType, Property, Service, ValidationResult } from "../../types.ts";
 
 export interface APIGatewayV2Data{
 
@@ -56,8 +56,8 @@ export default class APIGatewayV2 implements Resource{
 
     }
 
-    public toTerraform(): string {
-        return "";
+    public toTerraform(): CodeChunk[] {
+        return [];
     }
 
 }

@@ -1,10 +1,11 @@
 import { useState, useCallback, useEffect } from 'react';
 import { ReactFlow, applyNodeChanges, applyEdgeChanges, useReactFlow, addEdge } from '@xyflow/react';
-import type { AppEdge, AppNode, EdgeType, Service } from '../types.ts';
+import type { AppEdge, AppNode, CodeChunk, EdgeType, Service } from '../types.ts';
 import { CanvasController } from '../Controllers/CanvasController.ts';
 import '@xyflow/react/dist/style.css';
 import '../styles/Canvas.css'; 
 import PropertiesWidget from './Widgets/PropertiesWidget.tsx';
+import type Resource from '../Models/Resource.ts';
 
 export default function Canvas(
   {
@@ -38,7 +39,9 @@ export default function Canvas(
   const selectedNode = stateNodes.find((node: AppNode) => node.id == stateSelectedNodeID);
   const selectedEdge = stateEdges.find((edge: AppEdge) => edge.id == stateSelectedEdgeID);
 
-  const title = stateCanvasController.getPropertiesWidgetTitle(selectedNode?.data, stateNodes, selectedEdge);
+  const title: string = stateCanvasController.getPropertiesWidgetTitle(selectedNode?.data, stateNodes, selectedEdge);
+  const selectedResourceTerraform: CodeChunk[] | undefined = stateCanvasController.getSelectedResource(selectedNode?.data)?.toTerraform();
+
 
   const onNodesChange = useCallback((changes: any) => setNodes((nodesSnapshot) => applyNodeChanges(changes, nodesSnapshot)), []);
   const onEdgesChange = useCallback((changes: any) => setEdges((edgesSnapshot) => applyEdgeChanges(changes, edgesSnapshot)), []);
@@ -101,6 +104,7 @@ export default function Canvas(
         selectedEdgeData={selectedEdge?.data}
         stateSelectedEdgeID={stateSelectedEdgeID}
         setEdges={setEdges}
+        selectedResourceTerraform={selectedResourceTerraform}
         title={title}
       >
       </PropertiesWidget>

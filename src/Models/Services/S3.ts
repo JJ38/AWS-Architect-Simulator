@@ -1,5 +1,5 @@
 import type Resource from "../Resource";
-import type { Service, ValidationResult, Property, EdgeType } from "../../types.ts";
+import type { Service, ValidationResult, Property, EdgeType, CodeChunk } from "../../types.ts";
 
 
 export interface S3Data{
@@ -60,21 +60,44 @@ export default class S3 implements Resource{
 
     }
 
-    public toTerraform(): string {
+    public toTerraform(): CodeChunk[] {
 
-        let terraform: string = `resource ${this.service.providerType} ${this.properties.bucket.value}{`;
+        const codeChunks: CodeChunk[] = [];
+
+        codeChunks.push({value: "resource ", className:"terraformKeyword"})
+        codeChunks.push({value: this.service.providerType + " ", className:"terraformParameter"})
+        codeChunks.push({value: this.properties.bucket.value, className:"terraformParameter"})
+
+        codeChunks.push({value: "{", className:"terraformBracket"})
+
+        console.log(this.properties);
 
         for(const key of Object.keys(this.properties)){
 
-            const value = this.properties[key];
+            codeChunks.push({value: "\n  ", className:"terraformProperty"})
 
-            console.log(`key: ${key}, value: ${value}`);
-            terraform += this.propertyToTerraform(key, value);
+            codeChunks.push({value: key, className:"terraformProperty"})
+            codeChunks.push({value: " = ", className:""})
+
+            //look at the property value. It might be a record/tags and need deconstructing further
+            switch (key) {
+
+                case "tags": {
+                    codeChunks.push({value: "TO DO implement tags", className:"terraformValue"})
+                    break;
+                }
+
+                default: {
+                    codeChunks.push({value: this.properties[key].value, className:"terraformValue"})
+                }
+            }
+
         }
 
-        terraform += "}"
+        codeChunks.push({value: "\n", className:"terraformProperty"})
+        codeChunks.push({value: "}", className:"terraformBracket"})
 
-        return terraform;
+        return codeChunks;
     }
 
     private propertyToTerraform(key: string, Property: Property<any>): string{

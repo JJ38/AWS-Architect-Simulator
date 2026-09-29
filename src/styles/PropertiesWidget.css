@@ -6,7 +6,7 @@
     border: 2px solid rgb(20, 20, 20);
     padding: 10px;
     min-width: 200px;
-    max-width: 250px;
+    max-width: 275px;
     max-height: 80%;
     background-color: rgb(60, 60, 60);
     color: white;
@@ -26,6 +26,7 @@
 .propertiesWrapper{
 
     /* overflow-y: scroll; */
+    height: auto;
 
 }
 
@@ -45,4 +46,47 @@
 
 .propertyName{
     flex: 1;
+}
+
+.terraformSnippetWrapper{
+
+    margin-top: 10px;
+    padding: 12px 14px;
+    background-color: rgb(30, 30, 30);
+    border-radius: 5px;
+    border: solid 1px rgb(15, 15, 15);
+
+    overflow-x: auto;
+
+}
+
+.terraformCode{
+
+    display: block;
+    font-family: "Cascadia Code", Consolas, "SFMono-Regular", Menlo, monospace;
+    font-size: 0.78rem;
+    line-height: 1.5;
+    color: rgb(214, 214, 214);
+    white-space: pre;
+
+}
+
+.terraformKeyword{
+    color: rgb(209, 67, 209);
+}
+
+.terraformParameter{
+    color: rgb(255, 169, 255);
+}
+
+.terraformBracket{
+    color: yellow;
+}
+
+.terraformProperty{
+    color: white;
+}
+
+.terraformValue{
+    color: rgb(104, 170, 233);
 }

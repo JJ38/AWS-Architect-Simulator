@@ -1,5 +1,4 @@
 import type { ResourceStatics } from "./Models/Resource";
-import type Resource from "./Models/Resource";
 import APIGatewayV2 from "./Models/Services/APIGatewayV2";
 import EC2 from "./Models/Services/EC2";
 import Lambda from "./Models/Services/Lambda";

@@ -1,10 +1,12 @@
-import type { EdgeType, Property, Service, ValidationResult } from "../types";
+import type { CodeChunk, EdgeType, Property, ResourceNodeData, Service, ValidationResult } from "../types";
 
 
 export interface ResourceStatics{
+    new(data: ResourceNodeData): Resource
     create(id: string, service: Service): Record<string, any>;
     sourceTypes: EdgeType[];
     targetTypes: EdgeType[];
+
 }
 
 
@@ -16,6 +18,6 @@ export default interface Resource{
 
     // create(id: string, service: Service): Record<string, any>;
     validate(): ValidationResult;
-    toTerraform(): string;
+    toTerraform(): CodeChunk[];
 
 }

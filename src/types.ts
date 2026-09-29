@@ -23,10 +23,8 @@ type BaseComponentData = {
 }
 
 export type ResourceNodeData = BaseComponentData & {
-    kind: 'resource',
     id: string,
     service: Service,
-    ghost: boolean,
 }
 
 export type AppNode = Node<ResourceNodeData>;
@@ -55,3 +53,11 @@ export type PropertyType =
 | "radio";
 
 export type EdgeType = "sync" | "async" | "pull"
+
+
+export interface CodeChunk{
+
+    value: any,
+    className: string
+
+}

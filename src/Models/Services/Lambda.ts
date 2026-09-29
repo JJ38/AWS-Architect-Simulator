@@ -1,5 +1,5 @@
 import type Resource from "../Resource";
-import type { EdgeType, Property, Service, ValidationResult } from "../../types.ts";
+import type { CodeChunk, EdgeType, Property, Service, ValidationResult } from "../../types.ts";
 
 
 export interface LambdaData{
@@ -53,8 +53,8 @@ export default class Lambda implements Resource{
 
     }
 
-    public toTerraform(): string {
-        return "";
+    public toTerraform(): CodeChunk[] {
+        return [];
     }
 
 }

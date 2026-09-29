@@ -4,6 +4,8 @@ import { CanvasModel } from "../Models/CanvasModel.ts";
 import { resourceContainer, serviceImageSize } from "../constants.ts";
 import type Resource from "../Models/Resource.ts";
 import type { ResourceStatics } from "../Models/Resource.ts";
+import EC2 from "../Models/Services/EC2.ts";
+import S3 from "../Models/Services/S3.ts";
 
 export class CanvasController{
 
@@ -88,7 +90,7 @@ export class CanvasController{
 
         const position: XYPosition | null = this.getCanvasPosition(event);
 
-        const newGhostNode: AppNode = { id: `n-ghostNode`, position: position, data: { ghost: true, service: selectedService} , type: 'imageNode', measured: { width: 1, height: 1 }} as AppNode;
+        const newGhostNode: AppNode = { id: `n-ghostNode`, position: position, data: { service: selectedService} , type: 'imageNode', measured: { width: 1, height: 1 }} as AppNode;
         this.setGhostNodes([newGhostNode]);
         
     }
@@ -189,6 +191,19 @@ export class CanvasController{
         }
 
         return title;
+    }
+
+    public getSelectedResource(selectedNodeData: ResourceNodeData | undefined): Resource | undefined{
+        
+        if(selectedNodeData == undefined){
+            return;
+        }
+
+        const resource: ResourceStatics = resourceContainer[selectedNodeData?.service.providerType!];
+        
+        const resourceInstance = new resource(selectedNodeData);
+        
+        return resourceInstance;
     }
 
 }

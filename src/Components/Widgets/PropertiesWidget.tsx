@@ -1,6 +1,6 @@
 import { memo, useState } from 'react';
 import { PropertiesWidgetController } from '../../Controllers/PropertiesWidgetController';
-import type { AppEdge, AppNode, ComponentData, EdgeData, Property, ResourceNodeData } from '../../types';
+import type { AppEdge, AppNode, CodeChunk, ComponentData, EdgeData, Property, ResourceNodeData } from '../../types';
 import '../../styles/PropertiesWidget.css'
 
 
@@ -12,6 +12,7 @@ function PropertiesWidget(
         stateSelectedEdgeID,
         selectedEdgeData, 
         setEdges,
+        selectedResourceTerraform,
         title
     }
         : 
@@ -21,13 +22,13 @@ function PropertiesWidget(
         setNodes: React.Dispatch<React.SetStateAction<AppNode[]>>, 
         stateSelectedEdgeID: string | null,
         selectedEdgeData: EdgeData | undefined,
-        setEdges: React.Dispatch<React.SetStateAction<AppEdge[]>>, 
+        setEdges: React.Dispatch<React.SetStateAction<AppEdge[]>>,
+        selectedResourceTerraform: CodeChunk[] | undefined,
         title: string
     }
 ){
  
     const [statePropertiesWidgetController] = useState(() => new PropertiesWidgetController(setNodes, setEdges));
-
 
     const selectedComponentData = selectedNodeData != undefined ? selectedNodeData : selectedEdgeData != null ? selectedEdgeData : null;
     const componentProperties: Record<string, Property<any>> | undefined = selectedComponentData != null ? selectedComponentData?.properties : undefined;
@@ -85,7 +86,28 @@ function PropertiesWidget(
 
             }
 
+           
+
             </div>
+
+             {
+                
+                selectedNodeData && 
+
+                <div className='terraformSnippetWrapper'>
+                    <pre>
+                        <code className='terraformCode'>
+                            {
+                                selectedResourceTerraform?.map((codeChunk: CodeChunk, index: number) => {
+                                    console.log(codeChunk);
+                                    return <span key={index} className={codeChunk.className}>{codeChunk.value}</span>
+                                })
+                            }
+                        </code>
+                    </pre>
+                </div>
+
+            }
 
         </div>
     );
