@@ -1,5 +1,5 @@
 import Resource from "../Resource";
-import type { CodeChunk, EdgeType, Service, ValidationResult } from "../../types.ts";
+import type { EdgeType, ResourceData, Service, ValidationResult } from "../../types.ts";
 
 export default class SQS extends Resource{
 
@@ -8,7 +8,7 @@ export default class SQS extends Resource{
     public static targetTypes: EdgeType[] = ["async"]
 
 
-    public static create(id: string, service: Service): Record<string, any>{
+    public static create(id: string, service: Service): ResourceData{
 
         return {
 

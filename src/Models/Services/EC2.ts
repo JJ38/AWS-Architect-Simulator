@@ -1,5 +1,5 @@
 import Resource from "../Resource";
-import type { EdgeType, Service, ValidationResult } from "../../types.ts";
+import type { EdgeType, ResourceData, Service, ValidationResult } from "../../types.ts";
 
 export default class EC2 extends Resource{
 
@@ -7,7 +7,7 @@ export default class EC2 extends Resource{
     public static targetTypes: EdgeType[] = ["sync"]
 
 
-    public static create(id: string, service: Service): Record<string, any>{
+    public static create(id: string, service: Service): ResourceData{
 
         return {
 

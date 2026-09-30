@@ -1,5 +1,5 @@
 import Resource from "../Resource";
-import type { CodeChunk, EdgeType, Service, ValidationResult } from "../../types.ts";
+import type { EdgeType, ResourceData, Service, ValidationResult } from "../../types.ts";
 
 
 export default class Lambda extends Resource{
@@ -7,7 +7,7 @@ export default class Lambda extends Resource{
     public static sourceTypes: EdgeType[] = ["sync", "async"];
     public static targetTypes: EdgeType[] = ["sync", "async", "pull"]
 
-    public static create(id: string, service: Service): Record<string, any>{
+    public static create(id: string, service: Service): ResourceData{
 
         return {
             id: id,

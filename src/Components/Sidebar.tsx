@@ -34,7 +34,7 @@ export default function Sidebar(
                 <div>
 
                     {
-                        Object.keys(services).map((key) => (
+                        Object.keys(services).map((key) => 
                             <SidebarButton 
                                 serviceName={services[key].name} 
                                 serviceDescription={services[key].description} 
@@ -43,7 +43,7 @@ export default function Sidebar(
                                 isSelected={stateSelectedService?.name === services[key].name}
                                 onClick={() => stateSidebarController.handleSidebarButtonClick(services[key])}
                             />
-                        ))
+                        )
                     }
 
                 </div>

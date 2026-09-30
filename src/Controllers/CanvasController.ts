@@ -146,13 +146,9 @@ export class CanvasController{
     
         const sourceEdgeTypes = resourceContainer[sourceProviderType!].sourceTypes;
         const targetEdgeTypes = resourceContainer[targetProviderType!].targetTypes;
-
-        console.log(sourceEdgeTypes);
-        console.log(targetEdgeTypes);
     
         const validEdgeType = sourceEdgeTypes.filter((edgeType: EdgeType) => targetEdgeTypes.includes(edgeType));
 
-        console.log(validEdgeType);
 
         const defaultEdge = validEdgeType[0] ?? "";
     

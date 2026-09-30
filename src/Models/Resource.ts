@@ -3,8 +3,8 @@ import type { CodeChunk, EdgeType, Property, ResourceData, Service, ValidationRe
 
 export interface ResourceStatics{
 
-    new(data: ResourceData): Resource
-    create(id: string, service: Service): Record<string, any>;
+    new(data: ResourceData): Resource;
+    create(id: string, service: Service): ResourceData;
     sourceTypes: EdgeType[];
     targetTypes: EdgeType[];
 
