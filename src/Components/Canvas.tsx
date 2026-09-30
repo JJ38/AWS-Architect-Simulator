@@ -94,7 +94,7 @@ export default function Canvas(
         onPaneClick={(event) => stateCanvasController.handlePaneClick(event, stateSelectedService, stateNodes)}
         onPaneMouseMove={(event) => stateCanvasController.handlePaneMouseMove(event, stateSelectedService)}
         snapGrid={[20,20]}
-        colorMode='system'
+        colorMode='dark'//dark, light, system
         elementsSelectable={false}
       />
       <PropertiesWidget 

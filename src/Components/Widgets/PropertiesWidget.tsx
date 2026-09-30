@@ -99,7 +99,6 @@ function PropertiesWidget(
                         <code className='terraformCode'>
                             {
                                 selectedResourceTerraform?.map((codeChunk: CodeChunk, index: number) => {
-                                    console.log(codeChunk);
                                     return <span key={index} className={codeChunk.className}>{codeChunk.value}</span>
                                 })
                             }
@@ -123,20 +122,20 @@ function getPropertyInput(propertiesWidgetController: PropertiesWidgetController
 
         case "string":{
 
-            const input = <input className="propertyInput" id={`${inputName}`} type="text" name={`${inputName}`} value={property.value ?? ""} onChange={(event) => {propertiesWidgetController.stringOnChange(event, property, inputName, stateSelectedNodeID)}}/>
+            const input = <input className="propertyInput" id={`${inputName}`} type="text" name={`${inputName}`} value={property.value ?? ""} onChange={(event) => {propertiesWidgetController.nodeOnChange(event, property, inputName, stateSelectedNodeID)}}/>
             
             return input;
         }
 
         case "number":{
 
-            const input = <input className="propertyInput" id={`${inputName}`} type="number" name={`${inputName}`} value={`${property.value ?? ""}`}/>
+            const input = <input className="propertyInput" id={`${inputName}`} type="number" name={`${inputName}`} value={`${property.value ?? ""}`} onChange={(event) => {propertiesWidgetController.nodeOnChange(event, property, inputName, stateSelectedNodeID)}}/>
             
             return input;
         }
 
         case "boolean":{
-            return <input className="propertyInput" id={`${inputName}`} type="checkbox" name={`${inputName}`}/>
+            return <input className="propertyInput" id={`${inputName}`} type="checkbox" checked={property.value ?? false} name={`${inputName}`} onChange={(event) => {console.log("checkbox toggled"); propertiesWidgetController.checkBoxOnChange(event, property, inputName, stateSelectedNodeID)}}/>
         }
 
         case "select":{

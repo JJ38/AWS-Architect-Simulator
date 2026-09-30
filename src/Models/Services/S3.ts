@@ -70,8 +70,6 @@ export default class S3 implements Resource{
 
         codeChunks.push({value: "{", className:"terraformBracket"})
 
-        console.log(this.properties);
-
         for(const key of Object.keys(this.properties)){
 
             codeChunks.push({value: "\n  ", className:"terraformProperty"})

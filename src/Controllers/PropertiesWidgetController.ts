@@ -14,46 +14,7 @@ export class PropertiesWidgetController{
         this.setEdges = setEdges;
         this.setNodes = setNodes;
     }
-
-
-    //make generic and pass in setter
-    public stringOnChange(
-        event: React.ChangeEvent<HTMLInputElement, HTMLInputElement>, 
-        nodeProperty: Property<any>, 
-        inputName: string, 
-        stateSelectedNodeID: string | null,
-    ){
-        
-        if(nodeProperty == undefined){
-            console.log("node properties undefined");
-            return;
-        }
-
-        if(stateSelectedNodeID == null){
-            console.log("stateSelectedNodeID is null");
-            return;
-        }
-
-        const newNodeProperty = structuredClone(nodeProperty);
-        newNodeProperty.value = event.target.value;
-
-        this.setNodes((nodes: AppNode[]) => nodes.map((node: AppNode) => {
-
-            if(node.id !== stateSelectedNodeID){
-                return node;
-            }
-
-            const newNode = structuredClone(node);
-
-            if(newNode.data == null){
-                return newNode;
-            }
-
-            newNode.data.properties[inputName] = newNodeProperty;
-            return newNode;
-        }));
     
-    }
 
     public onSelectChange(
         event: React.ChangeEvent<HTMLSelectElement, HTMLSelectElement>,
@@ -80,6 +41,78 @@ export class PropertiesWidgetController{
             newEdge.data.edgeType = event.target.value as EdgeType;
             return newEdge;
         }));
+
+    }
+
+    private validProperty(nodeProperty: Property<any>, stateSelectedNodeID: string | null): boolean{
+
+        if(nodeProperty == undefined){
+            console.log("node properties undefined");
+            return false;
+        }
+
+        if(stateSelectedNodeID == null){
+            console.log("stateSelectedNodeID is null");
+            return false;
+        }
+
+        return true;
+
+    }
+
+    private updateNodeProperty(newNodeProperty: Property<any>, stateSelectedNodeID: string, inputName: string){
+
+        this.setNodes((nodes: AppNode[]) => nodes.map((node: AppNode) => {
+
+            if(node.id !== stateSelectedNodeID){
+                return node;
+            }
+
+            const newNode = structuredClone(node);
+
+            if(newNode.data == null){
+                return newNode;
+            }
+
+            newNode.data.properties[inputName] = newNodeProperty;
+            console.log(newNode);
+            return newNode;
+        }));
+
+    }
+
+    //make generic and pass in setter
+    public nodeOnChange(
+        event: React.ChangeEvent<HTMLInputElement, HTMLInputElement>, 
+        nodeProperty: Property<any>, 
+        inputName: string, 
+        stateSelectedNodeID: string | null,
+    ){  
+
+        if(!this.validProperty(nodeProperty, stateSelectedNodeID)) return;
+
+        const newNodeProperty = structuredClone(nodeProperty);
+        newNodeProperty.value = event.target.value;
+
+        this.updateNodeProperty(newNodeProperty, stateSelectedNodeID!, inputName);
+
+    }
+
+    
+
+    public checkBoxOnChange(
+        event: React.ChangeEvent<HTMLInputElement, HTMLInputElement>, 
+        nodeProperty: Property<any>, 
+        inputName: string, 
+        stateSelectedNodeID: string | null,
+    ){
+        
+        if(!this.validProperty(nodeProperty, stateSelectedNodeID)) return;
+
+        const newNodeProperty = structuredClone(nodeProperty);
+        newNodeProperty.value = event.target.checked;
+        
+        this.updateNodeProperty(newNodeProperty, stateSelectedNodeID!, inputName);
 
     }
 
