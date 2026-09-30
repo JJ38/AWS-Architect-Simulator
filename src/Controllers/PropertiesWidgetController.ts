@@ -1,4 +1,4 @@
-import type { AppEdge, AppNode, EdgeData, EdgeType, Property } from "../types";
+import type { AppEdge, AppNode, EdgeType, Property } from "../types";
 
 export class PropertiesWidgetController{
 
@@ -75,8 +75,8 @@ export class PropertiesWidgetController{
             }
 
             newNode.data.properties[inputName] = newNodeProperty;
-            console.log(newNode);
             return newNode;
+            
         }));
 
     }
@@ -98,7 +98,6 @@ export class PropertiesWidgetController{
 
     }
 
-    
 
     public checkBoxOnChange(
         event: React.ChangeEvent<HTMLInputElement, HTMLInputElement>, 
@@ -111,7 +110,7 @@ export class PropertiesWidgetController{
 
         const newNodeProperty = structuredClone(nodeProperty);
         newNodeProperty.value = event.target.checked;
-        
+
         this.updateNodeProperty(newNodeProperty, stateSelectedNodeID!, inputName);
 
     }

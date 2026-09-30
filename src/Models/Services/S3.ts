@@ -1,21 +1,9 @@
-import type Resource from "../Resource";
-import type { Service, ValidationResult, Property, EdgeType, CodeChunk } from "../../types.ts";
+import Resource from "../Resource";
+import type { Service, ValidationResult, Property, EdgeType } from "../../types.ts";
 
 
-export interface S3Data{
+export default class S3 extends Resource{
 
-    id: string;
-    service: Service;
-    properties: Record<string, Property<any>>;
-    
-}
-
-
-export default class S3 implements Resource{
-
-    public id: string;
-    public service: Service;
-    public properties: Record<string, Property<any>>;
     public static sourceTypes: EdgeType[] = ["async"];
     public static targetTypes: EdgeType[] = ["sync"]
 
@@ -26,6 +14,7 @@ export default class S3 implements Resource{
 
             id: id,
             service: service,
+            resourceName: id,
             properties: {
                 "bucket": { value: id, type: "string"},
                 "bucket_prefix": { value: null, type: "string"},
@@ -37,12 +26,6 @@ export default class S3 implements Resource{
 
     }
 
-
-    public constructor(data: S3Data){
-        this.id = data.id;
-        this.service = data.service;
-        this.properties = data.properties;
-    }
 
     public validate(): ValidationResult {
 
@@ -60,50 +43,42 @@ export default class S3 implements Resource{
 
     }
 
-    public toTerraform(): CodeChunk[] {
+    // public toTerraform(): CodeChunk[] {
 
-        const codeChunks: CodeChunk[] = [];
+    //     const codeChunks: CodeChunk[] = [];
 
-        codeChunks.push({value: "resource ", className:"terraformKeyword"})
-        codeChunks.push({value: this.service.providerType + " ", className:"terraformParameter"})
-        codeChunks.push({value: this.properties.bucket.value, className:"terraformParameter"})
+    //     codeChunks.push({value: "resource ", className:"terraformKeyword"})
+    //     codeChunks.push({value: this.service.providerType + " ", className:"terraformParameter"})
+    //     codeChunks.push({value: this.properties.bucket.value, className:"terraformParameter"})
 
-        codeChunks.push({value: "{", className:"terraformBracket"})
+    //     codeChunks.push({value: "{", className:"terraformBracket"})
 
-        for(const key of Object.keys(this.properties)){
+    //     for(const key of Object.keys(this.properties)){
 
-            codeChunks.push({value: "\n  ", className:"terraformProperty"})
+    //         codeChunks.push({value: "\n  ", className:"terraformProperty"})
 
-            codeChunks.push({value: key, className:"terraformProperty"})
-            codeChunks.push({value: " = ", className:""})
+    //         codeChunks.push({value: key, className:"terraformProperty"})
+    //         codeChunks.push({value: " = ", className:""})
 
-            //look at the property value. It might be a record/tags and need deconstructing further
-            switch (key) {
+    //         //look at the property value. It might be a record/tags and need deconstructing further
+    //         switch (key) {
 
-                case "tags": {
-                    codeChunks.push({value: "TO DO implement tags", className:"terraformValue"})
-                    break;
-                }
+    //             case "tags": {
+    //                 codeChunks.push({value: "TO DO implement tags", className:"terraformValue"})
+    //                 break;
+    //             }
 
-                default: {
-                    codeChunks.push({value: this.properties[key].value, className:"terraformValue"})
-                }
-            }
+    //             default: {
+    //                 codeChunks.push({value: this.properties[key].value, className:"terraformValue"})
+    //             }
+    //         }
 
-        }
+    //     }
 
-        codeChunks.push({value: "\n", className:"terraformProperty"})
-        codeChunks.push({value: "}", className:"terraformBracket"})
+    //     codeChunks.push({value: "\n", className:"terraformProperty"})
+    //     codeChunks.push({value: "}", className:"terraformBracket"})
 
-        return codeChunks;
-    }
-
-    private propertyToTerraform(key: string, Property: Property<any>): string{
-
-        const propertyTerraform = `${key} = ${Property.value}`;
-
-        return propertyTerraform;
-    }
-
+    //     return codeChunks;
+    // }
 
 }

@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { LoadSaveWidgetController } from '../../Controllers/LoadSaveWidgetController';
 import { useNotification } from '../../Providers/NotificationProvider';
-import type { Edge, Node } from '@xyflow/react';
 import '../../styles/LoadSaveWidget.css'
 import RoundedButton from '../Buttons/RoundedButton'
 import SavePill from '../SavePill';

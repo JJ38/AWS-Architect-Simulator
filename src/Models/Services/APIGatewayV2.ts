@@ -1,19 +1,9 @@
-import type Resource from "../Resource";
-import type { CodeChunk, EdgeType, Property, Service, ValidationResult } from "../../types.ts";
+import Resource from "../Resource";
+import type { CodeChunk, EdgeType, Service, ValidationResult } from "../../types.ts";
 
-export interface APIGatewayV2Data{
 
-    id: string;
-    service: Service;
-    properties: Record<string, Property<any>>;
+export default class APIGatewayV2 extends Resource{
     
-}
-
-export default class APIGatewayV2 implements Resource{
-    
-    public id: string;
-    public service: Service;
-    public properties: Record<string, Property<any>>;
     public static sourceTypes: EdgeType[] = ["sync", "async"];
     public static targetTypes: EdgeType[] = ["sync"]
 
@@ -24,6 +14,7 @@ export default class APIGatewayV2 implements Resource{
 
             id: id,
             service: service,
+            resourceName: id,
             properties: {
                 "test": {value: null, type: "string"},
                 "number": {value: null, type: "number"},
@@ -33,12 +24,6 @@ export default class APIGatewayV2 implements Resource{
 
     }
 
-
-    public constructor(data: APIGatewayV2Data){
-        this.id = data.id;
-        this.service = data.service;
-        this.properties = data.properties;
-    }
 
     public validate(): ValidationResult {
 
@@ -56,8 +41,5 @@ export default class APIGatewayV2 implements Resource{
 
     }
 
-    public toTerraform(): CodeChunk[] {
-        return [];
-    }
 
 }

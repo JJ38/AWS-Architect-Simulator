@@ -1,5 +1,5 @@
 import { type XYPosition, type Node, type ViewportHelperFunctions, type Edge, addEdge } from "@xyflow/react";
-import type { AppEdge, AppNode, EdgeType, ResourceNodeData, Service } from "../types";
+import type { AppEdge, AppNode, EdgeType, ResourceData, Service } from "../types";
 import { CanvasModel } from "../Models/CanvasModel.ts";
 import { resourceContainer, serviceImageSize } from "../constants.ts";
 import type Resource from "../Models/Resource.ts";
@@ -170,7 +170,7 @@ export class CanvasController{
 
     }
 
-    public getPropertiesWidgetTitle(selectedNodeData: ResourceNodeData | undefined, stateNodes: AppNode[], selectedEdge: AppEdge | undefined): string{
+    public getPropertiesWidgetTitle(selectedNodeData: ResourceData | undefined, stateNodes: AppNode[], selectedEdge: AppEdge | undefined): string{
 
         let title = "";
 
@@ -197,7 +197,7 @@ export class CanvasController{
         return title;
     }
 
-    public getSelectedResource(selectedNodeData: ResourceNodeData | undefined): Resource | undefined{
+    public getSelectedResource(selectedNodeData: ResourceData | undefined): Resource | undefined{
         
         if(selectedNodeData == undefined){
             return;

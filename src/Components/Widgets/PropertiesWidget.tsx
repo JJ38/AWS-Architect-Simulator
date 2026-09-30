@@ -1,6 +1,6 @@
 import { memo, useState } from 'react';
 import { PropertiesWidgetController } from '../../Controllers/PropertiesWidgetController';
-import type { AppEdge, AppNode, CodeChunk, ComponentData, EdgeData, Property, ResourceNodeData } from '../../types';
+import type { AppEdge, AppNode, CodeChunk, ComponentData, EdgeData, Property, ResourceData} from '../../types';
 import '../../styles/PropertiesWidget.css'
 
 
@@ -18,7 +18,7 @@ function PropertiesWidget(
         : 
     { 
         stateSelectedNodeID: string | null, 
-        selectedNodeData: ResourceNodeData | undefined,
+        selectedNodeData: ResourceData | undefined,
         setNodes: React.Dispatch<React.SetStateAction<AppNode[]>>, 
         stateSelectedEdgeID: string | null,
         selectedEdgeData: EdgeData | undefined,

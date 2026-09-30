@@ -1,20 +1,8 @@
-import type Resource from "../Resource";
-import type { CodeChunk, EdgeType, Property, Service, ValidationResult } from "../../types.ts";
+import Resource from "../Resource";
+import type { EdgeType, Service, ValidationResult } from "../../types.ts";
 
+export default class EC2 extends Resource{
 
-export interface EC2Data{
-
-    id: string;
-    service: Service;
-    properties: Record<string, Property<any>>;
-    
-}
-
-export default class EC2 implements Resource{
-
-    public id: string;
-    public service: Service;
-    public properties: Record<string, Property<any>>;
     public static sourceTypes: EdgeType[] = ["sync", "pull", "async"];
     public static targetTypes: EdgeType[] = ["sync"]
 
@@ -25,6 +13,7 @@ export default class EC2 implements Resource{
 
             id: id,
             service: service,
+            resourceName: id,
             properties: {
                 "test": {value: null, type: "string"},
                 "number": {value: null, type: "number"},
@@ -34,12 +23,6 @@ export default class EC2 implements Resource{
 
     }
 
-    
-    public constructor(data: EC2Data){
-        this.id = data.id;
-        this.service = data.service;
-        this.properties = data.properties;
-    }
 
     public validate(): ValidationResult {
 
@@ -55,12 +38,6 @@ export default class EC2 implements Resource{
 
         return validationResult;
 
-    }
-
-    public toTerraform(): CodeChunk[] {
-
-
-        return [];
     }
 
 }

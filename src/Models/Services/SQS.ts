@@ -1,20 +1,9 @@
-import type Resource from "../Resource";
-import type { CodeChunk, EdgeType, Property, Service, ValidationResult } from "../../types.ts";
+import Resource from "../Resource";
+import type { CodeChunk, EdgeType, Service, ValidationResult } from "../../types.ts";
+
+export default class SQS extends Resource{
 
 
-export interface SQSData{
-
-    id: string;
-    service: Service;
-    properties: Record<string, Property<any>>;
-    
-}
-
-export default class SQS implements Resource{
-
-    public id: string;
-    public service: Service;
-    public properties: Record<string, Property<any>>;
     public static sourceTypes: EdgeType[] = ["pull"];
     public static targetTypes: EdgeType[] = ["async"]
 
@@ -25,8 +14,9 @@ export default class SQS implements Resource{
 
             id: id,
             service: service,
+            resourceName: id,
             properties: {
-                "name": {value: null, type: id},
+                "name": {value: id, type: "string"},
                 "delay_seconds": {value: null, type: "number"},
                 "max_message_size": {value: null, type: "number"},
                 "message_retention_seconds": {value: null, type: "number"},
@@ -40,12 +30,6 @@ export default class SQS implements Resource{
 
     }
 
-    
-    public constructor(data: SQSData){
-        this.id = data.id;
-        this.service = data.service;
-        this.properties = data.properties;
-    }
 
     public validate(): ValidationResult {
 
@@ -61,12 +45,6 @@ export default class SQS implements Resource{
 
         return validationResult;
 
-    }
-
-    public toTerraform(): CodeChunk[] {
-
-
-        return [];
     }
 
 }

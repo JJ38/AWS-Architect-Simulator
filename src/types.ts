@@ -16,18 +16,19 @@ export type ValidationResult = {
     errors: string[];
 }
 
-export type ComponentData = ResourceNodeData | EdgeData;
+export type ComponentData = ResourceData | EdgeData;
 
 type BaseComponentData = {
     properties: Record<string, Property<any>>,
 }
 
-export type ResourceNodeData = BaseComponentData & {
+export type ResourceData = BaseComponentData & {
     id: string,
     service: Service,
+    resourceName: string
 }
 
-export type AppNode = Node<ResourceNodeData>;
+export type AppNode = Node<ResourceData>;
 
 export type EdgeData = BaseComponentData & {
     edgeType: EdgeType
@@ -61,3 +62,4 @@ export interface CodeChunk{
     className: string
 
 }
+

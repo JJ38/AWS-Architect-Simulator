@@ -108,7 +108,7 @@ export class LoadSaveWidgetController{
 
     }
 
-    public handleSavePillClick (){
+    public handleSaveClick (){
 
         if(this.setShowLoadWidget == null){
             return;
