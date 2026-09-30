@@ -1,11 +1,10 @@
 import { type XYPosition, type Node, type ViewportHelperFunctions, type Edge, addEdge } from "@xyflow/react";
-import type { AppEdge, AppNode, EdgeData, EdgeType, ResourceNodeData, Service } from "../types";
+import type { AppEdge, AppNode, EdgeType, ResourceNodeData, Service } from "../types";
 import { CanvasModel } from "../Models/CanvasModel.ts";
 import { resourceContainer, serviceImageSize } from "../constants.ts";
 import type Resource from "../Models/Resource.ts";
 import type { ResourceStatics } from "../Models/Resource.ts";
-import EC2 from "../Models/Services/EC2.ts";
-import S3 from "../Models/Services/S3.ts";
+
 
 export class CanvasController{
 
@@ -146,9 +145,14 @@ export class CanvasController{
         }
     
         const sourceEdgeTypes = resourceContainer[sourceProviderType!].sourceTypes;
-        const targetEdgeTypes = resourceContainer[targetProviderType!].sourceTypes;
+        const targetEdgeTypes = resourceContainer[targetProviderType!].targetTypes;
+
+        console.log(sourceEdgeTypes);
+        console.log(targetEdgeTypes);
     
         const validEdgeType = sourceEdgeTypes.filter((edgeType: EdgeType) => targetEdgeTypes.includes(edgeType));
+
+        console.log(validEdgeType);
 
         const defaultEdge = validEdgeType[0] ?? "";
     
