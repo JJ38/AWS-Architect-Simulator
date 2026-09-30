@@ -26,7 +26,7 @@ export default abstract class Resource{
         this.properties = data.properties;
     }
 
-    toTerraform(): CodeChunk[]{
+    toTerraformPreview(): CodeChunk[]{
 
         const codeChunks: CodeChunk[] = [];
 
@@ -63,6 +63,39 @@ export default abstract class Resource{
 
         return codeChunks;
 
+    }
+
+    toTerraform(): string{
+
+        let terraform: string = "resource ";
+
+        terraform += this.service.providerType + " ";
+        terraform += this.resourceName;
+        terraform += "{";
+
+        for(const key of Object.keys(this.properties)){
+
+            terraform += "\n  ";
+            terraform += key;
+            terraform += " = "
+
+            //look at the property value. It might be a record/tags and need deconstructing further
+            switch (key) {
+
+                case "tags": {
+                    terraform += "TO DO implement tags";
+                    break;
+                }
+
+                default: {
+                    terraform += this.properties[key].value;
+                }
+            }
+        }
+
+        terraform += "\n}\n";
+
+        return terraform;
     }
 
 }

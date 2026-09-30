@@ -175,14 +175,14 @@ export default function TerraformWidget({
                     <div className='terraformWidgetSnippetWrapper '>
                         <pre>
                             <code className='terraformCode'>
-                                {
+                                {                                    
                                     stateNodes?.map(
                                         (node: AppNode) => {
 
                                             const resource: ResourceStatics = resourceContainer[node.data.service.providerType!];
                                             const resourceInstance = new resource(node.data);
 
-                                            const codeChunks: CodeChunk[] = resourceInstance.toTerraform();
+                                            const codeChunks: CodeChunk[] = resourceInstance.toTerraformPreview();
 
                                             codeChunks.push({value: "\n", className:"terraformKeyword"});
                                             codeChunks.push({value: "\n", className:"terraformKeyword"});

@@ -36,10 +36,13 @@ export type EdgeData = BaseComponentData & {
 
 export type AppEdge = Edge<EdgeData>;
 
+export type AppComponent = AppNode | AppEdge;
+
 export interface Property<T>{
 
     value: T,
-    type: PropertyType
+    type: PropertyType,
+    options?: readonly T[]
 
 }
 

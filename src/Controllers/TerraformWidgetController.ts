@@ -45,7 +45,7 @@ export class TerraformWidgetController{
         
     }
 
-    public handleConvertToTerraform(stateNodes: Node[], stateEdges: Edge[]){
+    public handleConvertToTerraform(stateNodes: AppNode[], stateEdges: AppEdge[]){
 
         //create resource of each node.
         const terraformConverter = new TerraformConverter({stateNodes: stateNodes, stateEdges: stateEdges});
@@ -64,8 +64,9 @@ export class TerraformWidgetController{
             return;
         } 
 
-        this.showNotification(true, "Successfully converted to terraform");
+        console.log(terraformConverter.terraform);
 
+        this.showNotification(true, "Successfully converted to terraform");
         
     }
 

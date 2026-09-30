@@ -1,14 +1,16 @@
-import type { Edge, Node } from "@xyflow/react";
-import type Resource from "./Resource";
+import type { AppEdge, AppNode, CodeChunk } from "../types";
+import type { ResourceStatics } from "./Resource";
+import { resourceContainer } from "../constants";
 
 
 export class TerraformConverter{
 
-    private stateNodes: Node[];
-    private stateEdges: Edge[];
+    private stateNodes: AppNode[];
+    private stateEdges: AppEdge[];
+    public terraform: string = "";
 
 
-    public constructor({ stateNodes, stateEdges }: { stateNodes: Node[], stateEdges: Edge[]}){
+    public constructor({ stateNodes, stateEdges }: { stateNodes: AppNode[], stateEdges: AppEdge[]}){
         this.stateNodes = stateNodes;
         this.stateEdges = stateEdges;
     }    
@@ -27,23 +29,15 @@ export class TerraformConverter{
 
     public diagramToTerraform(): boolean{
 
-        let resourceTerraform = "";
+        this.terraform = "";
 
-        //create resources for nodes
         for(let i = 0; i < this.stateNodes.length; i++){
-            const resourceData = this.stateNodes[i].data.resourceData;
 
-            // const resource = new Lambda
+            const resource: ResourceStatics = resourceContainer[this.stateNodes[i].data.service.providerType!];
+            const resourceInstance = new resource(this.stateNodes[i].data);
+            this.terraform += resourceInstance.toTerraform();
 
-            // console.log(typeof resource);
-            // console.log(resource.constructor.name);
-
-            // console.log(resource.id);
-            // console.log(resource.service);
-            // console.log(resource.toTerraform());
         }
-
-        //identify any triggers in edges
 
         return true;
 

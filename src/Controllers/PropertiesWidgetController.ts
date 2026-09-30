@@ -1,4 +1,4 @@
-import type { AppEdge, AppNode, EdgeType, Property } from "../types";
+import type { AppEdge, AppNode, EdgeType, Property, AppComponent } from "../types";
 
 export class PropertiesWidgetController{
 
@@ -44,15 +44,15 @@ export class PropertiesWidgetController{
 
     }
 
-    private validProperty(nodeProperty: Property<any>, stateSelectedNodeID: string | null): boolean{
+    private validProperty(nodeProperty: Property<any>, componentID: string | null): boolean{
 
         if(nodeProperty == undefined){
             console.log("node properties undefined");
             return false;
         }
 
-        if(stateSelectedNodeID == null){
-            console.log("stateSelectedNodeID is null");
+        if(componentID == null){
+            console.log("componentID is null");
             return false;
         }
 
@@ -60,41 +60,42 @@ export class PropertiesWidgetController{
 
     }
 
-    private updateNodeProperty(newNodeProperty: Property<any>, stateSelectedNodeID: string, inputName: string){
+    private updateComponentProperty(newNodeProperty: Property<any>, componentID: string, inputName: string, componentSetter: React.Dispatch<React.SetStateAction<any>>){
 
-        this.setNodes((nodes: AppNode[]) => nodes.map((node: AppNode) => {
+        componentSetter((components: AppComponent[]) => components.map((component: AppComponent) => {
 
-            if(node.id !== stateSelectedNodeID){
-                return node;
+            if(component.id !== componentID){
+                return component;
             }
 
-            const newNode = structuredClone(node);
+            const newComponent = structuredClone(component);
 
-            if(newNode.data == null){
-                return newNode;
+            if(newComponent.data == null){
+                return newComponent;
             }
 
-            newNode.data.properties[inputName] = newNodeProperty;
-            return newNode;
+            newComponent.data.properties[inputName] = newNodeProperty;
+            return newComponent;
             
         }));
 
     }
 
     //make generic and pass in setter
-    public nodeOnChange(
+    public keyboardInputOnChange(
         event: React.ChangeEvent<HTMLInputElement, HTMLInputElement>, 
         nodeProperty: Property<any>, 
         inputName: string, 
-        stateSelectedNodeID: string | null,
+        componentID: string | null,
+        componentSetter: React.Dispatch<React.SetStateAction<any>>
     ){  
 
-        if(!this.validProperty(nodeProperty, stateSelectedNodeID)) return;
+        if(!this.validProperty(nodeProperty, componentID)) return;
 
         const newNodeProperty = structuredClone(nodeProperty);
         newNodeProperty.value = event.target.value;
 
-        this.updateNodeProperty(newNodeProperty, stateSelectedNodeID!, inputName);
+        this.updateComponentProperty(newNodeProperty, componentID!, inputName, componentSetter);
 
     }
 
@@ -103,15 +104,16 @@ export class PropertiesWidgetController{
         event: React.ChangeEvent<HTMLInputElement, HTMLInputElement>, 
         nodeProperty: Property<any>, 
         inputName: string, 
-        stateSelectedNodeID: string | null,
+        componentID: string | null,
+        componentSetter: React.Dispatch<React.SetStateAction<any>>
     ){
         
-        if(!this.validProperty(nodeProperty, stateSelectedNodeID)) return;
+        if(!this.validProperty(nodeProperty, componentID)) return;
 
         const newNodeProperty = structuredClone(nodeProperty);
         newNodeProperty.value = event.target.checked;
 
-        this.updateNodeProperty(newNodeProperty, stateSelectedNodeID!, inputName);
+        this.updateComponentProperty(newNodeProperty, componentID!, inputName, componentSetter);
 
     }
 

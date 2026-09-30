@@ -1,5 +1,6 @@
 import type { ResourceStatics } from "./Models/Resource";
 import APIGatewayV2 from "./Models/Services/APIGatewayV2";
+import DyanmoDB from "./Models/Services/DynamoDB";
 import EC2 from "./Models/Services/EC2";
 import Lambda from "./Models/Services/Lambda";
 import S3 from "./Models/Services/S3";
@@ -14,7 +15,7 @@ export const services: Record<string, Service> = {
     "aws_lambda_function": { name: 'Lambda', description: 'Serverless Computing Service', terraformType: 'resource', providerType: 'aws_lambda_function', icon: 'serviceIcons/Res_AWS-Lambda_Lambda-Function_48.svg', image: 'serviceImages/Arch_AWS-Lambda_64.svg'},
     "aws_apigatewayv2_api": { name: 'API Gateway V2', description: 'API Gateway V2', terraformType: 'resource', providerType: 'aws_apigatewayv2_api', icon: 'serviceIcons/Res_Amazon-API-Gateway_Endpoint_48.svg', image: 'serviceImages/Arch_Amazon-API-Gateway_64.svg'},
     "aws_sqs_queue": { name: 'SQS', description: 'Simple Queue Service', terraformType: 'resource', providerType: 'aws_sqs_queue', icon: 'serviceIcons/Res_Amazon-Simple-Queue-Service_Message_48.svg', image: 'serviceImages/Arch_Amazon-Simple-Queue-Service_64.svg'},
-
+    "aws_dynamodb_table": { name: 'DynamoDB', description: 'DynamoDB', terraformType: 'resource', providerType: 'aws_dynamodb_table', icon: 'serviceIcons/Res_Amazon-DynamoDB_Table_48.svg', image: 'serviceImages/Arch_Amazon-DynamoDB_64.svg'},
 }
 
 export const resourceContainer: Record<string, ResourceStatics> = {
@@ -22,5 +23,6 @@ export const resourceContainer: Record<string, ResourceStatics> = {
     'aws_s3_bucket': S3,
     "aws_lambda_function": Lambda,
     "aws_apigatewayv2_api": APIGatewayV2,
-    "aws_sqs_queue": SQS
+    "aws_sqs_queue": SQS,
+    "aws_dynamodb_table": DyanmoDB
 }   

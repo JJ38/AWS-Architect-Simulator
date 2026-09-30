@@ -1,6 +1,6 @@
 import { memo, useState } from 'react';
 import { PropertiesWidgetController } from '../../Controllers/PropertiesWidgetController';
-import type { AppEdge, AppNode, CodeChunk, ComponentData, EdgeData, Property, ResourceData} from '../../types';
+import type { AppComponent, AppEdge, AppNode, CodeChunk, ComponentData, EdgeData, Property, ResourceData} from '../../types';
 import '../../styles/PropertiesWidget.css'
 
 
@@ -18,10 +18,10 @@ function PropertiesWidget(
         : 
     { 
         stateSelectedNodeID: string | null, 
-        selectedNodeData: ResourceData | undefined,
+        selectedNodeData: ComponentData | undefined,
         setNodes: React.Dispatch<React.SetStateAction<AppNode[]>>, 
         stateSelectedEdgeID: string | null,
-        selectedEdgeData: EdgeData | undefined,
+        selectedEdgeData: ComponentData | undefined,
         setEdges: React.Dispatch<React.SetStateAction<AppEdge[]>>,
         selectedResourceTerraform: CodeChunk[] | undefined,
         title: string
@@ -30,8 +30,10 @@ function PropertiesWidget(
  
     const [statePropertiesWidgetController] = useState(() => new PropertiesWidgetController(setNodes, setEdges));
 
-    const selectedComponentData = selectedNodeData != undefined ? selectedNodeData : selectedEdgeData != null ? selectedEdgeData : null;
-    const componentProperties: Record<string, Property<any>> | undefined = selectedComponentData != null ? selectedComponentData?.properties : undefined;
+    const componentID: string | null = stateSelectedNodeID != undefined ? stateSelectedNodeID : stateSelectedEdgeID != null ? stateSelectedEdgeID : null;
+    const componentData = stateSelectedNodeID != undefined ? selectedNodeData : stateSelectedEdgeID != null ? selectedEdgeData : undefined;
+    const componentSetter: React.Dispatch<React.SetStateAction<any>> | null = stateSelectedNodeID != undefined ? setNodes : selectedEdgeData != null ? setEdges : null;
+    const componentProperties: Record<string, Property<any>> | undefined = componentData != null ? componentData?.properties : undefined;
 
     return(
 
@@ -42,8 +44,6 @@ function PropertiesWidget(
 
                     <div>
                         <p className='propertyInfo'>{title}</p>
-                        {/* <p className="propertyInfo">Node ID`: {stateSelectedNodeID}</p>
-                        <p className="propertyInfo">Description: {selectedNodeData?.service.description}</p>  */}
                     </div>         
             }
 
@@ -56,7 +56,7 @@ function PropertiesWidget(
             }
 
             {
-                selectedComponentData == undefined &&
+                componentData == undefined &&
 
                 <div className="checkboxWrapper">
                     <input type="checkbox" id="snapgridCheckbox" name="snapgridCheckbox"/>
@@ -75,7 +75,16 @@ function PropertiesWidget(
                         
                         return <div className='propertyInputWrapper' key={inputName} >
                             <p className='propertyName'>{inputName}</p>
-                            {getPropertyInput(statePropertiesWidgetController, selectedComponentData, componentProperties[inputName], inputName, stateSelectedNodeID, stateSelectedEdgeID)}
+                            {
+                                getPropertyInput(
+                                    statePropertiesWidgetController, 
+                                    componentData, 
+                                    componentProperties[inputName], 
+                                    inputName, 
+                                    componentID,
+                                    componentSetter
+                                )
+                            }
                         </div>
 
                     })
@@ -114,7 +123,17 @@ function PropertiesWidget(
 }
 
 
-function getPropertyInput(propertiesWidgetController: PropertiesWidgetController, selectedComponentData: ComponentData | null, property: Property<any>, inputName: string, stateSelectedNodeID: string | null,  stateSelectedEdgeID: string | null){
+function getPropertyInput(
+    propertiesWidgetController: PropertiesWidgetController, 
+    componentData: ComponentData | undefined, 
+    property: Property<any>, 
+    inputName: string, 
+    componentID: string | null,  
+    componentSetter: React.Dispatch<React.SetStateAction<any>> | null
+){
+    if(componentSetter == null){
+        return;
+    }
     
     const inputType = property.type;
 
@@ -122,27 +141,27 @@ function getPropertyInput(propertiesWidgetController: PropertiesWidgetController
 
         case "string":{
 
-            const input = <input className="propertyInput" id={`${inputName}`} type="text" name={`${inputName}`} value={property.value ?? ""} onChange={(event) => {propertiesWidgetController.nodeOnChange(event, property, inputName, stateSelectedNodeID)}}/>
+            const input = <input className="propertyInput" id={`${inputName}`} type="text" name={`${inputName}`} value={property.value ?? ""} onChange={(event) => {propertiesWidgetController.keyboardInputOnChange(event, property, inputName, componentID, componentSetter)}}/>
             
             return input;
         }
 
         case "number":{
 
-            const input = <input className="propertyInput" id={`${inputName}`} type="number" name={`${inputName}`} value={`${property.value ?? ""}`} onChange={(event) => {propertiesWidgetController.nodeOnChange(event, property, inputName, stateSelectedNodeID)}}/>
+            const input = <input className="propertyInput" id={`${inputName}`} type="number" name={`${inputName}`} value={`${property.value ?? ""}`} onChange={(event) => {propertiesWidgetController.keyboardInputOnChange(event, property, inputName, componentID, componentSetter)}}/>
             
             return input;
         }
 
         case "boolean":{
-            return <input className="propertyInput" id={`${inputName}`} type="checkbox" checked={property.value ?? false} name={`${inputName}`} onChange={(event) => {console.log("checkbox toggled"); propertiesWidgetController.checkBoxOnChange(event, property, inputName, stateSelectedNodeID)}}/>
+            return <input className="propertyInput" id={`${inputName}`} type="checkbox" checked={property.value ?? false} name={`${inputName}`} onChange={(event) => {console.log("checkbox toggled"); propertiesWidgetController.checkBoxOnChange(event, property, inputName, componentID, componentSetter)}}/>
         }
 
         case "select":{
 
-            const edgeData = selectedComponentData as EdgeData;
+            const edgeData = componentData as EdgeData;
             
-            return <select name="edgeType" id="select_edge_type" onChange={(event) => {propertiesWidgetController.onSelectChange(event, stateSelectedEdgeID)}}>
+            return <select name="edgeType" id="select_edge_type" onChange={(event) => {propertiesWidgetController.onSelectChange(event, componentID)}}>
                 {property.value.map((option: string) => {
                     return <option value={`${option}`} selected={option == edgeData.edgeType}>{option}</option>
                 })}

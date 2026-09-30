@@ -1,9 +1,14 @@
+import type { EdgeType, ResourceData, Service, ValidationResult } from "../../types";
 import Resource from "../Resource";
-import type { Service, ValidationResult, EdgeType, ResourceData } from "../../types.ts";
 
+//incomplete look at all types
+export const dynamodb_billing_mode = [
+    "PAY_PER_REQUEST",
+    "PROVISIONED"
+]
 
-export default class S3 extends Resource{
-
+export default class DyanmoDB extends Resource{
+    
     public static sourceTypes: EdgeType[] = ["async"];
     public static targetTypes: EdgeType[] = ["sync"]
 
@@ -16,15 +21,19 @@ export default class S3 extends Resource{
             service: service,
             resourceName: id,
             properties: {
-                "bucket": { value: id, type: "string"},
-                "bucket_prefix": { value: null, type: "string"},
-                "force_destroy": { value: false, type: "boolean"},
-                "tags": { value: {}, type: "tags"}
+                "name": {value: id, type: "string"},
+                "hash_key": {value: null, type: "number"},
+                "billing_mode": {value: "PAY_PER_REQUEST", type: "select", options: dynamodb_billing_mode},
+                "tags": {value: null, type: "tags"},
             }
 
         }
 
     }
+
+    // # only needed if billing_mode = "PROVISIONED"
+    // # read_capacity  = 5
+    // # write_capacity = 5
 
 
     public validate(): ValidationResult {
@@ -42,5 +51,6 @@ export default class S3 extends Resource{
         return validationResult;
 
     }
+
 
 }

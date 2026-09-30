@@ -40,7 +40,7 @@ export default function Canvas(
   const selectedEdge = stateEdges.find((edge: AppEdge) => edge.id == stateSelectedEdgeID);
 
   const title: string = stateCanvasController.getPropertiesWidgetTitle(selectedNode?.data, stateNodes, selectedEdge);
-  const selectedResourceTerraform: CodeChunk[] | undefined = stateCanvasController.getSelectedResource(selectedNode?.data)?.toTerraform();
+  const selectedResourceTerraform: CodeChunk[] | undefined = stateCanvasController.getSelectedResource(selectedNode?.data)?.toTerraformPreview();
 
 
   const onNodesChange = useCallback((changes: any) => setNodes((nodesSnapshot) => applyNodeChanges(changes, nodesSnapshot)), []);
