@@ -19,7 +19,8 @@ export type ValidationResult = {
 export type ComponentData = ResourceData | EdgeData;
 
 type BaseComponentData = {
-    properties: Record<string, Property<any>>,
+    componentProperties: Record<string, Property<any>>,
+    terraformProperties: Record<string, Property<any>>
 }
 
 export type ResourceData = BaseComponentData & {
@@ -45,6 +46,10 @@ export interface Property<T>{
     options?: readonly T[]
 
 }
+
+export type PropertyCategory =
+| "component"
+| "terraform" 
 
 //union type. Similar to an enum but more lightweight
 export type PropertyType =

@@ -20,7 +20,7 @@ export default class DyanmoDB extends Resource{
             id: id,
             service: service,
             resourceName: id,
-            properties: {
+            terraformProperties: {
                 "name": {value: id, type: "string"},
                 "hash_key": {value: null, type: "number"},
                 "billing_mode": {value: "PAY_PER_REQUEST", type: "select", options: dynamodb_billing_mode},

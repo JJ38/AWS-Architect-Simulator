@@ -13,7 +13,7 @@ export default class Lambda extends Resource{
             id: id,
             service: service,
             resourceName: id,
-            properties: {
+            terraformProperties: {
                 "test": {value: null, type: "string"},
                 "number": {value: null, type: "number"},
             }

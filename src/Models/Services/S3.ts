@@ -15,7 +15,7 @@ export default class S3 extends Resource{
             id: id,
             service: service,
             resourceName: id,
-            properties: {
+            terraformProperties: {
                 "bucket": { value: id, type: "string"},
                 "bucket_prefix": { value: null, type: "string"},
                 "force_destroy": { value: false, type: "boolean"},

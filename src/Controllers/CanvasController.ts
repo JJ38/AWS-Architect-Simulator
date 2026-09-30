@@ -45,7 +45,7 @@ export class CanvasController{
             id: nodeID, 
             position: position ?? {x:0, y:0}, 
             data: {        
-                properties: null
+                terraformProperties: null
             },
             type: 'imageNode', 
             measured: { width: 1, height: 1 },
@@ -154,10 +154,11 @@ export class CanvasController{
     
         params['type'] = "standardEdge";
         params['data'] = {
-            edgeType: defaultEdge, //"async", "pull", "sync"
-            properties: {
+            componentProperties:{
+                "edgeType": { value: defaultEdge, type: "select", options: validEdgeType }
+            },
+            terraformProperties: {
                 "test": { value: null, type: "string" },
-                "edgeType": { value: validEdgeType, type: "select" }
             }
         };
     

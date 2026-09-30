@@ -1,6 +1,8 @@
 import { BaseEdge, getSmoothStepPath, type EdgeProps } from '@xyflow/react';
 import '../../styles/StandardEdge.css';
  
+
+//deconstruct to get types and animation working
 export function StandardEdge({
   id,
   sourceX,
@@ -19,11 +21,12 @@ export function StandardEdge({
     targetY,
     targetPosition,
   });
- 
+    console.log(data);
+  
   return (
     <>
       <BaseEdge id={id} path={edgePath} className={`standardEdge`}/>
-      <BaseEdge id={`${id}-pulse`} path={edgePath} interactionWidth={0} className={`standardEdge-pulse  standardEdge-${data?.edgeType}`}/>
+      <BaseEdge id={`${id}-pulse`} path={edgePath} interactionWidth={0} className={`standardEdge-pulse  standardEdge-${data?.componentProperties.edgeType.value}`}/>
     </>
   );
 }

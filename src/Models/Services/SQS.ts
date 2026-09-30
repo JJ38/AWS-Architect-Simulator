@@ -15,7 +15,7 @@ export default class SQS extends Resource{
             id: id,
             service: service,
             resourceName: id,
-            properties: {
+            terraformProperties: {
                 "name": {value: id, type: "string"},
                 "delay_seconds": {value: null, type: "number"},
                 "max_message_size": {value: null, type: "number"},

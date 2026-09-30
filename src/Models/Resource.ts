@@ -15,7 +15,7 @@ export default abstract class Resource{
     public id: string;
     public service: Service;
     public resourceName: string;
-    public properties: Record<string, Property<any>>;
+    public terraformProperties: Record<string, Property<any>>;
 
     abstract validate(): ValidationResult;
 
@@ -23,7 +23,7 @@ export default abstract class Resource{
         this.id = data.id;
         this.service = data.service;
         this.resourceName = data.resourceName;
-        this.properties = data.properties;
+        this.terraformProperties = data.terraformProperties;
     }
 
     toTerraformPreview(): CodeChunk[]{
@@ -36,7 +36,7 @@ export default abstract class Resource{
 
         codeChunks.push({value: "{", className:"terraformBracket"})
 
-        for(const key of Object.keys(this.properties)){
+        for(const key of Object.keys(this.terraformProperties)){
 
             codeChunks.push({value: "\n  ", className:"terraformProperty"})
 
@@ -52,7 +52,7 @@ export default abstract class Resource{
                 }
 
                 default: {
-                    codeChunks.push({value: this.properties[key].value, className:"terraformValue"})
+                    codeChunks.push({value: this.terraformProperties[key].value, className:"terraformValue"})
                 }
             }
 
@@ -73,7 +73,7 @@ export default abstract class Resource{
         terraform += this.resourceName;
         terraform += "{";
 
-        for(const key of Object.keys(this.properties)){
+        for(const key of Object.keys(this.terraformProperties)){
 
             terraform += "\n  ";
             terraform += key;
@@ -88,7 +88,7 @@ export default abstract class Resource{
                 }
 
                 default: {
-                    terraform += this.properties[key].value;
+                    terraform += this.terraformProperties[key].value;
                 }
             }
         }
