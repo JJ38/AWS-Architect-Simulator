@@ -31,10 +31,32 @@ export default class EC2 extends Resource{
                     "disable_api_stop": {value: null, type: "boolean"},
                     "ebs_optimized": {value: null, type: "boolean"},
                     "tenancy": {value: null, type: "string"},   
-                    "credit_specification": {value: null, type: "tags"},
-                    "metadata_options": {value: null, type: "tags"},
-                    "root_block_device": {value: null, type: "tags"},
-                    "tags": {value: null, type: "tags"}
+                    "credit_specification": {
+                        value: {
+                            "cpu_credits": {value: null, type: "string"}
+                        },                  
+                        type: "tags"
+                    },
+                    "metadata_options":  {
+                        value: {
+                            "http_tokens": {value: null, type: "string"}
+                        },                  
+                        type: "tags"
+                    },
+                    "root_block_device":  {
+                        value: {
+                            "volume_size": {value: null, type: "number"},
+                            "volume_type": {value: null, type: "string"},
+                            "delete_on_termination": {value: true, type: "boolean"},
+                        },                  
+                        type: "tags"
+                    },
+                    "tags":  {
+                        value: {
+                            "Name": {value: null, type: "string"}
+                        },                  
+                        type: "tags"
+                    },
                 }
             },
             componentProperties: {}

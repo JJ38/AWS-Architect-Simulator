@@ -65,7 +65,23 @@ export default abstract class Resource{
             switch (propertyRecord[key].type) {
 
                 case "tags": { 
-                    codeChunks.push({value: "TO DO implement tags", className:"terraformValue"});
+
+                    codeChunks.push({value: "{", className:""});
+
+                    if(propertyRecord[key].value != null){
+                        
+                        const tagChunks = this.toTerraformPreviewParsePropertyRecord(propertyRecord[key].value as PropertyRecord);
+                        
+                        tagChunks.forEach((chunk) => {
+                            chunk.value = "  " + chunk.value;
+                        });
+
+                        codeChunks.push(...tagChunks);
+                        
+                    }
+
+                    codeChunks.push({value: "\n  }", className:""});
+
                     break;
                 }
 

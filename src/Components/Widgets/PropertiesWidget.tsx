@@ -122,6 +122,8 @@ function PropertiesWidget(
 
                                     Object.keys(componentTerraformProperties[propertyRecordName]).map((inputName) => {
 
+                                        // need to check here if the property is a tags type and change class. 
+
                                         return <div className='propertyInputWrapper' key={inputName}>
                                             <p className='propertyName'>{inputName}</p>
                                             {
@@ -185,32 +187,35 @@ function getPropertyInput(
     propertyRecordName: string,
     inputName: string, 
     componentID: string | null,  
-    componentSetter: React.Dispatch<React.SetStateAction<any>> | null
+    componentSetter: React.Dispatch<React.SetStateAction<any>> | null,
+    key?: number
 ){
     if(componentSetter == null){
         return;
     }
     
+    console.log(property);
     const inputType = property.type;
+
 
     switch(inputType){
 
         case "string":{
 
-            const input = <input className="propertyInput" id={`${inputName}`} type="text" name={`${inputName}`} value={property.value ?? ""} onChange={(event) => {propertiesWidgetController.keyboardInputOnChange(event, property, propertyCategory, propertyRecordName, inputName, componentID, componentSetter)}}/>
+            const input = <input key={key} className="propertyInput" id={`${inputName}`} type="text" name={`${inputName}`} value={property.value ?? ""} onChange={(event) => {propertiesWidgetController.keyboardInputOnChange(event, property, propertyCategory, propertyRecordName, inputName, componentID, componentSetter)}}/>
             
             return input;
         }
 
         case "number":{
 
-            const input = <input className="propertyInput" id={`${inputName}`} type="number" name={`${inputName}`} value={`${property.value ?? ""}`} onChange={(event) => {propertiesWidgetController.keyboardInputOnChange(event, property, propertyCategory, propertyRecordName, inputName, componentID, componentSetter)}}/>
+            const input = <input key={key} className="propertyInput" id={`${inputName}`} type="number" name={`${inputName}`} value={`${property.value ?? ""}`} onChange={(event) => {propertiesWidgetController.keyboardInputOnChange(event, property, propertyCategory, propertyRecordName, inputName, componentID, componentSetter)}}/>
             
             return input;
         }
 
         case "boolean":{
-            return <input className="propertyInput" id={`${inputName}`} type="checkbox" checked={property.value ?? false} name={`${inputName}`} onChange={(event) => {console.log("checkbox toggled"); propertiesWidgetController.checkBoxOnChange(event, property, propertyCategory, propertyRecordName, inputName, componentID, componentSetter)}}/>
+            return <input key={key} className="propertyInput" id={`${inputName}`} type="checkbox" checked={property.value ?? false} name={`${inputName}`} onChange={(event) => {console.log("checkbox toggled"); propertiesWidgetController.checkBoxOnChange(event, property, propertyCategory, propertyRecordName, inputName, componentID, componentSetter)}}/>
         }
 
         case "select":{
@@ -229,7 +234,30 @@ function getPropertyInput(
         }
 
         case "tags":{
-            return <textarea className="propertyInput" id={`${inputName}`} name={`${inputName}`}/>
+            console.log(property.value);
+            return Object.keys(property.value).map((tagKey: string, index: number) => {
+                console.log(property.value[tagKey]);
+
+                return  <div><br></br>
+                        <div className='propertyInputWrapper' key={tagKey}>
+                            <p className='propertyName'>{tagKey}</p>
+                                {
+                                    getPropertyInput(
+                                        propertiesWidgetController, 
+                                        componentData, 
+                                        property.value[tagKey],
+                                        propertyCategory, 
+                                        propertyRecordName,
+                                        tagKey, 
+                                        componentID,
+                                        componentSetter,
+                                        index
+                                    )
+                                }
+                    
+                        </div>
+                    </div>
+                });
         }
     }
 
