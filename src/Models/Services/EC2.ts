@@ -15,10 +15,12 @@ export default class EC2 extends Resource{
             service: service,
             resourceName: id,
             terraformProperties: {
-                "test": {value: null, type: "string"},
-                "number": {value: null, type: "number"},
-            }
-
+                "aws_instance": {
+                    "test": {value: null, type: "string"},
+                    "number": {value: null, type: "number"},
+                }
+            },
+            componentProperties: {}
         }
 
     }

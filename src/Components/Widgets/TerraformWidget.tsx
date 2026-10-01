@@ -179,7 +179,7 @@ export default function TerraformWidget({
                                     stateNodes?.map(
                                         (node: AppNode) => {
 
-                                            const resource: ResourceStatics = resourceContainer[node.data.service.providerType!];
+                                            const resource: ResourceStatics = resourceContainer[node.data.service.name!];
                                             const resourceInstance = new resource(node.data);
 
                                             const codeChunks: CodeChunk[] = resourceInstance.toTerraformPreview();

@@ -1,4 +1,4 @@
-import type { AppEdge, AppNode, EdgeType, Property, AppComponent, PropertyCategory } from "../types";
+import type { AppEdge, AppNode, Property, AppComponent, PropertyCategory } from "../types";
 
 export class PropertiesWidgetController{
 
@@ -20,6 +20,7 @@ export class PropertiesWidgetController{
         event: React.ChangeEvent<HTMLSelectElement, HTMLSelectElement>, 
         nodeProperty: Property<any>, 
         propertyCategory: PropertyCategory,
+        propertyRecordName: string,
         inputName: string, 
         componentID: string | null,
         componentSetter: React.Dispatch<React.SetStateAction<any>>
@@ -30,7 +31,7 @@ export class PropertiesWidgetController{
         const newNodeProperty = structuredClone(nodeProperty);
         newNodeProperty.value = event.target.value;
 
-        this.updateComponentProperty(newNodeProperty, propertyCategory, componentID!, inputName, componentSetter);
+        this.updateComponentProperty(newNodeProperty, propertyCategory, propertyRecordName, componentID!, inputName, componentSetter);
 
 
     }
@@ -51,7 +52,14 @@ export class PropertiesWidgetController{
 
     }
 
-    private updateComponentProperty(newNodeProperty: Property<any>, propertyCategory: PropertyCategory, componentID: string, inputName: string, componentSetter: React.Dispatch<React.SetStateAction<any>>){
+    private updateComponentProperty(newNodeProperty: Property<any>, 
+        propertyCategory: PropertyCategory, 
+        propertyRecordName: string, 
+        componentID: string, 
+        inputName: string, 
+        componentSetter: React.Dispatch<React.SetStateAction<any>>)
+    {
+        
         console.log("updateComponentProperty");
         componentSetter((components: AppComponent[]) => components.map((component: AppComponent) => {
 
@@ -67,11 +75,11 @@ export class PropertiesWidgetController{
 
             if(propertyCategory == "component"){
 
-                newComponent.data.componentProperties[inputName] = newNodeProperty;
+                newComponent.data.componentProperties[propertyRecordName][inputName] = newNodeProperty;
 
             }else if(propertyCategory == "terraform"){
 
-                newComponent.data.terraformProperties[inputName] = newNodeProperty;
+                newComponent.data.terraformProperties[propertyRecordName][inputName] = newNodeProperty;
 
             }
 
@@ -88,6 +96,7 @@ export class PropertiesWidgetController{
         event: React.ChangeEvent<HTMLInputElement, HTMLInputElement>, 
         nodeProperty: Property<any>, 
         propertyCategory: PropertyCategory,
+        propertyRecordName: string,
         inputName: string, 
         componentID: string | null,
         componentSetter: React.Dispatch<React.SetStateAction<any>>
@@ -98,7 +107,7 @@ export class PropertiesWidgetController{
         const newNodeProperty = structuredClone(nodeProperty);
         newNodeProperty.value = event.target.value;
 
-        this.updateComponentProperty(newNodeProperty, propertyCategory, componentID!, inputName, componentSetter);
+        this.updateComponentProperty(newNodeProperty, propertyCategory, propertyRecordName, componentID!, inputName, componentSetter);
 
     }
 
@@ -107,6 +116,7 @@ export class PropertiesWidgetController{
         event: React.ChangeEvent<HTMLInputElement, HTMLInputElement>, 
         nodeProperty: Property<any>, 
         propertyCategory: PropertyCategory,
+        propertyRecordName: string,
         inputName: string, 
         componentID: string | null,
         componentSetter: React.Dispatch<React.SetStateAction<any>>
@@ -117,7 +127,7 @@ export class PropertiesWidgetController{
         const newNodeProperty = structuredClone(nodeProperty);
         newNodeProperty.value = event.target.checked;
 
-        this.updateComponentProperty(newNodeProperty, propertyCategory, componentID!, inputName, componentSetter);
+        this.updateComponentProperty(newNodeProperty, propertyCategory, propertyRecordName, componentID!, inputName, componentSetter);
 
     }
 

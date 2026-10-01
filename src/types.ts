@@ -4,7 +4,7 @@ export type Service = {
     name: string;
     description: string;
     terraformType: string | null; //e.g resource
-    providerType: string | null; //e.d aws_lambda_function
+    providerTypes: string[] | null; //e.d aws_lambda_function
     icon: string;
     image: string;
 }
@@ -18,9 +18,11 @@ export type ValidationResult = {
 
 export type ComponentData = ResourceData | EdgeData;
 
+export type PropertyRecord = Record<string, Property<any>>;
+
 type BaseComponentData = {
-    componentProperties: Record<string, Property<any>>,
-    terraformProperties: Record<string, Property<any>>
+    componentProperties: Record<string, PropertyRecord>,
+    terraformProperties: Record<string, PropertyRecord>
 }
 
 export type ResourceData = BaseComponentData & {

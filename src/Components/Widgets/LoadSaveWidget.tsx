@@ -27,7 +27,7 @@ export default function LoadSavePopUp(
 
     const [stateSelectedSave, setSelectedSave] = useState<string | null>(null);
     const [stateLoadSaveWidgetController] = useState(() => new LoadSaveWidgetController(setShowLoadWidget, showNotification, showConfirmation, setEdges, setNodes, setLoadedSaveName));
-    console.log(stateSelectedSave)
+
     return(
 
         <div className="loadSaveWidgetWrapper">

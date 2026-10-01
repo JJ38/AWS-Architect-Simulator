@@ -52,7 +52,7 @@ export class CanvasController{
         };
 
         if(selectedService.terraformType == "resource"){   
-            const resourceFactory: ResourceStatics = resourceContainer[selectedService.providerType!];
+            const resourceFactory: ResourceStatics = resourceContainer[selectedService.name!];
             newNode['data'] = resourceFactory.create(nodeID, selectedService);
         }
 
@@ -137,15 +137,15 @@ export class CanvasController{
         const sourceNode = stateNodes.find((node: AppNode) => node.id == sourceID);
         const targetNode = stateNodes.find((node: AppNode) => node.id == targetID);
         
-        const sourceProviderType = sourceNode?.data.service.providerType;
-        const targetProviderType = targetNode?.data.service.providerType;
+        const sourceServiceName = sourceNode?.data.service.name;
+        const targetServiceName = targetNode?.data.service.name;
     
-        if(sourceProviderType == null || targetProviderType == null){
+        if(sourceServiceName == null || targetServiceName == null){
             return;
         }
     
-        const sourceEdgeTypes = resourceContainer[sourceProviderType!].sourceTypes;
-        const targetEdgeTypes = resourceContainer[targetProviderType!].targetTypes;
+        const sourceEdgeTypes = resourceContainer[sourceServiceName!].sourceTypes;
+        const targetEdgeTypes = resourceContainer[targetServiceName!].targetTypes;
     
         const validEdgeType = sourceEdgeTypes.filter((edgeType: EdgeType) => targetEdgeTypes.includes(edgeType));
 
@@ -155,10 +155,14 @@ export class CanvasController{
         params['type'] = "standardEdge";
         params['data'] = {
             componentProperties:{
-                "edgeType": { value: defaultEdge, type: "select", options: validEdgeType }
+                "metadata": {
+                    "edgeType": { value: defaultEdge, type: "select", options: validEdgeType }
+                }
             },
             terraformProperties: {
-                "test": { value: null, type: "string" },
+                "todo": {
+                    "test": { value: null, type: "string" },
+                }
             }
         };
     
@@ -200,7 +204,7 @@ export class CanvasController{
             return;
         }
 
-        const resource: ResourceStatics = resourceContainer[selectedNodeData?.service.providerType!];
+        const resource: ResourceStatics = resourceContainer[selectedNodeData?.service.name!];
         
         const resourceInstance = new resource(selectedNodeData);
         

@@ -1,4 +1,4 @@
-import type { CodeChunk, EdgeType, Property, ResourceData, Service, ValidationResult } from "../types";
+import type { CodeChunk, EdgeType, PropertyRecord, ResourceData, Service, ValidationResult } from "../types";
 
 
 export interface ResourceStatics{
@@ -15,7 +15,7 @@ export default abstract class Resource{
     public id: string;
     public service: Service;
     public resourceName: string;
-    public terraformProperties: Record<string, Property<any>>;
+    public terraformProperties: Record<string, PropertyRecord>;
 
     abstract validate(): ValidationResult;
 
@@ -30,36 +30,42 @@ export default abstract class Resource{
 
         const codeChunks: CodeChunk[] = [];
 
-        codeChunks.push({value: "resource ", className:"terraformKeyword"})
-        codeChunks.push({value: this.service.providerType + " ", className:"terraformParameter"})
-        codeChunks.push({value: this.resourceName, className:"terraformParameter"})
+        for(const recordName of Object.keys(this.terraformProperties)){
 
-        codeChunks.push({value: "{", className:"terraformBracket"})
+            // console.log(recordName)
 
-        for(const key of Object.keys(this.terraformProperties)){
+            codeChunks.push({value: "resource ", className:"terraformKeyword"})
+            codeChunks.push({value: recordName + " ", className:"terraformParameter"})
+            codeChunks.push({value: this.resourceName, className:"terraformParameter"})
 
-            codeChunks.push({value: "\n  ", className:"terraformProperty"})
+            codeChunks.push({value: "{", className:"terraformBracket"})
 
-            codeChunks.push({value: key, className:"terraformProperty"})
-            codeChunks.push({value: " = ", className:""})
+            for(const key of Object.keys(this.terraformProperties[recordName])){
 
-            //look at the property value. It might be a record/tags and need deconstructing further
-            switch (key) {
+                codeChunks.push({value: "\n  ", className:"terraformProperty"})
 
-                case "tags": {
-                    codeChunks.push({value: "TO DO implement tags", className:"terraformValue"})
-                    break;
+                codeChunks.push({value: key, className:"terraformProperty"})
+                codeChunks.push({value: " = ", className:""})
+
+                //look at the property value. It might be a record/tags and need deconstructing further
+                switch (key) {
+
+                    case "tags": {
+                        codeChunks.push({value: "TO DO implement tags", className:"terraformValue"})
+                        break;
+                    }
+
+                    default: {
+                        codeChunks.push({value: this.terraformProperties[recordName][key].value, className:"terraformValue"})
+                    }
                 }
 
-                default: {
-                    codeChunks.push({value: this.terraformProperties[key].value, className:"terraformValue"})
-                }
             }
+            
+            codeChunks.push({value: "\n}\n", className:"terraformBracket"})
 
         }
 
-        codeChunks.push({value: "\n", className:"terraformProperty"})
-        codeChunks.push({value: "}", className:"terraformBracket"})
 
         return codeChunks;
 
@@ -69,28 +75,34 @@ export default abstract class Resource{
 
         let terraform: string = "resource ";
 
-        terraform += this.service.providerType + " ";
-        terraform += this.resourceName;
-        terraform += "{";
+       
+        for(const recordName of Object.keys(this.terraformProperties)){
 
-        for(const key of Object.keys(this.terraformProperties)){
+            terraform += recordName + " ";
+            terraform += this.resourceName;
+            terraform += "{";
 
-            terraform += "\n  ";
-            terraform += key;
-            terraform += " = "
 
-            //look at the property value. It might be a record/tags and need deconstructing further
-            switch (key) {
+            for(const key of Object.keys(this.terraformProperties[recordName])){
 
-                case "tags": {
-                    terraform += "TO DO implement tags";
-                    break;
-                }
+                terraform += "\n  ";
+                terraform += key;
+                terraform += " = "
 
-                default: {
-                    terraform += this.terraformProperties[key].value;
+                //look at the property value. It might be a record/tags and need deconstructing further
+                switch (key) {
+
+                    case "tags": {
+                        terraform += "TO DO implement tags";
+                        break;
+                    }
+
+                    default: {
+                        terraform += this.terraformProperties[recordName][key].value;
+                    }
                 }
             }
+
         }
 
         terraform += "\n}\n";

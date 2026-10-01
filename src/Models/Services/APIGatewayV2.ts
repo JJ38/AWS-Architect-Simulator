@@ -16,10 +16,12 @@ export default class APIGatewayV2 extends Resource{
             service: service,
             resourceName: id,
             terraformProperties: {
-                "test": {value: null, type: "string"},
-                "number": {value: null, type: "number"},
-            }
-
+                "aws_apigatewayv2_api": {
+                    "test": {value: null, type: "string"},
+                    "number": {value: null, type: "number"},
+                }
+            },
+            componentProperties: {}
         }
 
     }

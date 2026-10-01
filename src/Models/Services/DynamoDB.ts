@@ -21,12 +21,14 @@ export default class DyanmoDB extends Resource{
             service: service,
             resourceName: id,
             terraformProperties: {
-                "name": {value: id, type: "string"},
-                "hash_key": {value: null, type: "number"},
-                "billing_mode": {value: "PAY_PER_REQUEST", type: "select", options: dynamodb_billing_mode},
-                "tags": {value: null, type: "tags"},
-            }
-
+                "aws_dynamodb_table": {
+                    "name": {value: id, type: "string"},
+                    "hash_key": {value: null, type: "number"},
+                    "billing_mode": {value: "PAY_PER_REQUEST", type: "select", options: dynamodb_billing_mode},
+                    "tags": {value: null, type: "tags"},
+                }
+            },
+            componentProperties: {}
         }
 
     }
