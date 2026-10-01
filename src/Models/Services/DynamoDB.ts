@@ -25,18 +25,22 @@ export default class DyanmoDB extends Resource{
                     "name": {value: id, type: "string"},
                     "hash_key": {value: null, type: "number"},
                     "billing_mode": {value: "PAY_PER_REQUEST", type: "select", options: dynamodb_billing_mode},
-                    "tags": {value: null, type: "tags"},
+                    "attribute": {value: null, type: "tags"},
+                    "stream_enabled": {value: null, type: "boolean"},
+                    "stream_view_type": {value: null, type: "string"},
+                    "point_in_time_recovery": {value: null, type: "tags"},
+                    "deletion_protection_enabled": {value: null, type: "boolean"},
+                    "read_capacity": {value: null, type: "number"}, //only if billing mode is PROVISIONED
+                    "write_capacity": {value: null, type: "number"}, //only if billing mode is PROVISIONED
+                    "tags": {value: null, type: "tags"}
+                    
                 }
             },
             componentProperties: {}
         }
 
     }
-
-    // # only needed if billing_mode = "PROVISIONED"
-    // # read_capacity  = 5
-    // # write_capacity = 5
-
+    
 
     public validate(): ValidationResult {
 

@@ -15,8 +15,24 @@ export default class Lambda extends Resource{
             resourceName: id,
             terraformProperties: {
                 "aws_lambda_function": {
-                    "test": {value: null, type: "string"},
-                    "number": {value: null, type: "number"},
+                    "function_name": {value: null, type: "string"},
+                    "role": {value: null, type: "string"},
+                    "filename": {value: null, type: "string"},
+                    "source_code_hash": {value: null, type: "string"},
+                    "handler": {value: null, type: "string"},
+                    "runtime": {value: null, type: "string"},
+                    "timeout": {value: null, type: "number"},
+                    "memory_size": {value: null, type: "number"},
+                    "package_type": {value: null, type: "string"},
+                    "architectures": {value: null, type: "tags"},
+                    "reserved_concurrent_executions": {value: null, type: "number"},
+                    "publish": {value: null, type: "boolean"},
+                    "environment": {value: null, type: "tags"},
+                    "vpc_config": {value: null, type: "tags"},
+                    "dead_letter_config": {value: null, type: "tags"},
+                    "ephemeral_storage": {value: null, type: "tags"},
+                    "layers": {value: null, type: "tags"},
+                    "tags": {value: null, type: "tags"}
                 }
             },
             componentProperties: {}
@@ -24,6 +40,7 @@ export default class Lambda extends Resource{
 
     }
 
+    
     public validate(): ValidationResult {
 
         let valid = true;

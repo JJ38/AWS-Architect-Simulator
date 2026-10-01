@@ -198,17 +198,4 @@ export class CanvasController{
         return title;
     }
 
-    public getSelectedResource(selectedNodeData: ResourceData | undefined): Resource | undefined{
-        
-        if(selectedNodeData == undefined){
-            return;
-        }
-
-        const resource: ResourceStatics = resourceContainer[selectedNodeData?.service.name!];
-        
-        const resourceInstance = new resource(selectedNodeData);
-        
-        return resourceInstance;
-    }
-
 }

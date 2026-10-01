@@ -1,4 +1,7 @@
-import type { AppEdge, AppNode, Property, AppComponent, PropertyCategory } from "../types";
+import { resourceContainer } from "../constants";
+import type { ResourceStatics } from "../Models/Resource";
+import type Resource from "../Models/Resource";
+import type { AppEdge, AppNode, Property, AppComponent, PropertyCategory, ComponentData, ResourceData } from "../types";
 
 export class PropertiesWidgetController{
 
@@ -13,6 +16,20 @@ export class PropertiesWidgetController{
     ){
         this.setEdges = setEdges;
         this.setNodes = setNodes;
+    }
+
+    
+    public getSelectedResource(selectedNodeData: ResourceData | undefined): Resource | undefined{
+        
+        if(selectedNodeData == undefined || selectedNodeData.service == undefined){
+            return;
+        }
+
+        const resource: ResourceStatics = resourceContainer[selectedNodeData?.service?.name!];
+        
+        const resourceInstance = new resource(selectedNodeData);
+        
+        return resourceInstance;
     }
     
 

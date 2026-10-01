@@ -30,9 +30,7 @@ export default abstract class Resource{
 
         const codeChunks: CodeChunk[] = [];
 
-        for(const recordName of Object.keys(this.terraformProperties)){
-
-            // console.log(recordName)
+        for(const recordName of Object.keys(this.terraformProperties as Record<string, PropertyRecord>)){
 
             codeChunks.push({value: "resource ", className:"terraformKeyword"})
             codeChunks.push({value: recordName + " ", className:"terraformParameter"})
@@ -40,36 +38,54 @@ export default abstract class Resource{
 
             codeChunks.push({value: "{", className:"terraformBracket"})
 
-            for(const key of Object.keys(this.terraformProperties[recordName])){
+            console.log(this.terraformProperties[recordName]);
 
-                codeChunks.push({value: "\n  ", className:"terraformProperty"})
-
-                codeChunks.push({value: key, className:"terraformProperty"})
-                codeChunks.push({value: " = ", className:""})
-
-                //look at the property value. It might be a record/tags and need deconstructing further
-                switch (key) {
-
-                    case "tags": {
-                        codeChunks.push({value: "TO DO implement tags", className:"terraformValue"})
-                        break;
-                    }
-
-                    default: {
-                        codeChunks.push({value: this.terraformProperties[recordName][key].value, className:"terraformValue"})
-                    }
-                }
-
-            }
-            
+            codeChunks.push(...this.toTerraformPreviewParsePropertyRecord(this.terraformProperties[recordName]));
             codeChunks.push({value: "\n}\n", className:"terraformBracket"})
 
         }
 
-
         return codeChunks;
 
     }
+
+
+    toTerraformPreviewParsePropertyRecord(propertyRecord: PropertyRecord): CodeChunk[]{
+
+        const codeChunks: CodeChunk[] = [];
+
+        for(const key of Object.keys(propertyRecord)){
+
+            codeChunks.push({value: "\n  ", className:"terraformProperty"})
+
+            codeChunks.push({value: key, className:"terraformProperty"})
+            codeChunks.push({value: " = ", className:""})
+
+            //look at the property value. It might be a record/tags and need deconstructing further
+            switch (propertyRecord[key].type) {
+
+                case "tags": { 
+                    codeChunks.push({value: "TO DO implement tags", className:"terraformValue"});
+                    break;
+                }
+
+                case "boolean": {
+                    codeChunks.push({value: propertyRecord[key].value ? "true" : "false", className:"terraformValue"});
+                    break;
+                }
+
+                default: {
+                    codeChunks.push({value: propertyRecord[key].value, className:"terraformValue"});
+                    break;
+                }
+            }
+
+        }
+            
+        return codeChunks;
+
+    }
+
 
     toTerraform(): string{
 

@@ -17,8 +17,15 @@ export default class APIGatewayV2 extends Resource{
             resourceName: id,
             terraformProperties: {
                 "aws_apigatewayv2_api": {
-                    "test": {value: null, type: "string"},
-                    "number": {value: null, type: "number"},
+                    "name": {value: null, type: "string"},
+                    "protocol_type": {value: null, type: "string"},
+                    "target": {value: null, type: "string"},
+                    "route_key": {value: null, type: "string"},
+                    "description": {value: null, type: "string"},
+                    "route_selection_expression": {value: null, type: "string"},
+                    "disable_execute_api_endpoint": {value: null, type: "boolean"},
+                    "cors_configuration": {value: null, type: "tags"},
+                    "tags": {value: null, type: "tags"}
                 }
             },
             componentProperties: {}

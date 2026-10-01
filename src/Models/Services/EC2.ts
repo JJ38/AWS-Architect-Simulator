@@ -16,15 +16,31 @@ export default class EC2 extends Resource{
             resourceName: id,
             terraformProperties: {
                 "aws_instance": {
-                    "test": {value: null, type: "string"},
-                    "number": {value: null, type: "number"},
+                    "ami": {value: null, type: "string"},
+                    "instance_type": {value: null, type: "string"},
+                    "subnet_id": {value: null, type: "string"},
+                    "vpc_security_group_ids": {value: null, type: "string"},
+                    "key_name": {value: null, type: "string"},
+                    "associate_public_ip_address": {value: null, type: "boolean"},
+                    "iam_instance_profile": {value: null, type: "string"},
+                    "user_data": {value: null, type: "string"},
+                    "user_data_replace_on_change": {value: null, type: "boolean"},
+                    "availability_zone": {value: null, type: "string"}, //make this a select input with the available AZs in the region
+                    "monitoring": {value: null, type: "boolean"},
+                    "disable_api_termination": {value: null, type: "boolean"},
+                    "disable_api_stop": {value: null, type: "boolean"},
+                    "ebs_optimized": {value: null, type: "boolean"},
+                    "tenancy": {value: null, type: "string"},   
+                    "credit_specification": {value: null, type: "tags"},
+                    "metadata_options": {value: null, type: "tags"},
+                    "root_block_device": {value: null, type: "tags"},
+                    "tags": {value: null, type: "tags"}
                 }
             },
             componentProperties: {}
         }
 
     }
-
 
     public validate(): ValidationResult {
 

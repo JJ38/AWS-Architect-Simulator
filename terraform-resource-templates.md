@@ -43,20 +43,30 @@ on the same side.
 
 ```hcl
 resource "aws_instance" "example" {
-  ami           = "ami-0abcdef1234567890" # REQUIRED
-  instance_type = "t3.micro"              # REQUIRED
+  ami           = "ami-0abcdef1234567890" # common — see note below
+  instance_type = "t3.micro"              # common — see note below
 
-  subnet_id                  = aws_subnet.example.id       # common
-  vpc_security_group_ids     = [aws_security_group.example.id] # common
-  key_name                   = "my-keypair"                # common
-  associate_public_ip_address = true                       # common
-  iam_instance_profile       = aws_iam_instance_profile.example.name
-  user_data                  = file("startup.sh")          # common
+  subnet_id                   = aws_subnet.example.id           # common
+  vpc_security_group_ids      = [aws_security_group.example.id] # common
+  key_name                    = "my-keypair"                    # common
+  associate_public_ip_address = true                            # common
+  iam_instance_profile        = aws_iam_instance_profile.example.name
+  user_data                   = file("startup.sh")              # common
+  user_data_replace_on_change = false
   availability_zone           = "eu-west-2a"
   monitoring                  = false
   disable_api_termination     = false
+  disable_api_stop            = false
   ebs_optimized                = false
   tenancy                      = "default"
+
+  credit_specification {      # common for t3/t4g — see note below
+    cpu_credits = "standard"
+  }
+
+  metadata_options {          # common — enforces IMDSv2
+    http_tokens = "required"
+  }
 
   root_block_device {
     volume_size = 8           # common
@@ -70,8 +80,26 @@ resource "aws_instance" "example" {
 }
 ```
 
-`ami` is region- and OS-specific — there's no universal default, the
-diagram would need to carry (or default to) one per region/OS choice.
+Unlike every other service template in this file, **nothing on
+`aws_instance` is schema-required** as of the current provider — `ami` and
+`instance_type` are both Optional, because either can be supplied by a
+`launch_template` block instead. This doc doesn't model `launch_template`,
+so in practice both are still needed to get a bootable instance; they're
+tagged `# common` here rather than `# REQUIRED` to stay accurate to the
+schema, not because they're skippable. `ami` is also region- and
+OS-specific — there's no universal default, the diagram would need to
+carry (or default to) one per region/OS choice.
+
+Two other things worth flagging:
+- `vpc_security_group_ids` (used above) and `security_groups` are **not**
+  interchangeable — `security_groups` only works for EC2-Classic/the
+  default VPC, `vpc_security_group_ids` is the one that works for any VPC
+  subnet, which is why it's the one modeled here.
+- `credit_specification.cpu_credits` matters specifically because the
+  example uses `t3.micro` — burstable (`t`-family) instances default to
+  `"standard"` credits, and switching to `"unlimited"` can bill extra for
+  sustained CPU above the free baseline. Same free-tier-gotcha shape as the
+  ECS/Fargate and Secrets Manager callouts further down this file.
 
 **Edge types**
 - As source: `sync` (calls out to RDS/DynamoDB/other APIs and waits), `async`
@@ -143,9 +171,12 @@ resource "aws_lambda_function" "example" {
   handler = "index.handler"                    # REQUIRED unless package_type = "Image"
   runtime = "nodejs20.x"                       # REQUIRED unless package_type = "Image"
 
-  timeout     = 3                              # common (default 3s, often too low)
-  memory_size = 128                            # common
-  package_type = "Zip"                         # "Zip" | "Image"
+  timeout                        = 3           # common (default 3s, often too low)
+  memory_size                    = 128         # common
+  package_type                   = "Zip"       # "Zip" | "Image"
+  architectures                  = ["arm64"]   # common — see note below
+  reserved_concurrent_executions = -1          # common — see note below
+  publish                        = false       # common — publish a new version on each change
 
   environment {                                # common
     variables = {
@@ -156,6 +187,14 @@ resource "aws_lambda_function" "example" {
   vpc_config {
     subnet_ids         = [aws_subnet.example.id]
     security_group_ids = [aws_security_group.example.id]
+  }
+
+  dead_letter_config {        # common when this function is an async target — see note below
+    target_arn = aws_sqs_queue.example.arn
+  }
+
+  ephemeral_storage {          # common — /tmp size, 512–10240 MB, default 512
+    size = 512
   }
 
   layers = [aws_lambda_layer_version.example.arn]
@@ -172,6 +211,34 @@ will likely need to synthesize a minimal `aws_iam_role` +
 `aws_iam_role_policy_attachment` (basic execution policy) per Lambda node
 rather than expecting the user to draw one.
 
+Three more worth calling out, in the same "free-tier/cost gotcha" vein as
+the EC2 `credit_specification` and ECS/Fargate notes elsewhere in this
+file:
+
+- `reserved_concurrent_executions` defaults to `-1` (unlimited) — a
+  function with no edges drawn to anything rate-limiting it can scale out
+  and run up cost/downstream load with no cap, which matters for a tool
+  whose whole point is simulating traffic.
+- `architectures = ["arm64"]` costs less per GB-ms than the `x86_64`
+  default and is still free-tier eligible — a reasonable default for this
+  project to steer toward rather than just mirroring whatever AWS defaults
+  to.
+- `dead_letter_config` is the direct Terraform expression of this file's
+  `async`-as-target edge type for Lambda (line ~176): since an async
+  invocation's ack only means "accepted," not "processed," a DLQ is what
+  catches the failures that happen after that ack. Natural candidate for
+  the converter to auto-attach whenever an edge into a Lambda node is typed
+  `async`.
+
+One honesty note on sourcing: the provider docs also list `capacity_provider_config`,
+`tenancy_config`, and `durable_config` blocks on this resource. Those didn't match
+anything in my own training knowledge of Lambda, so they may be recent
+additions I'm not aware of — I verified they're present in the current docs
+but haven't verified what they actually configure, so treat them as
+unconfirmed/niche and spot-check directly before relying on them. Left out
+of the example above either way since they're not "common" by this file's
+own criteria.
+
 **Edge types**
 - As source: `sync` (SDK calls to DynamoDB/RDS/other services), `async`
   (invoking another Lambda asynchronously, publishing to SNS/EventBridge)
@@ -187,6 +254,7 @@ resource "aws_apigatewayv2_api" "example" {
   protocol_type = "HTTP"          # REQUIRED — "HTTP" or "WEBSOCKET"
 
   target      = aws_lambda_function.example.arn # common — quick-create shortcut, skips routes/integrations below
+  route_key   = "ANY /"                          # common — pairs with target, see note below
   description = "Example HTTP API"
   route_selection_expression = "$request.method $request.path"
   disable_execute_api_endpoint = false
@@ -194,6 +262,7 @@ resource "aws_apigatewayv2_api" "example" {
   cors_configuration {          # common if a browser calls this API
     allow_origins = ["*"]
     allow_methods = ["GET", "POST"]
+    allow_headers = ["content-type"] # common — see note below
   }
 
   tags = {
@@ -201,6 +270,27 @@ resource "aws_apigatewayv2_api" "example" {
   }
 }
 ```
+
+Two things worth flagging, verified against the current provider docs:
+
+- **`route_key` pairs with `target`** for the quick-create path — `target`
+  alone creates the integration, but `route_key` is what says which
+  method/path it answers (`"ANY /"` is the typical catch-all). Both are
+  HTTP-API-only, same as `target` itself.
+- **`cors_configuration.allow_headers` is a classic preflight footgun** —
+  `allow_origins`/`allow_methods` alone are enough for a simple `GET`, but
+  any browser request sending `Content-Type: application/json` (i.e. any
+  JSON `POST`) fails CORS preflight without `content-type` explicitly
+  listed here. Same "looks done until you actually test it from a
+  browser" shape as the EC2/SQS gotchas elsewhere in this file.
+
+Two alternatives not shown in the example, both corner cases for this
+project's scope: `body` lets you define the whole API (routes,
+integrations, models) from an OpenAPI spec instead of the
+route/integration resources below — mutually exclusive with hand-building
+them; `credentials_arn` supplies an IAM role for quick-create targets that
+need AWS-level authorization (e.g. invoking another AWS service directly)
+rather than a plain Lambda ARN.
 
 Same pattern as Lambda's role: a bare `aws_apigatewayv2_api` with just
 `name`/`protocol_type` creates an API with no routes — nothing actually
@@ -262,12 +352,28 @@ Budgets, IAM Access Analyzer) — nothing to draw a node for there.
 resource "aws_dynamodb_table" "example" {
   name         = "example-table"    # REQUIRED
   hash_key     = "id"                # REQUIRED — must match an `attribute` below
-  billing_mode = "PAY_PER_REQUEST"   # common — avoids managing read/write capacity
+  billing_mode = "PAY_PER_REQUEST"   # common — avoids managing read/write capacity;
+                                      # PROVISIONED also accepts on_demand_throughput instead
 
   attribute {                        # REQUIRED — one per key (hash/range)
     name = "id"
     type = "S"                       # S = string, N = number, B = binary
   }
+
+  # range_key = "sort_key"           # common — sort key for a composite primary key
+  # attribute {                       # needed only if range_key is set
+  #   name = "sort_key"
+  #   type = "S"
+  # }
+
+  stream_enabled   = false                 # common — see note below
+  stream_view_type = "NEW_AND_OLD_IMAGES"   # REQUIRED if stream_enabled = true
+
+  point_in_time_recovery {           # common — see note below
+    enabled = true
+  }
+
+  deletion_protection_enabled = false # common — free, no reason not to default true
 
   # only needed if billing_mode = "PROVISIONED"
   # read_capacity  = 5
@@ -278,6 +384,37 @@ resource "aws_dynamodb_table" "example" {
   }
 }
 ```
+
+A few things worth flagging, verified against the current provider docs:
+
+- **`stream_enabled`/`stream_view_type` are the actual implementation of
+  this section's own "As source: `async`" edge type below** — without
+  them, "DynamoDB Streams triggering a Lambda" has nothing backing it in
+  the generated config. Same auto-attach idea as Lambda's
+  `dead_letter_config` and SQS's `redrive_policy` earlier in this file: the
+  converter should probably flip `stream_enabled = true` (and pick a
+  `stream_view_type`) automatically whenever the canvas has an `async` edge
+  leaving this node, rather than exposing it as a standalone toggle the
+  user has to remember.
+- **`point_in_time_recovery` is a reliability default, not a free one** —
+  worth calling out because it breaks the pattern of the other "sane
+  default" callouts in this file (S3 public-access-block, EC2
+  `metadata_options`, SQS managed SSE), which cost nothing. PITR bills for
+  continuous-backup storage beyond the table's own free-tier allowance, so
+  flip it on deliberately, not by the same reflex as those other defaults.
+- **`deletion_protection_enabled` has no such caveat** — it's free, and
+  there's no real reason for this project not to default it to `true` the
+  way it already treats S3's public-access-block as the obvious default.
+- Composite keys (`range_key`) and `global_secondary_index` are real and
+  common in production tables, but left as a commented-out hint rather
+  than a full worked example here — same "corner case, don't need to
+  model it yet" treatment the EC2 section gives nested blocks like
+  `cpu_options`.
+- Not shown because it needs no action: DynamoDB **encrypts at rest by
+  default** with an AWS-owned key at no extra cost (the `server_side_encryption`
+  block only matters if you want a customer-managed KMS key instead) — the
+  opposite situation from S3 and SQS, where the safe default has to be
+  turned on explicitly.
 
 **Edge types**
 - As source: `async` only (DynamoDB Streams triggering a Lambda)
@@ -473,15 +610,53 @@ resource "aws_sns_topic" "example" {
 resource "aws_sqs_queue" "example" {
   name = "example-queue" # common — auto-generated if omitted
 
-  fifo_queue                 = false # common — set true + name ending ".fifo" for ordered delivery
-  visibility_timeout_seconds = 30    # common
-  message_retention_seconds  = 345600 # common (default 4 days)
+  fifo_queue                 = false    # common — set true + name ending ".fifo" for ordered delivery
+  visibility_timeout_seconds = 30       # common
+  message_retention_seconds  = 345600   # common (default 4 days)
+  receive_wait_time_seconds  = 10       # common — long polling, see note below
+  delay_seconds               = 0        # common
+  sqs_managed_sse_enabled     = true     # common — free, encrypts at rest
+
+  redrive_policy = jsonencode({          # common — this queue's own DLQ, see note below
+    deadLetterTargetArn = aws_sqs_queue.dlq.arn
+    maxReceiveCount     = 5
+  })
 
   tags = {
     Name = "example-queue"
   }
 }
 ```
+
+A few things worth flagging, verified against the current provider docs:
+
+- **`redrive_policy`'s `maxReceiveCount` must be a JSON number, not a
+  string** (`5`, not `"5"`) — a documented, easy-to-get-wrong footgun since
+  `jsonencode` will happily emit either depending on how you write the
+  Terraform expression.
+- This queue's own `redrive_policy` DLQ is a **different failure mode**
+  than Lambda's `dead_letter_config` added in the Lambda section above:
+  SQS's redrive fires when a *consumer* fails to successfully process a
+  message `maxReceiveCount` times (the message itself is the thing being
+  retried); Lambda's DLQ fires when an *async invocation* of the function
+  fails. A `pull` edge from this queue into a Lambda node can legitimately
+  want both — one guarding against a bad message, one guarding against a
+  bad invocation.
+- `policy` and `redrive_allow_policy` exist as inline top-level arguments
+  here, but the docs recommend the dedicated `aws_sqs_queue_policy` and
+  `aws_sqs_queue_redrive_allow_policy` resource types instead — the same
+  "logically one node, multiple Terraform resource blocks" shape as S3's
+  `aws_s3_bucket_versioning`/`aws_s3_bucket_public_access_block` split
+  earlier in this file.
+- `receive_wait_time_seconds` (long polling) is tagged `common` for a
+  cost reason, not just a latency one: an empty receive still counts
+  against SQS's ~1M-free-requests/month quota, so `0` (short polling, the
+  default) burns through free-tier requests faster than necessary for an
+  idle queue.
+- FIFO-only arguments (`content_based_deduplication`, `deduplication_scope`,
+  `fifo_throughput_limit`) only apply once `fifo_queue = true` and are left
+  out of the base example above — they're a corner case conditional on
+  that one flag, not something every queue needs.
 
 **Edge types**
 - As source: `pull` only (consumers poll the queue at their own pace)

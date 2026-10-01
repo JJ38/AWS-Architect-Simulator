@@ -1,7 +1,8 @@
 import { memo, useState } from 'react';
 import { PropertiesWidgetController } from '../../Controllers/PropertiesWidgetController';
-import type { AppEdge, AppNode, CodeChunk, ComponentData, EdgeData, Property, PropertyCategory, PropertyRecord } from '../../types';
+import type { AppEdge, AppNode, CodeChunk, ComponentData, EdgeData, Property, PropertyCategory, PropertyRecord, ResourceData } from '../../types';
 import '../../styles/PropertiesWidget.css'
+import type Resource from '../../Models/Resource';
 
 
 function PropertiesWidget(
@@ -12,7 +13,6 @@ function PropertiesWidget(
         stateSelectedEdgeID,
         selectedEdgeData, 
         setEdges,
-        selectedResourceTerraform,
         title
     }
         : 
@@ -23,7 +23,6 @@ function PropertiesWidget(
         stateSelectedEdgeID: string | null,
         selectedEdgeData: ComponentData | undefined,
         setEdges: React.Dispatch<React.SetStateAction<AppEdge[]>>,
-        selectedResourceTerraform: CodeChunk[] | undefined,
         title: string
     }
 ){
@@ -36,7 +35,8 @@ function PropertiesWidget(
     const componentProperties: Record<string, PropertyRecord> | undefined = componentData != null ? componentData?.componentProperties : undefined;
     const componentTerraformProperties: Record<string, PropertyRecord> | undefined = componentData != null ? componentData?.terraformProperties : undefined;
 
-    console.log(selectedResourceTerraform);
+    const selectedResourceTerraform: CodeChunk[] | undefined = statePropertiesWidgetController.getSelectedResource(selectedNodeData as ResourceData)?.toTerraformPreview();
+    
 
     return(
 
@@ -115,17 +115,12 @@ function PropertiesWidget(
 
                     Object.keys(componentTerraformProperties).map((propertyRecordName) => {
                         
-
-                        console.log(propertyRecordName);
-
                         return <div key={propertyRecordName} className='propertyBlockWrapper'>
                             <p>{propertyRecordName}</p>
 
                                 {
 
                                     Object.keys(componentTerraformProperties[propertyRecordName]).map((inputName) => {
-
-                                        console.log(inputName);
 
                                         return <div className='propertyInputWrapper' key={inputName}>
                                             <p className='propertyName'>{inputName}</p>
@@ -197,7 +192,6 @@ function getPropertyInput(
     }
     
     const inputType = property.type;
-    console.log(property);
 
     switch(inputType){
 
