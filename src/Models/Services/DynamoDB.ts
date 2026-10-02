@@ -26,20 +26,20 @@ export default class DyanmoDB extends Resource{
                     "hash_key": {value: null, type: "number"},
                     "billing_mode": {value: "PAY_PER_REQUEST", type: "select", options: dynamodb_billing_mode},
                     "attribute": {
-                        value: {value: null, type: "string"},
+                        value: null,
                         type: "tags"
                     },
                     "stream_enabled": {value: null, type: "boolean"},
                     "stream_view_type": {value: null, type: "string"},
                     "point_in_time_recovery": {
-                        value: {value: null, type: "string"},
+                        value: null,
                         type: "tags"
                     },
                     "deletion_protection_enabled": {value: null, type: "boolean"},
                     "read_capacity": {value: null, type: "number"}, //only if billing mode is PROVISIONED
                     "write_capacity": {value: null, type: "number"}, //only if billing mode is PROVISIONED
                     "tags": {
-                        value: {value: null, type: "string"},
+                        value: null,
                         type: "tags"
                     },
                     

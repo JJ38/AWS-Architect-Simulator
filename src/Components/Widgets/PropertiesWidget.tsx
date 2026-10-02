@@ -62,33 +62,35 @@ function PropertiesWidget(
                     Object.keys(componentProperties).map((propertyRecordName) => {
 
 
-                        return <div key={propertyRecordName} className='propertyBlockWrapper'>
-                            <p>{propertyRecordName}</p>
+                        return  <details  key={propertyRecordName} className='propertyBlockWrapper'>
+                                    <summary className='propertyRecordSectionSummary'>{propertyRecordName}</summary>
 
-                                {
+                                    <div className='propertyRecordSectionWrapper'>
 
-                                    Object.keys(componentProperties[propertyRecordName]).map((inputName) => {
+                                        {
 
-                                        return <div className='propertyInputWrapper' key={inputName}>
-                                            <p className='propertyName'>{inputName}</p>
-                                            {
-                                                getPropertyInput(
-                                                    statePropertiesWidgetController, 
-                                                    componentData, 
-                                                    componentProperties[propertyRecordName][inputName],
-                                                    "component", 
-                                                    propertyRecordName,
-                                                    inputName, 
-                                                    componentID,
-                                                    componentSetter
-                                                )
-                                            }
+                                            Object.keys(componentProperties[propertyRecordName]).map((inputName) => {
 
-                                        </div>
-                                    })
-                                }
+                                                return <div className='propertyInputWrapper' key={inputName}>
+                                                    <p className='propertyName'>{inputName}</p>
+                                                    {
+                                                        getPropertyInput(
+                                                            statePropertiesWidgetController, 
+                                                            componentData, 
+                                                            componentProperties[propertyRecordName][inputName],
+                                                            "component", 
+                                                            propertyRecordName,
+                                                            inputName, 
+                                                            componentID,
+                                                            componentSetter
+                                                        )
+                                                    }
 
-                        </div>
+                                                </div>
+                                            })
+                                        }
+                                    </div>
+                                </details>
                     
                     })
 
