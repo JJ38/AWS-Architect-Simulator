@@ -169,34 +169,51 @@ export default function TerraformWidget({
 
             </div>
 
+            
+
             {
                 stateShowDownloadTerraformForm &&
 
-                    <div className='terraformWidgetSnippetWrapper '>
-                        <pre>
-                            <code className='terraformCode'>
-                                {                                    
-                                    stateNodes?.map(
-                                        (node: AppNode) => {
+                    <div className="terraformTabs">
 
-                                            const resource: ResourceStatics = resourceContainer[node.data.service.name!];
-                                            const resourceInstance = new resource(node.data);
+                        <input type="radio" className="terraformTabRadio" name="resource" id="tab-provider" defaultChecked/>
+                        <label htmlFor="tab-provider" className="terraformTab">Provider</label>
 
-                                            const codeChunks: CodeChunk[] = resourceInstance.toTerraformPreview();
+                        <input type="radio" className="terraformTabRadio" name="resource" id="tab-resource"/>
+                        <label htmlFor="tab-resource" className="terraformTab">Resource</label>
 
-                                            codeChunks.push({value: "\n", className:"terraformKeyword"});
-                                            codeChunks.push({value: "\n", className:"terraformKeyword"});
+                        <div id="panel-provider" className='terraformWidgetSnippetWrapper'>
+                            <pre>
+                                <code className='terraformCode'>seuijnfijesiosefj</code>
+                            </pre>
+                        </div>
 
-                                            return codeChunks.map(
-                                                (codeChunk: CodeChunk, index: number) => {
-                                                    return <span key={index} className={codeChunk.className}>{codeChunk.value}</span>      
-                                                }                              
-                                            )
-                                        }
-                                    )
-                                }
-                            </code> 
-                        </pre>
+                        <div id="panel-resource" className='terraformWidgetSnippetWrapper'>
+                            <pre>
+                                <code className='terraformCode'>
+                                    {
+                                        stateNodes?.map(
+                                            (node: AppNode) => {
+
+                                                const resource: ResourceStatics = resourceContainer[node.data.service.name!];
+                                                const resourceInstance = new resource(node.data);
+
+                                                const codeChunks: CodeChunk[] = resourceInstance.toTerraformPreview();
+
+                                                codeChunks.push({value: "\n", className:"terraformKeyword"});
+                                                codeChunks.push({value: "\n", className:"terraformKeyword"});
+
+                                                return codeChunks.map(
+                                                    (codeChunk: CodeChunk, index: number) => {
+                                                        return <span key={index} className={codeChunk.className}>{codeChunk.value}</span>
+                                                    }
+                                                )
+                                            }
+                                        )
+                                    }
+                                </code>
+                            </pre>
+                        </div>
                     </div>
             }
 

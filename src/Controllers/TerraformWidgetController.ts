@@ -64,8 +64,6 @@ export class TerraformWidgetController{
             return;
         } 
 
-        console.log(terraformConverter.terraform);
-
         this.showNotification(true, "Successfully converted to terraform");
         
     }

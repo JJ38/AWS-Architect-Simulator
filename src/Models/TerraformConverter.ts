@@ -7,7 +7,8 @@ export class TerraformConverter{
 
     private stateNodes: AppNode[];
     private stateEdges: AppEdge[];
-    public terraform: string = "";
+    public providerTerraform: string = "";
+    public resourceTerraform: string = "";
 
 
     public constructor({ stateNodes, stateEdges }: { stateNodes: AppNode[], stateEdges: AppEdge[]}){
@@ -29,13 +30,14 @@ export class TerraformConverter{
 
     public diagramToTerraform(): boolean{
 
-        this.terraform = "";
+        this.resourceTerraform = "";
+        this.providerTerraform = "";
 
         for(let i = 0; i < this.stateNodes.length; i++){
 
-            const resource: ResourceStatics = resourceContainer[this.stateNodes[i].data.service.providerType!];
+            const resource: ResourceStatics = resourceContainer[this.stateNodes[i].data.service.name!];
             const resourceInstance = new resource(this.stateNodes[i].data);
-            this.terraform += resourceInstance.toTerraform();
+            this.resourceTerraform += resourceInstance.toTerraform();
 
         }
 

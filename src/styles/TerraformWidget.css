@@ -19,7 +19,7 @@
     position: absolute;
     left: 50%;
     top: 50%;
-
+    
     max-height: 80vh;
     max-width: 80vw;
 
@@ -34,22 +34,61 @@
 
 }
 
+.terraformTabs{
+    flex: auto;
+}
+
+.terraformTabRadio {
+  display: none;
+}
+
+.terraformTab{
+    float: left;
+    background: #eee;
+    padding: 10px;
+    border: 1px solid #ccc;
+    margin-left: -1px;
+    position: relative;
+    left: 1px;
+    cursor: pointer;
+}
+
+.terraformTab:hover{
+    background: #cdf3f3;
+}
 
 .terraformWidgetSnippetWrapper{
 
+    display: none;
+    clear: both;
     margin-top: 10px;
     padding: 0px 30px;
     background-color: rgb(30, 30, 30);
     border-radius: 5px;
     border: solid 1px rgb(15, 15, 15);
-    overflow-y: auto;
-    /* overflow-x: hidden; */
-    flex: auto;
-    min-width: 0;
+    overflow-y: scroll;
+    max-height: 60vh;
+    min-width: 550px;
     min-height: 0;
 
 }
 
+.terraformTabRadio:checked + .terraformTab {
+  background: white;
+  border-bottom: 1px solid white;
+  z-index: 2;
+}
+
+
+#tab-provider:checked ~ #panel-provider,
+#tab-resource:checked ~ #panel-resource {
+  display: block;
+}
+
 .terraformSettingsWrapper{
     min-width: 300px;
+}
+
+.terraformFormWrapper{
+    min-height: 60vh;
 }
