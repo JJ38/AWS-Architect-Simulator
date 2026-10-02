@@ -27,7 +27,7 @@ export default class SQS extends Resource{
                         type: "tags"
                     },
                     "tags": {
-                        value: null,
+                        value: {},
                         type: "tags"
                     },
                 }

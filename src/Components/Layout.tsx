@@ -15,6 +15,7 @@ export default function Layout() {
     const [stateSelectedService, setSelectedService] = useState<Service | null>(null);
     const [stateNodes, setNodes] = useState<AppNode[]>([]);
     const [stateEdges, setEdges] = useState<AppEdge[]>([]);
+    const [stateDeploymentSettings, setDeploymentSettings] = useState<Record<string, any>>({});
     const [stateShowLoadWidget, setShowLoadWidget] = useState<boolean>(false);
     const [stateShowSaveWidget, setShowSaveWidget] = useState<boolean>(false);
     const [stateShowTerraformWidget, setShowTerraformWidget] = useState<boolean>(false);
@@ -45,38 +46,38 @@ export default function Layout() {
                     </ReactFlowProvider>
 
                     {
-                        stateShowTerraformWidget
-                            && 
-                        <TerraformWidget 
-                            setShowTerraformWidget={setShowTerraformWidget}
-                            stateNodes={stateNodes}
-                            setNodes={setNodes}
-                            stateEdges={stateEdges}
-                            setEdges={setEdges}
-                        />
+                        stateShowTerraformWidget && 
+
+                            <TerraformWidget 
+                                setShowTerraformWidget={setShowTerraformWidget}
+                                stateNodes={stateNodes}
+                                setNodes={setNodes}
+                                stateEdges={stateEdges}
+                                setEdges={setEdges}
+                                setDeploymentSettings={setDeploymentSettings}
+                            />
                     }
                     
                     {
-                        stateShowLoadWidget
-                            && 
-                        <LoadWidget
-                            setShowLoadWidget={setShowLoadWidget}
-                            setEdges={setEdges}
-                            setNodes={setNodes}
-                            setLoadedSaveName={setLoadedSaveName}
-                        />
+                        stateShowLoadWidget && 
+
+                            <LoadWidget
+                                setShowLoadWidget={setShowLoadWidget}
+                                setEdges={setEdges}
+                                setNodes={setNodes}
+                                setLoadedSaveName={setLoadedSaveName}
+                            />
                     }
 
                     {
-                        stateShowSaveWidget
-                            && 
-                        <SaveWidget
-                            setShowSaveWidget={setShowSaveWidget}
-                            stateLoadedSaveName={stateLoadedSaveName}
-                            setLoadedSaveName={setLoadedSaveName}
-                            stateNodes={stateNodes}
-                            stateEdges={stateEdges}
-                        />
+                        stateShowSaveWidget && 
+                            <SaveWidget
+                                setShowSaveWidget={setShowSaveWidget}
+                                stateLoadedSaveName={stateLoadedSaveName}
+                                setLoadedSaveName={setLoadedSaveName}
+                                stateNodes={stateNodes}
+                                stateEdges={stateEdges}
+                            />
                     }
 
                 </div>

@@ -1,11 +1,9 @@
 import { useState } from "react";
 import { TerraformWidgetController } from "../../Controllers/TerraformWidgetController";
 import { useNotification } from "../../Providers/NotificationProvider";
-import type { Edge } from "@xyflow/react";
 import RoundedButton from "../Buttons/RoundedButton";
 import '../../styles/TerraformWidget.css';
-import type { AppEdge, AppNode, CodeChunk, ResourceData } from "../../types";
-import type Resource from "../../Models/Resource";
+import type { AppEdge, AppNode, CodeChunk } from "../../types";
 import { resourceContainer } from "../../constants";
 import type { ResourceStatics } from "../../Models/Resource";
 
@@ -16,7 +14,8 @@ export default function TerraformWidget({
         stateNodes, 
         setNodes, 
         stateEdges, 
-        setEdges 
+        setEdges,
+        setDeploymentSettings 
     }
         : 
     { 
@@ -25,11 +24,12 @@ export default function TerraformWidget({
         setNodes: React.Dispatch<React.SetStateAction<AppNode[]>>, 
         stateEdges: AppEdge[], 
         setEdges: React.Dispatch<React.SetStateAction<AppEdge[]>> 
+        setDeploymentSettings: React.Dispatch<React.SetStateAction<Record<string, any>>>
     }){
 
     const showNotification = useNotification();
     const [stateShowDownloadTerraformForm, setShowDownloadTerraformForm] = useState<boolean>(false);
-    const [stateTerraformWidgetController] = useState(() => new TerraformWidgetController(setShowTerraformWidget, showNotification, setNodes, setEdges, setShowDownloadTerraformForm));
+    const [stateTerraformWidgetController] = useState(() => new TerraformWidgetController(setShowTerraformWidget, showNotification, setNodes, setEdges, setShowDownloadTerraformForm, setDeploymentSettings));
     
     return(
          <div className="terraformWidgetWrapper">
@@ -176,17 +176,22 @@ export default function TerraformWidget({
 
                     <div className="terraformTabs">
 
+
                         <input type="radio" className="terraformTabRadio" name="resource" id="tab-provider" defaultChecked/>
-                        <label htmlFor="tab-provider" className="terraformTab">Provider</label>
+                        <label htmlFor="tab-provider" className="terraformTab">Main</label>
 
                         <input type="radio" className="terraformTabRadio" name="resource" id="tab-resource"/>
                         <label htmlFor="tab-resource" className="terraformTab">Resource</label>
 
-                        <div id="panel-provider" className='terraformWidgetSnippetWrapper'>
+
+                         <div id="panel-provider" className='terraformWidgetSnippetWrapper'>
                             <pre>
-                                <code className='terraformCode'>seuijnfijesiosefj</code>
+                                <code className='terraformCode'>
+                                    wadwad
+                                </code>
                             </pre>
                         </div>
+
 
                         <div id="panel-resource" className='terraformWidgetSnippetWrapper'>
                             <pre>
@@ -200,8 +205,8 @@ export default function TerraformWidget({
 
                                                 const codeChunks: CodeChunk[] = resourceInstance.toTerraformPreview();
 
-                                                codeChunks.push({value: "\n", className:"terraformKeyword"});
-                                                codeChunks.push({value: "\n", className:"terraformKeyword"});
+                                                codeChunks.push({value: "\n", className:""});
+                                                codeChunks.push({value: "\n", className:""});
 
                                                 return codeChunks.map(
                                                     (codeChunk: CodeChunk, index: number) => {

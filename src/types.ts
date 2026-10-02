@@ -46,6 +46,7 @@ export interface Property<T>{
     value: T,
     type: PropertyType,
     options?: readonly T[]
+    name?: string
 
 }
 
@@ -59,6 +60,7 @@ export type PropertyType =
 | "boolean"
 | "number"
 | "tags"
+| "nestedTags"
 | "checkbox"
 | "select"
 | "radio";
@@ -72,4 +74,5 @@ export interface CodeChunk{
     className: string
 
 }
+
 

@@ -56,6 +56,11 @@ export default abstract class Resource{
 
         for(const key of Object.keys(propertyRecord)){
 
+      
+            if(propertyRecord[key].value == null){
+                break;
+            }
+
             codeChunks.push({value: "\n  ", className:"terraformProperty"})
 
             codeChunks.push({value: key, className:"terraformProperty"})

@@ -199,12 +199,10 @@ function getPropertyInput(
         }
 
         case "boolean":{
-            return <input key={key} className="propertyInput" id={`${inputName}`} type="checkbox" checked={property.value ?? false} name={`${inputName}`} onChange={(event) => {console.log("checkbox toggled"); propertiesWidgetController.checkBoxOnChange(event, property, propertyCategory, propertyRecordName, inputName, componentID, componentSetter)}}/>
+            return <input key={key} className="propertyInput" id={`${inputName}`} type="checkbox" checked={property.value ?? false} name={`${inputName}`} onChange={(event) => {propertiesWidgetController.checkBoxOnChange(event, property, propertyCategory, propertyRecordName, inputName, componentID, componentSetter)}}/>
         }
 
         case "select":{
-
-            const edgeData = componentData as EdgeData;
 
             if(property.options == undefined){
                 return;
@@ -212,15 +210,12 @@ function getPropertyInput(
             
             return <select name="edgeType" id="select_edge_type" onChange={(event) => {propertiesWidgetController.onSelectChange(event, property, propertyCategory, propertyRecordName, inputName, componentID, componentSetter)}}>
                 {property.options.map((option: string) => {
-                    return <option value={`${option}`} selected={option == edgeData.edgeType}>{option}</option>
+                    return <option value={`${option}`} selected={option == property.value}>{option}</option>
                 })}
             </select>
         }
 
         case "tags":{
-
-            console.log(property)
-            console.log(property.value);
 
             if(property.value == null){
                 return;

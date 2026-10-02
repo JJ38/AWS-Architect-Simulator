@@ -1,9 +1,9 @@
 import { resourceContainer } from "../constants";
 import type { ResourceStatics } from "../Models/Resource";
 import type Resource from "../Models/Resource";
-import type { AppEdge, AppNode, Property, AppComponent, PropertyCategory, ComponentData, ResourceData } from "../types";
+import type { AppEdge, AppNode, Property, AppComponent, PropertyCategory, ResourceData } from "../types";
 
-export class PropertiesWidgetController{
+export class PropertiesWidgetController {
 
 
     private setNodes: React.Dispatch<React.SetStateAction<AppNode[]>>;
@@ -50,7 +50,6 @@ export class PropertiesWidgetController{
 
         this.updateComponentProperty(newNodeProperty, propertyCategory, propertyRecordName, componentID!, inputName, componentSetter);
 
-
     }
 
     private validProperty(nodeProperty: Property<any>, componentID: string | null): boolean{
@@ -77,7 +76,6 @@ export class PropertiesWidgetController{
         componentSetter: React.Dispatch<React.SetStateAction<any>>)
     {
         
-        console.log("updateComponentProperty");
         componentSetter((components: AppComponent[]) => components.map((component: AppComponent) => {
 
             if(component.id !== componentID){
@@ -99,8 +97,6 @@ export class PropertiesWidgetController{
                 newComponent.data.terraformProperties[propertyRecordName][inputName] = newNodeProperty;
 
             }
-
-            console.log(newComponent);
 
             return newComponent;
             
