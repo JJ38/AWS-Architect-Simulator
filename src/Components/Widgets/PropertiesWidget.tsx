@@ -2,7 +2,6 @@ import { memo, useState } from 'react';
 import { PropertiesWidgetController } from '../../Controllers/PropertiesWidgetController';
 import type { AppEdge, AppNode, CodeChunk, ComponentData, EdgeData, Property, PropertyCategory, PropertyRecord, ResourceData } from '../../types';
 import '../../styles/PropertiesWidget.css'
-import type Resource from '../../Models/Resource';
 
 
 function PropertiesWidget(
@@ -42,22 +41,8 @@ function PropertiesWidget(
 
         <div className="propertiesWidgetWrapper">
 
-            {
-                selectedNodeData != null &&
-
-                    <div>
-                        <p className='propertyInfo'>{title}</p>
-                    </div>         
-            }
-
-            {
-                selectedEdgeData != null &&
-
-                    <div>
-                        <p className='propertyInfo'>{title}</p>                       
-                    </div>
-            }
-
+            <p className='propertyInfo'>{title}</p>
+                        
             {
                 componentData == undefined &&
 
@@ -115,37 +100,36 @@ function PropertiesWidget(
 
                     Object.keys(componentTerraformProperties).map((propertyRecordName) => {
                         
-                        return <div key={propertyRecordName} className='propertyBlockWrapper'>
-                            <p>{propertyRecordName}</p>
+                        return <details  key={propertyRecordName} className='propertyBlockWrapper'>
+                                    <summary className='propertyRecordSectionSummary'>{propertyRecordName}</summary>
 
-                                {
+                                    <div className='propertyRecordSectionWrapper'>
+                                        {
 
-                                    Object.keys(componentTerraformProperties[propertyRecordName]).map((inputName) => {
+                                            Object.keys(componentTerraformProperties[propertyRecordName]).map((inputName) => {
 
-                                        // need to check here if the property is a tags type and change class. 
+                                                // need to check here if the property is a tags type and change class. 
 
-                                        return <div className='propertyInputWrapper' key={inputName}>
-                                            <p className='propertyName'>{inputName}</p>
-                                            {
-                                                getPropertyInput(
-                                                    statePropertiesWidgetController, 
-                                                    componentData, 
-                                                    componentTerraformProperties[propertyRecordName][inputName],
-                                                    "terraform", 
-                                                    propertyRecordName,
-                                                    inputName, 
-                                                    componentID,
-                                                    componentSetter
-                                                )
-                                            }
+                                                return <div className='propertyInputWrapper' key={inputName}>
+                                                    <p className='propertyName'>{inputName}</p>
+                                                    {
+                                                        getPropertyInput(
+                                                            statePropertiesWidgetController, 
+                                                            componentData, 
+                                                            componentTerraformProperties[propertyRecordName][inputName],
+                                                            "terraform", 
+                                                            propertyRecordName,
+                                                            inputName, 
+                                                            componentID,
+                                                            componentSetter
+                                                        )
+                                                    }
 
-                                        </div>
-                                    })
-                                }
-
-                        </div>
-                        
-
+                                                </div>
+                                            })
+                                        }
+                                    </div>
+                                </details>          
 
                     })
 

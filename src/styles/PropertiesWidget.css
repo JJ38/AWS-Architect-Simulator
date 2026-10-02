@@ -15,7 +15,7 @@
 
 .propertyInfo{
     font-size: 0.8rem;
-    margin: 0px;
+    margin: 0px 5px 10px 5px;
 }
 
 .checkboxWrapper{
@@ -26,6 +26,9 @@
 .propertiesWrapper{
 
     /* overflow-y: scroll; */
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
     height: auto;
 
 }
@@ -88,4 +91,28 @@
 
 .terraformValue{
     color: rgb(104, 170, 233);
+}
+
+.propertyBlockWrapper{
+    display: flex;
+    flex-direction: column;
+    /* padding: 5px 10px; */
+    border-radius: 5px;
+    border: solid 1px rgb(15, 15, 15);
+    overflow: hidden;
+}
+
+.propertyBlockWrapper:hover{
+    cursor: pointer;
+}
+
+.propertyRecordSectionSummary{
+    background-color: rgb(105, 105, 105);
+    padding: 5px 10px;
+    word-break: break-word;
+}
+
+.propertyRecordSectionWrapper{
+    background-color: rgb(43, 43, 43);
+    padding: 5px 10px;
 }

@@ -23,7 +23,13 @@ export default class S3 extends Resource{
                 },
                 "aws_s3_bucket_versioning": {
                     "bucket": { value: id, type: "string"},
-                    "versioning_configuration": { value: "to do", type: "tags"}
+                    "versioning_configuration": 
+                    { 
+                        value: { 
+                            "status": { value: "Enabled", type: "string" }
+                        }, 
+                        type: "tags"
+                    }
                 },
                 "aws_s3_bucket_public_access_block": {
                     "bucket": { value: id, type: "string"},
