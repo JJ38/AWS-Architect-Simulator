@@ -24,15 +24,36 @@ export default class Lambda extends Resource{
                     "timeout": {value: null, type: "number"},
                     "memory_size": {value: null, type: "number"},
                     "package_type": {value: null, type: "string"},
-                    "architectures": {value: null, type: "tags"},
+                    "architectures": {
+                        value: null,
+                        type: "tags"
+                    },
                     "reserved_concurrent_executions": {value: null, type: "number"},
                     "publish": {value: null, type: "boolean"},
-                    "environment": {value: null, type: "tags"},
-                    "vpc_config": {value: null, type: "tags"},
-                    "dead_letter_config": {value: null, type: "tags"},
-                    "ephemeral_storage": {value: null, type: "tags"},
-                    "layers": {value: null, type: "tags"},
-                    "tags": {value: null, type: "tags"}
+                    "environment": {
+                        value: null,
+                        type: "tags"
+                    },
+                    "vpc_config": {
+                        value: null,
+                        type: "tags"
+                    },
+                    "dead_letter_config": {
+                        value: null,
+                        type: "tags"
+                    },
+                    "ephemeral_storage": {
+                        value: null,
+                        type: "tags"
+                    },
+                    "layers": {
+                        value: null,
+                        type: "tags"
+                    },
+                    "tags": {
+                        value: null,
+                        type: "tags"
+                    },
                 }
             },
             componentProperties: {}

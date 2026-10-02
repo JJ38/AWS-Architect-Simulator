@@ -177,10 +177,8 @@ function getPropertyInput(
     if(componentSetter == null){
         return;
     }
-    
-    console.log(property);
-    const inputType = property.type;
 
+    const inputType = property.type;
 
     switch(inputType){
 
@@ -218,8 +216,16 @@ function getPropertyInput(
         }
 
         case "tags":{
+
+            console.log(property)
             console.log(property.value);
+
+            if(property.value == null){
+                return;
+            }
+
             return Object.keys(property.value).map((tagKey: string, index: number) => {
+
                 console.log(property.value[tagKey]);
 
                 return  <div><br></br>

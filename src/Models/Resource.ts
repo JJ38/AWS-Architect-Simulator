@@ -61,7 +61,6 @@ export default abstract class Resource{
             codeChunks.push({value: key, className:"terraformProperty"})
             codeChunks.push({value: " = ", className:""})
 
-            //look at the property value. It might be a record/tags and need deconstructing further
             switch (propertyRecord[key].type) {
 
                 case "tags": { 
@@ -69,7 +68,7 @@ export default abstract class Resource{
                     codeChunks.push({value: "{", className:""});
 
                     if(propertyRecord[key].value != null){
-                        
+             
                         const tagChunks = this.toTerraformPreviewParsePropertyRecord(propertyRecord[key].value as PropertyRecord);
                         
                         tagChunks.forEach((chunk) => {

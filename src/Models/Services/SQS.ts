@@ -22,8 +22,14 @@ export default class SQS extends Resource{
                     "max_message_size": {value: null, type: "number"},
                     "message_retention_seconds": {value: null, type: "number"},
                     "receive_wait_time_seconds": {value: null, type: "number"},
-                    "redrive_policy": {value: null, type: "tags"},
-                    "tags": {value: null, type: "tags"},
+                    "redrive_policy": {
+                        value: {value: null, type: "string"},
+                        type: "tags"
+                    },
+                    "tags": {
+                        value: {value: null, type: "string"},
+                        type: "tags"
+                    },
                 }
             },
             componentProperties: {}

@@ -24,8 +24,14 @@ export default class APIGatewayV2 extends Resource{
                     "description": {value: null, type: "string"},
                     "route_selection_expression": {value: null, type: "string"},
                     "disable_execute_api_endpoint": {value: null, type: "boolean"},
-                    "cors_configuration": {value: null, type: "tags"},
-                    "tags": {value: null, type: "tags"}
+                    "cors_configuration": {
+                        value: {value: null, type: "string"},
+                        type: "tags"
+                    },
+                    "tags": {
+                        value: {value: null, type: "string"},
+                        type: "tags"
+                    },
                 }
             },
             componentProperties: {}
