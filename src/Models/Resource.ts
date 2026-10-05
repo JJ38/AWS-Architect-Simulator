@@ -1,4 +1,5 @@
-import type { CodeChunk, EdgeType, PropertyRecord, ResourceData, Service, ValidationResult } from "../types";
+import { PropertiesWidgetController } from "../Controllers/PropertiesWidgetController";
+import type { CodeChunk, EdgeType, Property, PropertyRecord, ResourceData, Service, ValidationResult } from "../types";
 
 
 export interface ResourceStatics{
@@ -89,6 +90,30 @@ export default abstract class Resource{
 
                 case "boolean": {
                     codeChunks.push({value: propertyRecord[key].value ? "true" : "false", className:"terraformValue"});
+                    break;
+                }
+
+                case "link": {
+
+                    //this is hardcoded for 1 nested value currently
+
+                    const property: Property<any> = propertyRecord[key];
+                    const link: string[] | undefined = property.link;
+
+                    console.log(link);
+
+                    if(link == undefined){
+                        return[];
+                    }
+
+                    let dependantPropertyRecord: PropertyRecord = this.terraformProperties[link[0]];
+                    console.log(dependantPropertyRecord);
+
+                    let dependantProperty: Property<any> = dependantPropertyRecord[link[1]];
+
+    
+
+                    codeChunks.push({value: dependantProperty.value, className:"terraformValue"});
                     break;
                 }
 
