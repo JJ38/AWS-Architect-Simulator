@@ -6,6 +6,7 @@ import '@xyflow/react/dist/style.css';
 import '../styles/Canvas.css'; 
 import PropertiesWidget from './Widgets/PropertiesWidget.tsx';
 import type Resource from '../Models/Resource.ts';
+import { useNotification } from '../Providers/NotificationProvider.tsx';
 
 export default function Canvas(
   {
@@ -33,8 +34,18 @@ export default function Canvas(
   const [stateSelectedEdgeID, setSelectedEdgeID] = useState<string | null>(null);
   const { screenToFlowPosition } = useReactFlow();
 
+  const showNotification = useNotification();
 
-  const [stateCanvasController] = useState(() => new CanvasController(screenToFlowPosition, setGhostNodes, setNodes, setEdges, setSelectedNodeID, setSelectedEdgeID, setSelectedService))
+  const [stateCanvasController] = useState(() => new CanvasController(
+    showNotification,
+    screenToFlowPosition, 
+    setGhostNodes, 
+    setNodes, 
+    setEdges, 
+    setSelectedNodeID, 
+    setSelectedEdgeID, 
+    setSelectedService
+  ))
 
   const selectedNode = stateNodes.find((node: AppNode) => node.id == stateSelectedNodeID);
   const selectedEdge = stateEdges.find((edge: AppEdge) => edge.id == stateSelectedEdgeID);

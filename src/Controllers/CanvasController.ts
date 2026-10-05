@@ -10,6 +10,7 @@ export class CanvasController{
 
     public model: CanvasModel = new CanvasModel;
 
+    private showNotification: (success: boolean, message: string) => void
     private screenToFlowPosition: ViewportHelperFunctions['screenToFlowPosition'];
     private setGhostNodes: React.Dispatch<React.SetStateAction<AppNode[]>>;
     private setNodes: React.Dispatch<React.SetStateAction<AppNode[]>>; 
@@ -20,6 +21,7 @@ export class CanvasController{
      
 
     public constructor(
+        showNotification: (success: boolean, message: string) => void,
         screenToFlowPosition: ViewportHelperFunctions['screenToFlowPosition'], 
         setGhostNodes: React.Dispatch<React.SetStateAction<AppNode[]>>,
         setNodes: React.Dispatch<React.SetStateAction<AppNode[]>>, 
@@ -28,6 +30,7 @@ export class CanvasController{
         setSelectedEdgeID: React.Dispatch<React.SetStateAction<string | null>>,
         setSelectedService: React.Dispatch<React.SetStateAction<Service | null>>
     ){
+        this.showNotification = showNotification;
         this.screenToFlowPosition = screenToFlowPosition;
         this.setGhostNodes = setGhostNodes;
         this.setNodes = setNodes;
@@ -149,6 +152,10 @@ export class CanvasController{
     
         const validEdgeType = sourceEdgeTypes.filter((edgeType: EdgeType) => targetEdgeTypes.includes(edgeType));
 
+        if(validEdgeType.length == 0){
+            this.showNotification(false, "Invalid connection");
+            return;
+        }
 
         const defaultEdge = validEdgeType[0] ?? "";
     
@@ -168,7 +175,6 @@ export class CanvasController{
     
         this.setEdges((edgesSnapshot) => addEdge(params, edgesSnapshot))
     
-
     }
 
     public getPropertiesWidgetTitle(selectedNodeData: ResourceData | undefined, stateNodes: AppNode[], selectedEdge: AppEdge | undefined): string{
