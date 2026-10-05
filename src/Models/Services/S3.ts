@@ -16,13 +16,17 @@ export default class S3 extends Resource{
             resourceName: id,
             terraformProperties: {
                 "aws_s3_bucket": {
-                    "bucket": { value: id, type: "string"},
+                    "bucket": { value: id, type: "string", anchor: true},
                     "bucket_prefix": { value: null, type: "string"},
                     "force_destroy": { value: false, type: "boolean"},
                     "tags": { value: {}, type: "tags"}
                 },
                 "aws_s3_bucket_versioning": {
-                    "bucket": { value: id, type: "string"},
+                    "bucket": { 
+                        value: id, 
+                        type: "link", 
+                        link: ['aws_s3_bucket', 'bucket']
+                    },
                     "versioning_configuration": 
                     { 
                         value: { 
@@ -32,7 +36,11 @@ export default class S3 extends Resource{
                     }
                 },
                 "aws_s3_bucket_public_access_block": {
-                    "bucket": { value: id, type: "string"},
+                    "bucket": { 
+                        value: id, 
+                        type: "link", 
+                        link: ['aws_s3_bucket', 'bucket']                     
+                    },
                     "block_public_acls": { value: true, type: "boolean"},
                     "block_public_policy": { value: true, type: "boolean"},
                     "ignore_public_acls": { value: true, type: "boolean"},

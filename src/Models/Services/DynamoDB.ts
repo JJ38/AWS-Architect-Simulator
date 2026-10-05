@@ -41,7 +41,7 @@ export default class DyanmoDB extends Resource{
                         type: "number", 
                         dependant: {
                             propertyPath: ['aws_dynamodb_table', 'billing_mode'], 
-                            value: "PAY_PER_REQUEST"
+                            value: "PAY_PER_REQUEST",
                         }
                     }, //only if billing mode is PROVISIONED
                     "write_capacity": {
@@ -49,7 +49,7 @@ export default class DyanmoDB extends Resource{
                         type: "number",
                         dependant: {
                             propertyPath: ['aws_dynamodb_table', 'billing_mode'], 
-                            value: "PAY_PER_REQUEST"
+                            value: "PAY_PER_REQUEST",
                         }
                     }, //only if billing mode is PROVISIONED
                     "tags": {

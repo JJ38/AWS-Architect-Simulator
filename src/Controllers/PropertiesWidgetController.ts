@@ -76,6 +76,55 @@ export class PropertiesWidgetController {
 
         return true;
     }
+
+    public getDependantProperty(property: Property<any>, componentData: ComponentData | undefined): any{
+
+        const propertyPath = property.link
+
+        if(propertyPath != undefined){
+                //check if dependant value is set. if not return
+
+            let dependant = componentData?.terraformProperties;
+            let dependantProperty: Property<any> | undefined;
+
+            if(propertyPath == undefined){
+                return;
+            }
+
+            if(componentData == undefined || dependant == undefined){
+                console.log("componentData == undefined || dependant == undefined");
+                return "";
+            }
+
+            if(propertyPath.length == 0){
+                return "";
+            }
+
+            const dependantPropertyRecord = dependant![propertyPath[0]]; // need because type is different at top level
+
+            for(let i = 1 ; i < propertyPath.length; i++){
+            
+                const fieldName = propertyPath[i]
+                
+                dependantProperty = dependantPropertyRecord[fieldName];
+
+                if(dependantProperty == undefined){
+                    return "";
+                }
+            
+            }
+
+            if(dependantProperty == undefined){
+                return "";
+            }
+
+            return dependantProperty.value;
+           
+        }
+
+        return "";
+        
+    }
     
 
     public onSelectChange(

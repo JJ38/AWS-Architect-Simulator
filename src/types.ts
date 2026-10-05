@@ -47,7 +47,9 @@ export interface Property<T>{
     type: PropertyType,
     options?: readonly T[]
     name?: string
-    dependant?: {propertyPath: string[], value: any}
+    dependant?: {propertyPath: string[], value?: any}
+    anchor?: boolean
+    link?: string[]
 
 }
 
@@ -57,6 +59,7 @@ export type PropertyCategory =
 
 //union type. Similar to an enum but more lightweight
 export type PropertyType =
+| "link"
 | "string"
 | "boolean"
 | "number"
@@ -76,4 +79,4 @@ export interface CodeChunk{
 
 }
 
-
+export type DependantType = "visibility" | "mirror"

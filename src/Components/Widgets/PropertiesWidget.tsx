@@ -190,6 +190,13 @@ function getPropertyInput(
 
     switch(inputType){
 
+        case "link":{
+
+            const text = <p key={key}>{propertiesWidgetController.getDependantProperty(property, componentData)}</p>
+
+            return text;
+        }
+
         case "string":{
 
             const input = <input key={key} className="propertyInput" id={`${inputName}`} type="text" name={`${inputName}`} value={property.value ?? ""} onChange={(event) => {propertiesWidgetController.keyboardInputOnChange(event, property, propertyCategory, propertyRecordName, inputName, componentID, componentSetter)}}/>
@@ -228,8 +235,6 @@ function getPropertyInput(
             }
 
             return Object.keys(property.value).map((tagKey: string, index: number) => {
-
-                console.log(property.value[tagKey]);
 
                 return  <div><br></br>
                         <div className='propertyInputWrapper' key={tagKey}>
