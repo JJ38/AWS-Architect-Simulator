@@ -1,4 +1,4 @@
-import type { EdgeType, ResourceData, Service, ValidationResult } from "../../types";
+import type { EdgeType, PermissionType, ResourceData, Service, ValidationResult } from "../../types";
 import Resource from "../Resource";
 
 //incomplete look at all types
@@ -9,8 +9,9 @@ export const dynamodb_billing_mode = [
 
 export default class DyanmoDB extends Resource{
     
-    public static sourceTypes: EdgeType[] = ["async"];
-    public static targetTypes: EdgeType[] = ["sync"]
+    public static sourceTypes: EdgeType[] = ["pull"];
+    public static targetTypes: EdgeType[] = ["sync"];
+    public static permissionType: PermissionType = "Passive";
 
 
     public static create(id: string, service: Service): ResourceData{

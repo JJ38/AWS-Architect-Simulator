@@ -1,12 +1,12 @@
 import Resource from "../Resource";
-import type { EdgeType, ResourceData, Service, ValidationResult } from "../../types.ts";
+import type { EdgeType, PermissionType, ResourceData, Service, ValidationResult } from "../../types.ts";
 
 export default class SQS extends Resource{
 
 
     public static sourceTypes: EdgeType[] = ["pull"];
-    public static targetTypes: EdgeType[] = ["async"]
-
+    public static targetTypes: EdgeType[] = ["async"];
+    public static permissionType: PermissionType = "Passive";
 
     public static create(id: string, service: Service): ResourceData{
 

@@ -1,11 +1,12 @@
 import Resource from "../Resource";
-import type { Service, ValidationResult, EdgeType, ResourceData } from "../../types.ts";
+import type { Service, ValidationResult, EdgeType, ResourceData, PermissionType } from "../../types.ts";
 
 
 export default class S3 extends Resource{
 
     public static sourceTypes: EdgeType[] = ["async"];
     public static targetTypes: EdgeType[] = ["sync"];
+    public static permissionType: PermissionType = "Service";
 
 
     public static create(id: string, service: Service): ResourceData{

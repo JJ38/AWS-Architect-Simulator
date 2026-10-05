@@ -471,3 +471,30 @@ deps defeats the memoization entirely — it'll "recompute" on the exact frames
 you were trying to skip. The fix isn't a deps-array trick; it's narrowing the
 function's inputs so what it actually needs to read lines up with what's
 actually stable.
+
+## 23. IAM-role holder vs. service principal
+
+Two different shapes of "who's allowed to call what" in AWS, easy to conflate
+because both end up as Terraform permission resources.
+
+**IAM-role holder** — a resource you create (Lambda, EC2, ECS task) with its
+own IAM role attached. It holds real credentials and calls out to other AWS
+APIs *as itself*. Permission is granted by attaching a policy to **its own
+role**: "here's what you're allowed to do."
+
+**Service principal** — not something you create. It's AWS's own name for an
+AWS *service* invoking into your resource (`s3.amazonaws.com`,
+`apigateway.amazonaws.com`). It has no role you manage. Permission instead
+lives on the **resource being called**, via a resource-based policy
+(`aws_lambda_permission`, an S3 bucket policy): "this named service may call
+me."
+
+The distinction in one line: IAM-role holder → permission lives on the
+**caller**. Service principal → permission lives on the **thing being
+called**. ARNs appear in both cases just to identify which resource — that's
+not what separates them.
+
+This decides *which Terraform resource type* a connection needs: a caller
+that's an IAM-role holder gets an identity policy attached to its role; a
+caller that's a service principal gets a resource-based permission block on
+the callee instead.

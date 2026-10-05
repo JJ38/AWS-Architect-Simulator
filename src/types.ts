@@ -59,6 +59,7 @@ export type PropertyCategory =
 
 //union type. Similar to an enum but more lightweight
 export type PropertyType =
+| "edgeType"
 | "link"
 | "string"
 | "boolean"
@@ -69,7 +70,7 @@ export type PropertyType =
 | "select"
 | "radio";
 
-export type EdgeType = "sync" | "async" | "pull"
+export type EdgeType = "sync" | "async" | "pull";
 
 
 export interface CodeChunk{
@@ -78,3 +79,5 @@ export interface CodeChunk{
     className: string
 
 }
+
+export type PermissionType = "IAM" | "Service" | "Passive"; // A passive service should only ever show up as a pull source

@@ -1,5 +1,5 @@
 import { PropertiesWidgetController } from "../Controllers/PropertiesWidgetController";
-import type { CodeChunk, EdgeType, Property, PropertyRecord, ResourceData, Service, ValidationResult } from "../types";
+import type { CodeChunk, EdgeType, PermissionType, Property, PropertyRecord, ResourceData, Service, ValidationResult } from "../types";
 
 
 export interface ResourceStatics{
@@ -8,6 +8,7 @@ export interface ResourceStatics{
     create(id: string, service: Service): ResourceData;
     sourceTypes: EdgeType[];
     targetTypes: EdgeType[];
+    permissionType: PermissionType;
 
 }
 

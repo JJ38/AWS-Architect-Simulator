@@ -221,9 +221,9 @@ function getPropertyInput(
                 return;
             }
             
-            return <select name="edgeType" id="select_edge_type" onChange={(event) => {propertiesWidgetController.onSelectChange(event, property, propertyCategory, propertyRecordName, inputName, componentID, componentSetter)}}>
-                {property.options.map((option: string) => {
-                    return <option value={`${option}`} selected={option == property.value}>{option}</option>
+            return <select name={`${key}`} id={`${key}`} onChange={(event) => {propertiesWidgetController.onSelectChange(event, property, propertyCategory, propertyRecordName, inputName, componentID, componentSetter)}}>
+                {property.options.map((option: string, index: number) => {
+                    return <option key={key + "_" + index} value={`${option}`} selected={option == property.value}>{option}</option>
                 })}
             </select>
         }

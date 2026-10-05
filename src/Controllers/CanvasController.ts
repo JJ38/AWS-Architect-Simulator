@@ -1,5 +1,5 @@
 import { type XYPosition, type Node, type ViewportHelperFunctions, type Edge, addEdge } from "@xyflow/react";
-import type { AppEdge, AppNode, EdgeType, ResourceData, Service } from "../types";
+import type { AppEdge, AppNode, EdgeType, PermissionType, ResourceData, Service } from "../types";
 import { CanvasModel } from "../Models/CanvasModel.ts";
 import { resourceContainer, serviceImageSize } from "../constants.ts";
 import type Resource from "../Models/Resource.ts";
@@ -146,9 +146,12 @@ export class CanvasController{
         if(sourceServiceName == null || targetServiceName == null){
             return;
         }
+
+        const sourceResource = resourceContainer[sourceServiceName!];
+        const targetResource = resourceContainer[targetServiceName!];
     
-        const sourceEdgeTypes = resourceContainer[sourceServiceName!].sourceTypes;
-        const targetEdgeTypes = resourceContainer[targetServiceName!].targetTypes;
+        const sourceEdgeTypes = sourceResource.sourceTypes;
+        const targetEdgeTypes = targetResource.targetTypes;
     
         const validEdgeType = sourceEdgeTypes.filter((edgeType: EdgeType) => targetEdgeTypes.includes(edgeType));
 
@@ -158,12 +161,25 @@ export class CanvasController{
         }
 
         const defaultEdge = validEdgeType[0] ?? "";
-    
+
+
+        let callerPermissionType: PermissionType;
+
+        if(defaultEdge == "pull"){
+            callerPermissionType = targetResource.permissionType;
+        }else{
+            callerPermissionType = sourceResource.permissionType;
+        }
+        
+        console.log(callerPermissionType);
+
         params['type'] = "standardEdge";
         params['data'] = {
             componentProperties:{
                 "metadata": {
-                    "edgeType": { value: defaultEdge, type: "select", options: validEdgeType }
+                    "edgeType": { value: defaultEdge, type: "edgeType", options: validEdgeType },
+                    "sourceServiceName": sourceServiceName,
+                    "targetServiceName": targetServiceName,
                 }
             },
             terraformProperties: {
