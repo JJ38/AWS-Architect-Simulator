@@ -1,7 +1,8 @@
+import type { Component } from "react";
 import { resourceContainer } from "../constants";
 import type { ResourceStatics } from "../Models/Resource";
 import type Resource from "../Models/Resource";
-import type { AppEdge, AppNode, Property, AppComponent, PropertyCategory, ResourceData } from "../types";
+import type { AppEdge, AppNode, Property, AppComponent, PropertyCategory, ResourceData, ComponentData } from "../types";
 
 export class PropertiesWidgetController {
 
@@ -30,6 +31,50 @@ export class PropertiesWidgetController {
         const resourceInstance = new resource(selectedNodeData);
         
         return resourceInstance;
+    }
+
+    public shouldShowProperty(property: Property<any>, componentData: ComponentData | undefined): boolean {
+
+        if(property.dependant != undefined){
+                //check if dependant value is set. if not return
+
+            let dependant = componentData?.terraformProperties;
+            let dependantProperty: Property<any> | undefined;
+            const propertyPath = property.dependant.propertyPath;
+
+            if(componentData == undefined || dependant == undefined){
+                console.log("componentData == undefined || dependant == undefined");
+                return false;
+            }
+
+            if(propertyPath.length == 0){
+                return false;
+            }
+
+            const dependantPropertyRecord = dependant![propertyPath[0]]; // need because type is different at top level
+
+            for(let i = 1 ; i < propertyPath.length; i++){
+            
+                const fieldName = propertyPath[i]
+                
+                dependantProperty = dependantPropertyRecord[fieldName];
+
+                if(dependantProperty == undefined){
+                    return false;
+                }
+            
+            }
+
+            if(dependantProperty == undefined){
+                return false;
+            }
+
+            if(dependantProperty.value != property.dependant.value){
+                return false;
+            }
+        }
+
+        return true;
     }
     
 

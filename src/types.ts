@@ -47,6 +47,7 @@ export interface Property<T>{
     type: PropertyType,
     options?: readonly T[]
     name?: string
+    dependant?: {propertyPath: string[], value: any}
 
 }
 

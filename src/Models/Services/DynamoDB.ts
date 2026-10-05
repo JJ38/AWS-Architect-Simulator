@@ -36,8 +36,22 @@ export default class DyanmoDB extends Resource{
                         type: "tags"
                     },
                     "deletion_protection_enabled": {value: null, type: "boolean"},
-                    "read_capacity": {value: null, type: "number"}, //only if billing mode is PROVISIONED
-                    "write_capacity": {value: null, type: "number"}, //only if billing mode is PROVISIONED
+                    "read_capacity": {
+                        value: null, 
+                        type: "number", 
+                        dependant: {
+                            propertyPath: ['aws_dynamodb_table', 'billing_mode'], 
+                            value: "PAY_PER_REQUEST"
+                        }
+                    }, //only if billing mode is PROVISIONED
+                    "write_capacity": {
+                        value: null, 
+                        type: "number",
+                        dependant: {
+                            propertyPath: ['aws_dynamodb_table', 'billing_mode'], 
+                            value: "PAY_PER_REQUEST"
+                        }
+                    }, //only if billing mode is PROVISIONED
                     "tags": {
                         value: null,
                         type: "tags"

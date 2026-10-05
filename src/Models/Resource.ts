@@ -37,9 +37,7 @@ export default abstract class Resource{
             codeChunks.push({value: this.resourceName, className:"terraformParameter"})
 
             codeChunks.push({value: "{", className:"terraformBracket"})
-
-            console.log(this.terraformProperties[recordName]);
-
+            
             codeChunks.push(...this.toTerraformPreviewParsePropertyRecord(this.terraformProperties[recordName]));
             codeChunks.push({value: "\n}\n", className:"terraformBracket"})
 

@@ -112,6 +112,12 @@ function PropertiesWidget(
 
                                                 // need to check here if the property is a tags type and change class. 
 
+                                                const shouldShowProperty = statePropertiesWidgetController.shouldShowProperty(componentTerraformProperties[propertyRecordName][inputName], componentData);
+                                                
+                                                if(!shouldShowProperty){
+                                                    return;
+                                                }
+
                                                 return <div className='propertyInputWrapper' key={inputName}>
                                                     <p className='propertyName'>{inputName}</p>
                                                     {
