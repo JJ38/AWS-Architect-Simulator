@@ -111,8 +111,6 @@ export default abstract class Resource{
 
                     let dependantProperty: Property<any> = dependantPropertyRecord[link[1]];
 
-    
-
                     codeChunks.push({value: dependantProperty.value, className:"terraformValue"});
                     break;
                 }

@@ -78,5 +78,3 @@ export interface CodeChunk{
     className: string
 
 }
-
-export type DependantType = "visibility" | "mirror"
