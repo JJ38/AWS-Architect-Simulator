@@ -2,7 +2,7 @@ import type { Component } from "react";
 import { resourceContainer } from "../constants";
 import type { ResourceStatics } from "../Models/Resource";
 import type Resource from "../Models/Resource";
-import type { AppEdge, AppNode, Property, AppComponent, PropertyCategory, ResourceData, ComponentData } from "../types";
+import type { AppEdge, AppNode, Property, AppComponent, PropertyCategory, ResourceData, ComponentData, PropertyRecord } from "../types";
 
 export class PropertiesWidgetController {
 
@@ -131,7 +131,7 @@ export class PropertiesWidgetController {
         event: React.ChangeEvent<HTMLSelectElement, HTMLSelectElement>, 
         nodeProperty: Property<any>, 
         propertyCategory: PropertyCategory,
-        propertyRecordName: string,
+        propertyRecordName: string[],
         inputName: string, 
         componentID: string | null,
         componentSetter: React.Dispatch<React.SetStateAction<any>>
@@ -162,45 +162,68 @@ export class PropertiesWidgetController {
 
     }
 
+    private updatePropertyByPath(index: number, record: Record<string, PropertyRecord> | PropertyRecord, propertyRecordPath: string[], newNodeProperty: Property<any>): void{
+
+        const key = propertyRecordPath[index];
+        const isLeaf = index === propertyRecordPath.length - 1;
+
+        if(isLeaf){
+            (record as PropertyRecord)[key] = newNodeProperty;
+            return;
+        }
+
+        // index 0 is Record<string, PropertyRecord> - the value at a block name is already a PropertyRecord.
+        // every level after that is a PropertyRecord itself, so each entry is a Property and needs .value unwrapped.
+        const nextRecord: PropertyRecord = index === 0
+            ? (record as Record<string, PropertyRecord>)[key]
+            : (record as PropertyRecord)[key].value as PropertyRecord;
+
+        this.updatePropertyByPath(index + 1, nextRecord, propertyRecordPath, newNodeProperty);
+
+    }
+
     private updateComponentProperty(newNodeProperty: Property<any>, 
         propertyCategory: PropertyCategory, 
-        propertyRecordName: string, 
+        propertyRecordPath: string[], 
         componentID: string, 
         inputName: string, 
         componentSetter: React.Dispatch<React.SetStateAction<any>>)
     {
         
+        //need a way to deal with nested inputs 
         componentSetter((components: AppComponent[]) => components.map((component: AppComponent) => {
 
             if(component.id !== componentID){
                 return component;
             }
 
-            const newComponent = structuredClone(component);
+            const newComponent: AppComponent = structuredClone(component);
 
             if(newComponent.data == null){
                 return newComponent;
             }
 
+            const fullPath = [...propertyRecordPath, inputName];
+
             switch (propertyCategory){
 
                 case "component": {
-                    newComponent.data.componentProperties[propertyRecordName][inputName] = newNodeProperty;
+                    this.updatePropertyByPath(0, newComponent.data.componentProperties, fullPath, newNodeProperty);
                     break;
                 }
 
                 case "terraform": {
-                    newComponent.data.terraformProperties[propertyRecordName][inputName] = newNodeProperty;
+                    this.updatePropertyByPath(0, newComponent.data.terraformProperties, fullPath, newNodeProperty);
                     break;
                 }
 
                 case "iam": {
-                    
+
                     if(newComponent.data.iamProperties == undefined){
                         return;
                     }
 
-                    newComponent.data.iamProperties[propertyRecordName][inputName] = newNodeProperty;
+                    this.updatePropertyByPath(0, newComponent.data.iamProperties, fullPath, newNodeProperty);
                     break;
                 }
 
@@ -217,7 +240,7 @@ export class PropertiesWidgetController {
         event: React.ChangeEvent<HTMLInputElement, HTMLInputElement>, 
         nodeProperty: Property<any>, 
         propertyCategory: PropertyCategory,
-        propertyRecordName: string,
+        propertyRecordName: string[],
         inputName: string, 
         componentID: string | null,
         componentSetter: React.Dispatch<React.SetStateAction<any>>
@@ -237,7 +260,7 @@ export class PropertiesWidgetController {
         event: React.ChangeEvent<HTMLInputElement, HTMLInputElement>, 
         nodeProperty: Property<any>, 
         propertyCategory: PropertyCategory,
-        propertyRecordName: string,
+        propertyRecordName: string[],
         inputName: string, 
         componentID: string | null,
         componentSetter: React.Dispatch<React.SetStateAction<any>>

@@ -33,7 +33,6 @@ function PropertiesWidget(
     const componentProperties: Record<string, PropertyRecord> | undefined = componentData != null ? componentData?.componentProperties : undefined;
     const componentTerraformProperties: Record<string, PropertyRecord> | undefined = componentData != null ? componentData?.terraformProperties : undefined;
     const iamTerraformProperties: Record<string, PropertyRecord> | undefined = componentData != null ? componentData?.iamProperties : undefined;
-    console.log(iamTerraformProperties);
    
     const selectedResourceTerraform: CodeChunk[] | undefined = statePropertiesWidgetController.getSelectedResource(selectedNodeData as ResourceData)?.toTerraformPreview();
 
@@ -109,21 +108,21 @@ function generateUIProperties(
 ){
 
 
-    return Object.keys(properties).map((propertyRecordName) => {
+    return Object.keys(properties).map((propertyRecordPath) => {
 
-        if(properties[propertyRecordName] == null){
+        if(properties[propertyRecordPath] == null){
             return;
         }
 
-        return <details  key={propertyRecordName} className='propertyBlockWrapper'>
-                    <summary className='propertyRecordSectionSummary'>{propertyRecordName}</summary>
+        return <details  key={propertyRecordPath} className='propertyBlockWrapper'>
+                    <summary className='propertyRecordSectionSummary'>{propertyRecordPath}</summary>
 
                     <div className='propertyRecordSectionWrapper'>
                         {
                             
-                            Object.keys(properties[propertyRecordName]).map((inputName, index) => {
+                            Object.keys(properties[propertyRecordPath]).map((inputName, index) => {
 
-                                const shouldShowProperty = propertiesWidgetController.shouldShowProperty(properties[propertyRecordName][inputName], componentData);
+                                const shouldShowProperty = propertiesWidgetController.shouldShowProperty(properties[propertyRecordPath][inputName], componentData);
 
                                 if(!shouldShowProperty){
                                     return;
@@ -131,11 +130,11 @@ function generateUIProperties(
 
                                 return renderPropertyRow(
                                     inputName,
-                                    properties[propertyRecordName][inputName],
+                                    properties[propertyRecordPath][inputName],
                                     propertiesWidgetController,
                                     componentData,
                                     propertyCategory,
-                                    propertyRecordName,
+                                    [propertyRecordPath],
                                     componentID,
                                     componentSetter,
                                     index
@@ -156,7 +155,7 @@ function renderPropertyRow(
     propertiesWidgetController: PropertiesWidgetController,
     componentData: ComponentData | undefined,
     propertyCategory: PropertyCategory,
-    propertyRecordName: string,
+    propertyRecordPath: string[],
     componentID: string | null,
     componentSetter: React.Dispatch<React.SetStateAction<any>> | null,
     key?: number
@@ -167,7 +166,7 @@ function renderPropertyRow(
             componentData,
             property,
             propertyCategory,
-            propertyRecordName,
+            propertyRecordPath,
             inputName,
             componentID,
             componentSetter,
@@ -183,7 +182,7 @@ function renderPropertyRow(
                 componentData,
                 property,
                 propertyCategory,
-                propertyRecordName,
+                propertyRecordPath,
                 inputName,
                 componentID,
                 componentSetter,
@@ -199,7 +198,7 @@ function getPropertyInput(
     componentData: ComponentData | undefined, 
     property: Property<any>, 
     propertyCategory: PropertyCategory,
-    propertyRecordName: string,
+    propertyRecordPath: string[], // this assumes no nested values currently
     inputName: string, 
     componentID: string | null,  
     componentSetter: React.Dispatch<React.SetStateAction<any>> | null,
@@ -227,19 +226,19 @@ function getPropertyInput(
         }
 
         case "string":{
-
-            const input = <input key={key} className="propertyInput" id={`${inputName}`} type="text" name={`${inputName}`} value={property.value ?? ""} onChange={(event) => {propertiesWidgetController.keyboardInputOnChange(event, property, propertyCategory, propertyRecordName, inputName, componentID, componentSetter)}}/>
+            console.log()
+            const input = <input key={key} className="propertyInput" id={`${inputName}`} type="text" name={`${inputName}`} value={property.value ?? ""} onChange={(event) => {propertiesWidgetController.keyboardInputOnChange(event, property, propertyCategory, propertyRecordPath, inputName, componentID, componentSetter)}}/>
             return input;
         }
 
         case "number":{
 
-            const input = <input key={key} className="propertyInput" id={`${inputName}`} type="number" name={`${inputName}`} value={`${property.value ?? ""}`} onChange={(event) => {propertiesWidgetController.keyboardInputOnChange(event, property, propertyCategory, propertyRecordName, inputName, componentID, componentSetter)}}/>     
+            const input = <input key={key} className="propertyInput" id={`${inputName}`} type="number" name={`${inputName}`} value={`${property.value ?? ""}`} onChange={(event) => {propertiesWidgetController.keyboardInputOnChange(event, property, propertyCategory, propertyRecordPath, inputName, componentID, componentSetter)}}/>     
             return input;
         }
 
         case "boolean":{
-            return <input key={key} className="propertyInput" id={`${inputName}`} type="checkbox" checked={property.value ?? false} name={`${inputName}`} onChange={(event) => {propertiesWidgetController.checkBoxOnChange(event, property, propertyCategory, propertyRecordName, inputName, componentID, componentSetter)}}/>
+            return <input key={key} className="propertyInput" id={`${inputName}`} type="checkbox" checked={property.value ?? false} name={`${inputName}`} onChange={(event) => {propertiesWidgetController.checkBoxOnChange(event, property, propertyCategory, propertyRecordPath, inputName, componentID, componentSetter)}}/>
         }
 
         case "select":{
@@ -248,7 +247,7 @@ function getPropertyInput(
                 return;
             }
             
-            return <select name={`${key}`} id={`${key}`} onChange={(event) => {propertiesWidgetController.onSelectChange(event, property, propertyCategory, propertyRecordName, inputName, componentID, componentSetter)}}>
+            return <select name={`${key}`} id={`${key}`} onChange={(event) => {propertiesWidgetController.onSelectChange(event, property, propertyCategory, propertyRecordPath, inputName, componentID, componentSetter)}}>
                 {property.options.map((option: string, index: number) => {
                     return <option key={key + "_" + index} value={`${option}`} selected={option == property.value}>{option}</option>
                 })}
@@ -261,7 +260,7 @@ function getPropertyInput(
                 return;
             }
             
-            return <select name={`${key}`} id={`${key}`} onChange={(event) => {propertiesWidgetController.onSelectChange(event, property, propertyCategory, propertyRecordName, inputName, componentID, componentSetter)}}>
+            return <select name={`${key}`} id={`${key}`} onChange={(event) => {propertiesWidgetController.onSelectChange(event, property, propertyCategory, propertyRecordPath, inputName, componentID, componentSetter)}}>
                 {property.options.map((option: string, index: number) => {
                     return <option key={key + "_" + index} value={`${option}`} selected={option == property.value}>{option}</option>
                 })}
@@ -274,19 +273,25 @@ function getPropertyInput(
             if(property.value == null){
                 return;
             }
+            
+            console.log(property.value);
 
             return <details key={inputName} className='propertyBlockWrapper'>
                 <summary className='propertyRecordSectionSummary'>{inputName}</summary>
                 <div className='propertyRecordSectionWrapper'>
                     {
-                        Object.keys(property.value).map((tagKey: string, index: number) => {
+                        Object.keys(property.value).map((key: string, index: number) => {
+
+                            const newPropertyRecordPath = Array.from(propertyRecordPath);
+                            newPropertyRecordPath.push(inputName);
+
                             return renderPropertyRow(
-                                tagKey,
-                                property.value[tagKey],
+                                key,
+                                property.value[key],
                                 propertiesWidgetController,
                                 componentData,
                                 propertyCategory,
-                                propertyRecordName,
+                                newPropertyRecordPath,
                                 componentID,
                                 componentSetter,
                                 index

@@ -66,9 +66,9 @@ export default class EC2 extends Resource{
                 }
             },
             componentProperties: {},
-            iamProperties: {
-                "aws_iam_role": IamFactory.makeIamRole("", "lambda.amazonaws.com")
-            }
+            // iamProperties: {
+            //     "aws_iam_role": IamFactory.makeIamRole("", "lambda.amazonaws.com")
+            // }
         }
 
     }
