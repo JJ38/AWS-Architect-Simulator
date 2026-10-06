@@ -274,8 +274,6 @@ function getPropertyInput(
                 return;
             }
             
-            console.log(property.value);
-
             return <details key={inputName} className='propertyBlockWrapper'>
                 <summary className='propertyRecordSectionSummary'>{inputName}</summary>
                 <div className='propertyRecordSectionWrapper'>

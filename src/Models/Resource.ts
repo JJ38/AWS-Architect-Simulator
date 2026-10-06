@@ -36,6 +36,8 @@ export default abstract class Resource{
 
         const codeChunks: CodeChunk[] = [];
 
+        console.log(this.terraformProperties);
+
         for(const recordName of Object.keys(this.terraformProperties as Record<string, PropertyRecord>)){
 
             codeChunks.push({value: "resource ", className:"terraformKeyword"})
@@ -56,72 +58,73 @@ export default abstract class Resource{
 
     toTerraformPreviewParsePropertyRecord(propertyRecord: PropertyRecord): CodeChunk[]{
 
+        console.log(Object.keys(propertyRecord));
+
         const codeChunks: CodeChunk[] = [];
 
         for(const key of Object.keys(propertyRecord)){
-            
-            if(propertyRecord[key].value == null){
-                break;
-            }
 
-            codeChunks.push({value: "\n  ", className:"terraformProperty"})
+            if(propertyRecord[key].value != null){
 
-            codeChunks.push({value: key, className:"terraformProperty"})
-            codeChunks.push({value: " = ", className:""})
+                codeChunks.push({value: "\n  ", className:"terraformProperty"})
 
-            switch (propertyRecord[key].type) {
+                codeChunks.push({value: key, className:"terraformProperty"})
+                codeChunks.push({value: " = ", className:""})
 
-                case "tags": { 
+                switch (propertyRecord[key].type) {
 
-                    codeChunks.push({value: "{", className:""});
+                    case "tags": { 
 
-                    if(propertyRecord[key].value != null){
-             
-                        const tagChunks = this.toTerraformPreviewParsePropertyRecord(propertyRecord[key].value as PropertyRecord);
-                        
-                        tagChunks.forEach((chunk) => {
-                            chunk.value = "  " + chunk.value;
-                        });
+                        codeChunks.push({value: "{", className:""});
 
-                        codeChunks.push(...tagChunks);
-                        
+                        if(propertyRecord[key].value != null){
+                
+                            const tagChunks = this.toTerraformPreviewParsePropertyRecord(propertyRecord[key].value as PropertyRecord);
+                            
+                            tagChunks.forEach((chunk) => {
+                                chunk.value = "  " + chunk.value;
+                            });
+
+                            codeChunks.push(...tagChunks);
+                            
+                        }
+
+                        codeChunks.push({value: "\n  }", className:""});
+
+                        break;
                     }
 
-                    codeChunks.push({value: "\n  }", className:""});
-
-                    break;
-                }
-
-                case "boolean": {
-                    codeChunks.push({value: propertyRecord[key].value ? "true" : "false", className:"terraformValue"});
-                    break;
-                }
-
-                case "link": {
-
-                    //this is hardcoded for 1 nested value currently
-
-                    const property: Property<any> = propertyRecord[key];
-                    const link: string[] | undefined = property.link;
-
-                    console.log(link);
-
-                    if(link == undefined){
-                        return[];
+                    case "boolean": {
+                        codeChunks.push({value: propertyRecord[key].value ? "true" : "false", className:"terraformValue"});
+                        break;
                     }
 
-                    let dependantPropertyRecord: PropertyRecord = this.terraformProperties[link[0]];
-                    console.log(dependantPropertyRecord);
+                    case "link": {
 
-                    let dependantProperty: Property<any> = dependantPropertyRecord[link[1]];
+                        //this is hardcoded for 1 nested value currently
 
-                    codeChunks.push({value: dependantProperty.value, className:"terraformValue"});
-                    break;
-                }
+                        const property: Property<any> = propertyRecord[key];
+                        const link: string[] | undefined = property.link;
 
-                default: {
-                    codeChunks.push({value: propertyRecord[key].value, className:"terraformValue"});
-                    break;
+                        console.log(link);
+
+                        if(link == undefined){
+                            return[];
+                        }
+
+                        let dependantPropertyRecord: PropertyRecord = this.terraformProperties[link[0]];
+                        console.log(dependantPropertyRecord);
+
+                        let dependantProperty: Property<any> = dependantPropertyRecord[link[1]];
+
+                        codeChunks.push({value: dependantProperty.value, className:"terraformValue"});
+                        break;
+                    }
+
+                    default: {
+                        codeChunks.push({value: propertyRecord[key].value, className:"terraformValue"});
+                        break;
+                    }
                 }
             }
 

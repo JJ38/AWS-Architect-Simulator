@@ -8,8 +8,6 @@ export default class EC2 extends Resource{
     public static targetTypes: EdgeType[] = ["sync"];
     public static permissionType: PermissionType = "IAM";
     
-
-
     public static create(id: string, service: Service): ResourceData{
 
         return {
@@ -66,9 +64,9 @@ export default class EC2 extends Resource{
                 }
             },
             componentProperties: {},
-            // iamProperties: {
-            //     "aws_iam_role": IamFactory.makeIamRole("", "lambda.amazonaws.com")
-            // }
+            iamProperties: {
+                "aws_iam_role": IamFactory.makeIamRole("", "lambda.amazonaws.com")
+            }
         }
 
     }
