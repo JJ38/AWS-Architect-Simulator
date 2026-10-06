@@ -115,6 +115,41 @@ No `Resource`, no `Sid` needed (single statement, nothing to disambiguate).
 `principalService` is a fixed trait per service — Lambda always passes
 `"lambda.amazonaws.com"`, same as `permissionType` in `types.ts`.
 
+## AWS service principals — the exact strings AWS expects
+
+Not just "the service's name" — each is a specific hostname-shaped string,
+and getting it wrong means `AssumeRole`/the call being denied, not a helpful
+error at `plan` time. Terraform doesn't validate these; AWS does, at apply
+or runtime.
+
+### IAM-role holders in this catalog (`permissionType: "IAM"`) — used as `Principal.Service` in `assume_role_policy`
+
+| Service | Principal |
+|---|---|
+| Lambda | `lambda.amazonaws.com` |
+| EC2 | `ec2.amazonaws.com` |
+
+### Service principals in this catalog (`permissionType: "Service"`) — used as `Principal` in a *resource-based* policy (e.g. `aws_lambda_permission`), not a trust policy
+
+| Service | Principal |
+|---|---|
+| S3 (event notifications) | `s3.amazonaws.com` |
+| API Gateway V2 | `apigateway.amazonaws.com` — same principal for both REST and HTTP APIs, despite the `v2` in the resource name |
+
+### Common ones not yet in this catalog, for when it grows
+
+| Service | Principal |
+|---|---|
+| ECS (task role trust) | `ecs-tasks.amazonaws.com` — not `ecs.amazonaws.com`, which is a different (control-plane) principal |
+| EventBridge | `events.amazonaws.com` |
+| SNS | `sns.amazonaws.com` |
+
+`SQS` and `DynamoDB` are `permissionType: "Passive"` in this catalog, so
+neither ever appears as a `Principal` — the Streams/polling case routes
+through the *caller's own* IAM policy instead (see
+`edge-terraform-templates.md`'s DynamoDB → Lambda worked example), never a
+resource-based permission naming `dynamodb.amazonaws.com`.
+
 ## Open questions / not yet decided
 
 - Exact shape `makeIamRolePolicyStatement` takes for the cross-resource

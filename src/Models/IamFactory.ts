@@ -1,5 +1,5 @@
 import { effect } from "../constants";
-import type { Property, PropertyRecord } from "../types";
+import type { Property } from "../types";
 
 
 export class IamFactory{

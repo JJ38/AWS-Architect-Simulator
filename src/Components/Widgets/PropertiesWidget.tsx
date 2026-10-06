@@ -33,7 +33,7 @@ function PropertiesWidget(
     const componentProperties: Record<string, PropertyRecord> | undefined = componentData != null ? componentData?.componentProperties : undefined;
     const componentTerraformProperties: Record<string, PropertyRecord> | undefined = componentData != null ? componentData?.terraformProperties : undefined;
     const iamTerraformProperties: Record<string, PropertyRecord> | undefined = componentData != null ? componentData?.iamProperties : undefined;
-                        console.log(iamTerraformProperties);
+    console.log(iamTerraformProperties);
    
     const selectedResourceTerraform: CodeChunk[] | undefined = statePropertiesWidgetController.getSelectedResource(selectedNodeData as ResourceData)?.toTerraformPreview();
 
@@ -58,16 +58,13 @@ function PropertiesWidget(
                 {
 
                     (componentProperties != null && componentProperties != undefined) &&
-
                         generateUIProperties(statePropertiesWidgetController, componentProperties, "component", componentData, componentID, componentSetter)
-
 
                 }
 
                 {
 
                     (componentTerraformProperties != null && componentTerraformProperties != undefined) &&
-
                         generateUIProperties(statePropertiesWidgetController, componentTerraformProperties, "terraform", componentData, componentID, componentSetter)
 
                 }
@@ -126,31 +123,23 @@ function generateUIProperties(
                             
                             Object.keys(properties[propertyRecordName]).map((inputName, index) => {
 
-                                // need to check here if the property is a tags type and change class. 
-
                                 const shouldShowProperty = propertiesWidgetController.shouldShowProperty(properties[propertyRecordName][inputName], componentData);
-                                
+
                                 if(!shouldShowProperty){
                                     return;
                                 }
 
-                                return <div className='propertyInputWrapper' key={inputName}>
-                                    <p className='propertyName'>{inputName}</p>
-                                    {
-                                        getPropertyInput(
-                                            propertiesWidgetController, 
-                                            componentData, 
-                                            properties[propertyRecordName][inputName],
-                                            propertyCategory, 
-                                            propertyRecordName,
-                                            inputName, 
-                                            componentID,
-                                            componentSetter,
-                                            index
-                                        )
-                                    }
-
-                                </div>
+                                return renderPropertyRow(
+                                    inputName,
+                                    properties[propertyRecordName][inputName],
+                                    propertiesWidgetController,
+                                    componentData,
+                                    propertyCategory,
+                                    propertyRecordName,
+                                    componentID,
+                                    componentSetter,
+                                    index
+                                );
                             })
                         }
                     </div>
@@ -158,6 +147,50 @@ function generateUIProperties(
 
     })
 
+}
+
+
+function renderPropertyRow(
+    inputName: string,
+    property: Property<any>,
+    propertiesWidgetController: PropertiesWidgetController,
+    componentData: ComponentData | undefined,
+    propertyCategory: PropertyCategory,
+    propertyRecordName: string,
+    componentID: string | null,
+    componentSetter: React.Dispatch<React.SetStateAction<any>> | null,
+    key?: number
+){
+    if(property.type === "tags"){
+        return getPropertyInput(
+            propertiesWidgetController,
+            componentData,
+            property,
+            propertyCategory,
+            propertyRecordName,
+            inputName,
+            componentID,
+            componentSetter,
+            key
+        );
+    }
+
+    return <div className='propertyInputWrapper' key={inputName}>
+        <p className='propertyName'>{inputName}</p>
+        {
+            getPropertyInput(
+                propertiesWidgetController,
+                componentData,
+                property,
+                propertyCategory,
+                propertyRecordName,
+                inputName,
+                componentID,
+                componentSetter,
+                key
+            )
+        }
+    </div>;
 }
 
 
@@ -242,28 +275,26 @@ function getPropertyInput(
                 return;
             }
 
-            return Object.keys(property.value).map((tagKey: string, index: number) => {
-
-                return  <div><br></br>
-                        <div className='propertyInputWrapper' key={tagKey}>
-                            <p className='propertyName'>{tagKey}</p>
-                                {
-                                    getPropertyInput(
-                                        propertiesWidgetController, 
-                                        componentData, 
-                                        property.value[tagKey],
-                                        propertyCategory, 
-                                        propertyRecordName,
-                                        tagKey, 
-                                        componentID,
-                                        componentSetter,
-                                        index
-                                    )
-                                }
-                    
-                        </div>
-                    </div>
-                });
+            return <details key={inputName} className='propertyBlockWrapper'>
+                <summary className='propertyRecordSectionSummary'>{inputName}</summary>
+                <div className='propertyRecordSectionWrapper'>
+                    {
+                        Object.keys(property.value).map((tagKey: string, index: number) => {
+                            return renderPropertyRow(
+                                tagKey,
+                                property.value[tagKey],
+                                propertiesWidgetController,
+                                componentData,
+                                propertyCategory,
+                                propertyRecordName,
+                                componentID,
+                                componentSetter,
+                                index
+                            );
+                        })
+                    }
+                </div>
+            </details>;
         }
 
         case "json": {
@@ -271,6 +302,9 @@ function getPropertyInput(
         }
 
         case "array": {
+
+            console.log("array");
+            console.log(property.value);
             return <div></div>
         }
     }

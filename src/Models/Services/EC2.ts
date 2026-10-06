@@ -1,5 +1,6 @@
 import Resource from "../Resource";
 import type { EdgeType, PermissionType, ResourceData, Service, ValidationResult } from "../../types.ts";
+import { IamFactory } from "../IamFactory.ts";
 
 export default class EC2 extends Resource{
 
@@ -64,7 +65,10 @@ export default class EC2 extends Resource{
                     },
                 }
             },
-            componentProperties: {}
+            componentProperties: {},
+            iamProperties: {
+                "aws_iam_role": IamFactory.makeIamRole("", "lambda.amazonaws.com")
+            }
         }
 
     }
