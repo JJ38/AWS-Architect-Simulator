@@ -72,20 +72,12 @@ export default class Lambda extends Resource{
     }
 
     toTerraformEdgePropertiesCaller(edgeType: EdgeType, counterPart: Resource): Record<string, PropertyRecord>{
-    
-        const record: Record<string, PropertyRecord> = { };
+        
 
-        const aws_iam_role_policy: PropertyRecord = {//https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy
-            "name": {value: null, type: "string"},
-            "name_prefix": {value: null, type: "string"},
-            "policy": {value:null, type: "json"},
-            "role": {value: null, type: "string"}
-        }
-
-        record['aws_iam_role_policy'] = aws_iam_role_policy;
+        
     
 
-        return record;
+        return {};
 
     }
 

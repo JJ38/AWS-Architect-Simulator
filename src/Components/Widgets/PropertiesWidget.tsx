@@ -33,8 +33,7 @@ function PropertiesWidget(
     const componentProperties: Record<string, PropertyRecord> | undefined = componentData != null ? componentData?.componentProperties : undefined;
     const componentTerraformProperties: Record<string, PropertyRecord> | undefined = componentData != null ? componentData?.terraformProperties : undefined;
     const iamTerraformProperties: Record<string, PropertyRecord> | undefined = componentData != null ? componentData?.iamProperties : undefined;
-
-    console.log(iamTerraformProperties);
+                        console.log(iamTerraformProperties);
    
     const selectedResourceTerraform: CodeChunk[] | undefined = statePropertiesWidgetController.getSelectedResource(selectedNodeData as ResourceData)?.toTerraformPreview();
 
@@ -75,8 +74,7 @@ function PropertiesWidget(
                 
                 {
 
-                    (iamTerraformProperties != null && iamTerraformProperties != undefined) &&
-
+                    (iamTerraformProperties != null && iamTerraformProperties != undefined) &&  
                         generateUIProperties(statePropertiesWidgetController, iamTerraformProperties, "iam", componentData, componentID, componentSetter)
 
                 }
@@ -182,24 +180,28 @@ function getPropertyInput(
 
     switch(inputType){
 
+        case "text":{
+
+            const text = <p key={key}>{property.value}</p>
+            return text;
+        }
+
+
         case "link":{
 
             const text = <p key={key}>{propertiesWidgetController.getDependantProperty(property, componentData)}</p>
-
             return text;
         }
 
         case "string":{
 
             const input = <input key={key} className="propertyInput" id={`${inputName}`} type="text" name={`${inputName}`} value={property.value ?? ""} onChange={(event) => {propertiesWidgetController.keyboardInputOnChange(event, property, propertyCategory, propertyRecordName, inputName, componentID, componentSetter)}}/>
-            
             return input;
         }
 
         case "number":{
 
-            const input = <input key={key} className="propertyInput" id={`${inputName}`} type="number" name={`${inputName}`} value={`${property.value ?? ""}`} onChange={(event) => {propertiesWidgetController.keyboardInputOnChange(event, property, propertyCategory, propertyRecordName, inputName, componentID, componentSetter)}}/>
-            
+            const input = <input key={key} className="propertyInput" id={`${inputName}`} type="number" name={`${inputName}`} value={`${property.value ?? ""}`} onChange={(event) => {propertiesWidgetController.keyboardInputOnChange(event, property, propertyCategory, propertyRecordName, inputName, componentID, componentSetter)}}/>     
             return input;
         }
 
@@ -265,8 +267,11 @@ function getPropertyInput(
         }
 
         case "json": {
-
             return <textarea name="" id=""></textarea>
+        }
+
+        case "array": {
+            return <div></div>
         }
     }
 
