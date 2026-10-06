@@ -1,5 +1,6 @@
 import Resource from "../Resource";
-import type { EdgeType, PermissionType, ResourceData, Service, ValidationResult } from "../../types.ts";
+import type { EdgeType, PermissionType, PropertyRecord, ResourceData, Service, ValidationResult } from "../../types.ts";
+import { IamFactory } from "../IamFactory.ts";
 
 
 export default class Lambda extends Resource{
@@ -10,10 +11,13 @@ export default class Lambda extends Resource{
 
     public static create(id: string, service: Service): ResourceData{
 
-        return {
+        const resourceData: ResourceData = {
             id: id,
             service: service,
             resourceName: id,
+            metaData:{
+
+            },
             terraformProperties: {
                 "aws_lambda_function": {
                     "function_name": {value: null, type: "string"},
@@ -57,8 +61,48 @@ export default class Lambda extends Resource{
                     },
                 }
             },
-            componentProperties: {}
+            componentProperties: {},
+            iamProperties: {
+                "aws_iam_role": IamFactory.makeIamRole("", "lambda.amazonaws.com")
+            }
         }
+
+        return resourceData;
+
+    }
+
+    toTerraformEdgePropertiesCaller(edgeType: EdgeType, counterPart: Resource): Record<string, PropertyRecord>{
+    
+        const record: Record<string, PropertyRecord> = { };
+
+        const aws_iam_role_policy: PropertyRecord = {//https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy
+            "name": {value: null, type: "string"},
+            "name_prefix": {value: null, type: "string"},
+            "policy": {value:null, type: "json"},
+            "role": {value: null, type: "string"}
+        }
+
+        record['aws_iam_role_policy'] = aws_iam_role_policy;
+    
+
+        return record;
+
+    }
+
+    toTerraformEdgePropertiesReceiver(edgeType: EdgeType, counterPart: Resource){
+
+        const record: Record<string, PropertyRecord> = { };
+
+        const resourcePropertyRecord: PropertyRecord = {
+            "resource_attribute_name_wdw": {
+                value: "resource attribute value", type: "string",
+            }
+        }
+
+        record['resource_name_receiver'] = resourcePropertyRecord;
+    
+
+        return record;
 
     }
 

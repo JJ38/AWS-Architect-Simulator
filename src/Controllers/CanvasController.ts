@@ -1,5 +1,5 @@
 import { type XYPosition, type Node, type ViewportHelperFunctions, type Edge, addEdge } from "@xyflow/react";
-import type { AppEdge, AppNode, EdgeType, PermissionType, ResourceData, Service } from "../types";
+import type { AppEdge, AppNode, EdgeType, PermissionType, PropertyRecord, ResourceData, Service } from "../types";
 import { CanvasModel } from "../Models/CanvasModel.ts";
 import { resourceContainer, serviceImageSize } from "../constants.ts";
 import type Resource from "../Models/Resource.ts";
@@ -139,6 +139,10 @@ export class CanvasController{
     
         const sourceNode = stateNodes.find((node: AppNode) => node.id == sourceID);
         const targetNode = stateNodes.find((node: AppNode) => node.id == targetID);
+
+        if(sourceNode == undefined || targetNode == undefined){
+            return;
+        }
         
         const sourceServiceName = sourceNode?.data.service.name;
         const targetServiceName = targetNode?.data.service.name;
@@ -162,33 +166,61 @@ export class CanvasController{
 
         const defaultEdge = validEdgeType[0] ?? "";
 
+        let callerInstance: Resource;
+        let receiverInstance: Resource;
+        let callerName: string;
+        let receiverName: string;
 
-        let callerPermissionType: PermissionType;
-
-        if(defaultEdge == "pull"){
-            callerPermissionType = targetResource.permissionType;
-        }else{
-            callerPermissionType = sourceResource.permissionType;
-        }
         
-        console.log(callerPermissionType);
+        if(defaultEdge == "pull"){
+
+            callerInstance = new targetResource(targetNode.data);
+            receiverInstance = new sourceResource(sourceNode.data);
+            callerName = targetServiceName;
+            receiverName = sourceServiceName;
+
+        }else{
+
+            callerInstance = new sourceResource(sourceNode.data);
+            receiverInstance = new targetResource(targetNode.data);
+            callerName = sourceServiceName;
+            receiverName = targetServiceName;
+
+        }
 
         params['type'] = "standardEdge";
         params['data'] = {
+            metaData:{
+                "sourceServiceName": sourceServiceName,
+                "targetServiceName": targetServiceName,
+            },
             componentProperties:{
-                "metadata": {
+                "behaviour": {
                     "edgeType": { value: defaultEdge, type: "edgeType", options: validEdgeType },
-                    "sourceServiceName": sourceServiceName,
-                    "targetServiceName": targetServiceName,
                 }
             },
-            terraformProperties: {
-                "todo": {
-                    "test": { value: null, type: "string" },
-                }
-            }
+            terraformProperties: {}
         };
-    
+
+        const callerTerraform: Record<string, PropertyRecord> | null = callerInstance.toTerraformEdgePropertiesCaller(defaultEdge, receiverInstance);
+        const receiverTerraform: Record<string, PropertyRecord> | null = callerInstance.toTerraformEdgePropertiesReceiver(defaultEdge, receiverInstance);
+
+        if(callerTerraform != null){
+
+            Object.keys(callerTerraform).map((key) => {
+                params['data']['terraformProperties'][key] = callerTerraform[key];
+            });
+
+        }
+
+        if(receiverTerraform != null){
+
+            Object.keys(receiverTerraform).map((key) => {
+                params['data']['terraformProperties'][key] = receiverTerraform[key];
+            });
+
+        }
+
         this.setEdges((edgesSnapshot) => addEdge(params, edgesSnapshot))
     
     }

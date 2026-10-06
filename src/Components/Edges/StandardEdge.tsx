@@ -36,7 +36,7 @@ export function StandardEdge({
   return (
     <>
       <BaseEdge id={id} path={edgePath} className={`standardEdge`}/>
-      <BaseEdge id={`${id}-pulse`} path={edgePath} interactionWidth={0} className={`standardEdge-pulse standardEdge-${data?.componentProperties.metadata.edgeType.value}`}/>
+      <BaseEdge id={`${id}-pulse`} path={edgePath} interactionWidth={0} className={`standardEdge-pulse standardEdge-${data?.componentProperties.behaviour.edgeType.value}`}/>
     </>
   );
 }

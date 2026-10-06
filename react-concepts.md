@@ -498,3 +498,19 @@ This decides *which Terraform resource type* a connection needs: a caller
 that's an IAM-role holder gets an identity policy attached to its role; a
 caller that's a service principal gets a resource-based permission block on
 the callee instead.
+
+## 24. `aws_iam_role` vs. `aws_iam_role_policy` — two resources, one badge
+
+**`aws_iam_role`** — the identity itself. Think of it as Lambda's ID badge:
+created once, always the same shape, says "I am this Lambda."
+
+**`aws_iam_role_policy`** — the list of doors that badge can open. Attached
+separately, and grows over time: one connection to S3 adds a door, a
+connection to DynamoDB adds another, all on the *same* badge.
+
+AWS splits these into two resources on purpose — "having an identity" and
+"what that identity can do" are different concerns, so permissions can be
+added or removed later without ever touching the identity. That's why the
+role is a *fixed* thing a resource always has (made once, e.g. in
+`Lambda.create()`), while the policy is what each new edge/connection keeps
+adding to.

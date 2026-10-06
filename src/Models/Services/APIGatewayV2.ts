@@ -17,6 +17,9 @@ export default class APIGatewayV2 extends Resource{
             id: id,
             service: service,
             resourceName: id,
+            metaData:{
+
+            },
             terraformProperties: {
                 "aws_apigatewayv2_api": {
                     "name": {value: null, type: "string"},
@@ -39,6 +42,15 @@ export default class APIGatewayV2 extends Resource{
             componentProperties: {}
         }
 
+    }
+
+
+    toTerraformEdgePropertiesCaller(edgeType: EdgeType, counterPart: Resource){
+        return null;
+    }
+
+    toTerraformEdgePropertiesReceiver(edgeType: EdgeType, counterPart: Resource){
+        return null;
     }
 
 

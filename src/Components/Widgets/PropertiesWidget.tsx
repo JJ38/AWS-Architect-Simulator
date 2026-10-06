@@ -1,7 +1,9 @@
 import { memo, useState } from 'react';
 import { PropertiesWidgetController } from '../../Controllers/PropertiesWidgetController';
-import type { AppEdge, AppNode, CodeChunk, ComponentData, EdgeData, Property, PropertyCategory, PropertyRecord, ResourceData } from '../../types';
+import type { AppEdge, AppNode, CodeChunk, ComponentData, EdgeData, PermissionType, Property, PropertyCategory, PropertyRecord, ResourceData } from '../../types';
 import '../../styles/PropertiesWidget.css'
+import { resourceContainer } from '../../constants';
+import type { ResourceStatics } from '../../Models/Resource';
 
 
 function PropertiesWidget(
@@ -33,9 +35,8 @@ function PropertiesWidget(
     const componentSetter: React.Dispatch<React.SetStateAction<any>> | null = stateSelectedNodeID != undefined ? setNodes : selectedEdgeData != null ? setEdges : null;
     const componentProperties: Record<string, PropertyRecord> | undefined = componentData != null ? componentData?.componentProperties : undefined;
     const componentTerraformProperties: Record<string, PropertyRecord> | undefined = componentData != null ? componentData?.terraformProperties : undefined;
-
+   
     const selectedResourceTerraform: CodeChunk[] | undefined = statePropertiesWidgetController.getSelectedResource(selectedNodeData as ResourceData)?.toTerraformPreview();
-    
 
     return(
 
@@ -61,6 +62,9 @@ function PropertiesWidget(
 
                     Object.keys(componentProperties).map((propertyRecordName) => {
 
+                        if(componentProperties[propertyRecordName] == null){
+                            return;
+                        }
 
                         return  <details  key={propertyRecordName} className='propertyBlockWrapper'>
                                     <summary className='propertyRecordSectionSummary'>{propertyRecordName}</summary>
@@ -69,7 +73,11 @@ function PropertiesWidget(
 
                                         {
 
-                                            Object.keys(componentProperties[propertyRecordName]).map((inputName) => {
+                                            Object.keys(componentProperties[propertyRecordName]).map((inputName, index) => {
+
+                                                if(inputName == null){
+                                                    return;
+                                                }
 
                                                 return <div className='propertyInputWrapper' key={inputName}>
                                                     <p className='propertyName'>{inputName}</p>
@@ -82,7 +90,8 @@ function PropertiesWidget(
                                                             propertyRecordName,
                                                             inputName, 
                                                             componentID,
-                                                            componentSetter
+                                                            componentSetter,
+                                                            index
                                                         )
                                                     }
 
@@ -101,14 +110,18 @@ function PropertiesWidget(
                 (componentTerraformProperties != null && componentTerraformProperties != undefined) &&
 
                     Object.keys(componentTerraformProperties).map((propertyRecordName) => {
-                        
+
+                        if(componentTerraformProperties[propertyRecordName] == null){
+                            return;
+                        }
+
                         return <details  key={propertyRecordName} className='propertyBlockWrapper'>
                                     <summary className='propertyRecordSectionSummary'>{propertyRecordName}</summary>
 
                                     <div className='propertyRecordSectionWrapper'>
                                         {
-
-                                            Object.keys(componentTerraformProperties[propertyRecordName]).map((inputName) => {
+                                            
+                                            Object.keys(componentTerraformProperties[propertyRecordName]).map((inputName, index) => {
 
                                                 // need to check here if the property is a tags type and change class. 
 
@@ -129,7 +142,8 @@ function PropertiesWidget(
                                                             propertyRecordName,
                                                             inputName, 
                                                             componentID,
-                                                            componentSetter
+                                                            componentSetter,
+                                                            index
                                                         )
                                                     }
 
@@ -148,8 +162,6 @@ function PropertiesWidget(
             </div>
 
              {
-                
-                selectedNodeData && 
 
                 <div className='terraformSnippetWrapper'>
                     <pre>
@@ -228,6 +240,20 @@ function getPropertyInput(
             </select>
         }
 
+        case "edgeType":{
+
+            if(property.options == undefined){
+                return;
+            }
+            
+            return <select name={`${key}`} id={`${key}`} onChange={(event) => {propertiesWidgetController.onSelectChange(event, property, propertyCategory, propertyRecordName, inputName, componentID, componentSetter)}}>
+                {property.options.map((option: string, index: number) => {
+                    return <option key={key + "_" + index} value={`${option}`} selected={option == property.value}>{option}</option>
+                })}
+            </select>
+        }
+
+
         case "tags":{
 
             if(property.value == null){
@@ -256,6 +282,11 @@ function getPropertyInput(
                         </div>
                     </div>
                 });
+        }
+
+        case "json": {
+
+            return <textarea name="" id=""></textarea>
         }
     }
 

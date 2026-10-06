@@ -16,6 +16,9 @@ export default class EC2 extends Resource{
             id: id,
             service: service,
             resourceName: id,
+            metaData:{
+
+            },
             terraformProperties: {
                 "aws_instance": {
                     "ami": {value: null, type: "string"},
@@ -64,6 +67,15 @@ export default class EC2 extends Resource{
             componentProperties: {}
         }
 
+    }
+
+
+    toTerraformEdgePropertiesCaller(edgeType: EdgeType, counterPart: Resource){
+        return null;
+    }
+
+    toTerraformEdgePropertiesReceiver(edgeType: EdgeType, counterPart: Resource){
+        return null;
     }
 
     public validate(): ValidationResult {

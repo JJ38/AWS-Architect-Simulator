@@ -1,5 +1,5 @@
 import Resource from "../Resource";
-import type { Service, ValidationResult, EdgeType, ResourceData, PermissionType } from "../../types.ts";
+import type { Service, ValidationResult, EdgeType, ResourceData, PermissionType, PropertyRecord } from "../../types.ts";
 
 
 export default class S3 extends Resource{
@@ -15,6 +15,9 @@ export default class S3 extends Resource{
             id: id,
             service: service,
             resourceName: id,
+            metaData:{
+
+            },
             terraformProperties: {
                 "aws_s3_bucket": {
                     "bucket": { value: id, type: "string", anchor: true},
@@ -51,6 +54,28 @@ export default class S3 extends Resource{
             componentProperties: {}
         }
 
+    }
+
+
+    toTerraformEdgePropertiesCaller(edgeType: EdgeType, counterPart: Resource){
+        return null;
+    }
+
+    toTerraformEdgePropertiesReceiver(edgeType: EdgeType, counterPart: Resource){
+        
+        const record: Record<string, PropertyRecord> = { };
+    
+        const resourcePropertyRecord: PropertyRecord = {
+            "resource_attribute_name": {
+                value: "resource attribute value", type: "string",
+            }
+        }
+
+        record['resource_name'] = resourcePropertyRecord;
+    
+
+        return record;
+        
     }
 
 

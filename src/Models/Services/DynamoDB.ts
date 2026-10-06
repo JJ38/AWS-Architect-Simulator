@@ -21,6 +21,9 @@ export default class DyanmoDB extends Resource{
             id: id,
             service: service,
             resourceName: id,
+            metaData:{
+
+            },
             terraformProperties: {
                 "aws_dynamodb_table": {
                     "name": {value: id, type: "string"},
@@ -57,14 +60,20 @@ export default class DyanmoDB extends Resource{
                         value: null,
                         type: "tags"
                     },
-                    
                 }
             },
             componentProperties: {}
         }
 
     }
-    
+
+    toTerraformEdgePropertiesCaller(edgeType: EdgeType, counterPart: Resource){
+        return null;
+    }
+
+    toTerraformEdgePropertiesReceiver(edgeType: EdgeType, counterPart: Resource){
+        return null;
+    }
 
     public validate(): ValidationResult {
 

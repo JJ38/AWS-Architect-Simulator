@@ -1,4 +1,3 @@
-import { PropertiesWidgetController } from "../Controllers/PropertiesWidgetController";
 import type { CodeChunk, EdgeType, PermissionType, Property, PropertyRecord, ResourceData, Service, ValidationResult } from "../types";
 
 
@@ -19,7 +18,6 @@ export default abstract class Resource{
     public resourceName: string;
     public terraformProperties: Record<string, PropertyRecord>;
 
-    abstract validate(): ValidationResult;
 
     public constructor(data: ResourceData){
         this.id = data.id;
@@ -27,6 +25,12 @@ export default abstract class Resource{
         this.resourceName = data.resourceName;
         this.terraformProperties = data.terraformProperties;
     }
+    
+
+    abstract validate(): ValidationResult;
+    abstract toTerraformEdgePropertiesCaller(edgeType: EdgeType, counterPart: Resource): Record<string, PropertyRecord> | null;
+    abstract toTerraformEdgePropertiesReceiver(edgeType: EdgeType, counterPart: Resource): Record<string, PropertyRecord> | null;
+
 
     toTerraformPreview(): CodeChunk[]{
 
@@ -55,8 +59,7 @@ export default abstract class Resource{
         const codeChunks: CodeChunk[] = [];
 
         for(const key of Object.keys(propertyRecord)){
-
-      
+            
             if(propertyRecord[key].value == null){
                 break;
             }
@@ -168,4 +171,5 @@ export default abstract class Resource{
         return terraform;
     }
 
+   
 }

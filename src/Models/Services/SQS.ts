@@ -15,6 +15,9 @@ export default class SQS extends Resource{
             id: id,
             service: service,
             resourceName: id,
+            metaData:{
+
+            },
             terraformProperties: {
                 "aws_sqs_queue": {
                     "name": {value: id, type: "string"},
@@ -35,6 +38,15 @@ export default class SQS extends Resource{
             componentProperties: {}
         }
 
+    }
+
+
+    toTerraformEdgePropertiesCaller(edgeType: EdgeType, counterPart: Resource){
+        return null;
+    }
+
+    toTerraformEdgePropertiesReceiver(edgeType: EdgeType, counterPart: Resource){
+        return null;
     }
 
 

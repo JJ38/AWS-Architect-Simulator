@@ -46,3 +46,5 @@ export const regions: string[] = [
     "eu-north-1",
     "sa-east-1"
 ]
+
+export const effect = ["allow", "deny"]

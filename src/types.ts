@@ -21,8 +21,10 @@ export type ComponentData = ResourceData | EdgeData;
 export type PropertyRecord = Record<string, Property<any>>;
 
 type BaseComponentData = {
+    metaData: Record<string, any>,
     componentProperties: Record<string, PropertyRecord>,
-    terraformProperties: Record<string, PropertyRecord>
+    terraformProperties: Record<string, PropertyRecord>,
+    iamProperties?: Record<string, PropertyRecord> 
 }
 
 export type ResourceData = BaseComponentData & {
@@ -61,6 +63,8 @@ export type PropertyCategory =
 export type PropertyType =
 | "edgeType"
 | "link"
+| "json"
+| "*"
 | "string"
 | "boolean"
 | "number"
