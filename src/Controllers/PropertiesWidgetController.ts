@@ -182,13 +182,27 @@ export class PropertiesWidgetController {
                 return newComponent;
             }
 
-            if(propertyCategory == "component"){
+            switch (propertyCategory){
 
-                newComponent.data.componentProperties[propertyRecordName][inputName] = newNodeProperty;
+                case "component": {
+                    newComponent.data.componentProperties[propertyRecordName][inputName] = newNodeProperty;
+                    break;
+                }
 
-            }else if(propertyCategory == "terraform"){
+                case "terraform": {
+                    newComponent.data.terraformProperties[propertyRecordName][inputName] = newNodeProperty;
+                    break;
+                }
 
-                newComponent.data.terraformProperties[propertyRecordName][inputName] = newNodeProperty;
+                case "iam": {
+                    
+                    if(newComponent.data.iamProperties == undefined){
+                        return;
+                    }
+
+                    newComponent.data.iamProperties[propertyRecordName][inputName] = newNodeProperty;
+                    break;
+                }
 
             }
 

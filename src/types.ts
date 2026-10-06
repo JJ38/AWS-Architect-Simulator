@@ -58,6 +58,7 @@ export interface Property<T>{
 export type PropertyCategory =
 | "component"
 | "terraform" 
+| "iam"
 
 //union type. Similar to an enum but more lightweight
 export type PropertyType =

@@ -1,10 +1,7 @@
 import { memo, useState } from 'react';
 import { PropertiesWidgetController } from '../../Controllers/PropertiesWidgetController';
-import type { AppEdge, AppNode, CodeChunk, ComponentData, EdgeData, PermissionType, Property, PropertyCategory, PropertyRecord, ResourceData } from '../../types';
+import type { AppEdge, AppNode, CodeChunk, ComponentData, Property, PropertyCategory, PropertyRecord, ResourceData } from '../../types';
 import '../../styles/PropertiesWidget.css'
-import { resourceContainer } from '../../constants';
-import type { ResourceStatics } from '../../Models/Resource';
-
 
 function PropertiesWidget(
     { 
@@ -35,6 +32,9 @@ function PropertiesWidget(
     const componentSetter: React.Dispatch<React.SetStateAction<any>> | null = stateSelectedNodeID != undefined ? setNodes : selectedEdgeData != null ? setEdges : null;
     const componentProperties: Record<string, PropertyRecord> | undefined = componentData != null ? componentData?.componentProperties : undefined;
     const componentTerraformProperties: Record<string, PropertyRecord> | undefined = componentData != null ? componentData?.terraformProperties : undefined;
+    const iamTerraformProperties: Record<string, PropertyRecord> | undefined = componentData != null ? componentData?.iamProperties : undefined;
+
+    console.log(iamTerraformProperties);
    
     const selectedResourceTerraform: CodeChunk[] | undefined = statePropertiesWidgetController.getSelectedResource(selectedNodeData as ResourceData)?.toTerraformPreview();
 
@@ -56,108 +56,30 @@ function PropertiesWidget(
             
             <div className="propertiesWrapper">
 
-            {
+                {
 
-                (componentProperties != null && componentProperties != undefined) &&
+                    (componentProperties != null && componentProperties != undefined) &&
 
-                    Object.keys(componentProperties).map((propertyRecordName) => {
+                        generateUIProperties(statePropertiesWidgetController, componentProperties, "component", componentData, componentID, componentSetter)
 
-                        if(componentProperties[propertyRecordName] == null){
-                            return;
-                        }
 
-                        return  <details  key={propertyRecordName} className='propertyBlockWrapper'>
-                                    <summary className='propertyRecordSectionSummary'>{propertyRecordName}</summary>
+                }
 
-                                    <div className='propertyRecordSectionWrapper'>
+                {
 
-                                        {
+                    (componentTerraformProperties != null && componentTerraformProperties != undefined) &&
 
-                                            Object.keys(componentProperties[propertyRecordName]).map((inputName, index) => {
+                        generateUIProperties(statePropertiesWidgetController, componentTerraformProperties, "terraform", componentData, componentID, componentSetter)
 
-                                                if(inputName == null){
-                                                    return;
-                                                }
+                }
+                
+                {
 
-                                                return <div className='propertyInputWrapper' key={inputName}>
-                                                    <p className='propertyName'>{inputName}</p>
-                                                    {
-                                                        getPropertyInput(
-                                                            statePropertiesWidgetController, 
-                                                            componentData, 
-                                                            componentProperties[propertyRecordName][inputName],
-                                                            "component", 
-                                                            propertyRecordName,
-                                                            inputName, 
-                                                            componentID,
-                                                            componentSetter,
-                                                            index
-                                                        )
-                                                    }
+                    (iamTerraformProperties != null && iamTerraformProperties != undefined) &&
 
-                                                </div>
-                                            })
-                                        }
-                                    </div>
-                                </details>
-                    
-                    })
+                        generateUIProperties(statePropertiesWidgetController, iamTerraformProperties, "iam", componentData, componentID, componentSetter)
 
-            }
-
-            {
-
-                (componentTerraformProperties != null && componentTerraformProperties != undefined) &&
-
-                    Object.keys(componentTerraformProperties).map((propertyRecordName) => {
-
-                        if(componentTerraformProperties[propertyRecordName] == null){
-                            return;
-                        }
-
-                        return <details  key={propertyRecordName} className='propertyBlockWrapper'>
-                                    <summary className='propertyRecordSectionSummary'>{propertyRecordName}</summary>
-
-                                    <div className='propertyRecordSectionWrapper'>
-                                        {
-                                            
-                                            Object.keys(componentTerraformProperties[propertyRecordName]).map((inputName, index) => {
-
-                                                // need to check here if the property is a tags type and change class. 
-
-                                                const shouldShowProperty = statePropertiesWidgetController.shouldShowProperty(componentTerraformProperties[propertyRecordName][inputName], componentData);
-                                                
-                                                if(!shouldShowProperty){
-                                                    return;
-                                                }
-
-                                                return <div className='propertyInputWrapper' key={inputName}>
-                                                    <p className='propertyName'>{inputName}</p>
-                                                    {
-                                                        getPropertyInput(
-                                                            statePropertiesWidgetController, 
-                                                            componentData, 
-                                                            componentTerraformProperties[propertyRecordName][inputName],
-                                                            "terraform", 
-                                                            propertyRecordName,
-                                                            inputName, 
-                                                            componentID,
-                                                            componentSetter,
-                                                            index
-                                                        )
-                                                    }
-
-                                                </div>
-                                            })
-                                        }
-                                    </div>
-                                </details>          
-
-                    })
-
-            }
-
-           
+                }
 
             </div>
 
@@ -179,6 +101,64 @@ function PropertiesWidget(
 
         </div>
     );
+
+}
+
+function generateUIProperties(
+    propertiesWidgetController: PropertiesWidgetController, 
+    properties: Record<string, PropertyRecord>,
+    propertyCategory: PropertyCategory,
+    componentData: ComponentData | undefined, 
+    componentID: string | null,  
+    componentSetter: React.Dispatch<React.SetStateAction<any>> | null,
+){
+
+
+    return Object.keys(properties).map((propertyRecordName) => {
+
+        if(properties[propertyRecordName] == null){
+            return;
+        }
+
+        return <details  key={propertyRecordName} className='propertyBlockWrapper'>
+                    <summary className='propertyRecordSectionSummary'>{propertyRecordName}</summary>
+
+                    <div className='propertyRecordSectionWrapper'>
+                        {
+                            
+                            Object.keys(properties[propertyRecordName]).map((inputName, index) => {
+
+                                // need to check here if the property is a tags type and change class. 
+
+                                const shouldShowProperty = propertiesWidgetController.shouldShowProperty(properties[propertyRecordName][inputName], componentData);
+                                
+                                if(!shouldShowProperty){
+                                    return;
+                                }
+
+                                return <div className='propertyInputWrapper' key={inputName}>
+                                    <p className='propertyName'>{inputName}</p>
+                                    {
+                                        getPropertyInput(
+                                            propertiesWidgetController, 
+                                            componentData, 
+                                            properties[propertyRecordName][inputName],
+                                            propertyCategory, 
+                                            propertyRecordName,
+                                            inputName, 
+                                            componentID,
+                                            componentSetter,
+                                            index
+                                        )
+                                    }
+
+                                </div>
+                            })
+                        }
+                    </div>
+                </details>          
+
+    })
 
 }
 
