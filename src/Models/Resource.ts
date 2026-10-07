@@ -86,7 +86,7 @@ export default abstract class Resource{
     }
 
 
-    toTerraformPreviewParseProperty(property: Property<any>, propertyName: string, numberOfIndents: number): CodeChunk[]{
+    toTerraformPreviewParseProperty(property: Property<any>, propertyName: string | null, numberOfIndents: number): CodeChunk[]{
 
         if(property == null){
             return [];
@@ -101,8 +101,12 @@ export default abstract class Resource{
         }
 
         codeChunks.push({value: `\n${indent}`, className:"terraformProperty"})
-        codeChunks.push({value: propertyName, className:"terraformProperty"})
-        codeChunks.push({value: " = ", className:""})
+
+        if(propertyName != null){
+            codeChunks.push({value: propertyName, className:"terraformProperty"})
+            codeChunks.push({value: " = ", className:""})
+        }
+
         codeChunks.push({value: "", className:""})
 
         switch (property.type) {
@@ -113,7 +117,7 @@ export default abstract class Resource{
 
                 if(property.value != null){
                     
-                    const tagChunks = this.toTerraformPreviewParsePropertyRecord(property.value as PropertyRecord, numberOfIndents + 1);
+                    const tagChunks = this.toTerraformPreviewParsePropertyRecord(property.value as PropertyRecord, numberOfIndents);
                     codeChunks.push(...tagChunks);
                     
                 }
@@ -157,7 +161,7 @@ export default abstract class Resource{
 
                     property.value.forEach((value: Property<any>, index: number) => {
                         console.log(value)
-                        arrayChunks = [...arrayChunks, ...this.toTerraformPreviewParseProperty(value, index.toString(), numberOfIndents + 1)];
+                        arrayChunks = [...arrayChunks, ...this.toTerraformPreviewParseProperty(value, null, numberOfIndents + 1)];
                     })
 
                     codeChunks.push(...arrayChunks);
