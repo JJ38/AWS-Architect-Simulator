@@ -37,9 +37,8 @@ export default abstract class Resource{
     toTerraformPreview(): CodeChunk[]{
 
         let codeChunks: CodeChunk[] = this.toTerraformResource(this.terraformProperties)
-        console.log(this.iamProperties);
 
-        if(this.iamProperties != null){
+        if(this.iamProperties != undefined){
             codeChunks = [...codeChunks, ...this.toTerraformResource(this.iamProperties)];
         }
 
@@ -59,7 +58,7 @@ export default abstract class Resource{
 
             codeChunks.push({value: "{", className:"terraformBracket"})
             
-            codeChunks.push(...this.toTerraformPreviewParsePropertyRecord(properties[recordName]));
+            codeChunks.push(...this.toTerraformPreviewParsePropertyRecord(properties[recordName], 0));
             codeChunks.push({value: "\n}\n", className:"terraformBracket"})
 
         }
@@ -68,75 +67,113 @@ export default abstract class Resource{
     }
 
 
-    toTerraformPreviewParsePropertyRecord(propertyRecord: PropertyRecord): CodeChunk[]{
+    toTerraformPreviewParsePropertyRecord(propertyRecord: PropertyRecord, numberOfIndents: number): CodeChunk[]{
 
-        const codeChunks: CodeChunk[] = [];
+        let codeChunks: CodeChunk[] = [];
 
         for(const key of Object.keys(propertyRecord)){
 
             if(propertyRecord[key].value != null){
 
-                codeChunks.push({value: "\n  ", className:"terraformProperty"})
-                codeChunks.push({value: key, className:"terraformProperty"})
-                codeChunks.push({value: "-=-", className:""})
-
-                switch (propertyRecord[key].type) {
-
-                    case "tags": { 
-
-                        codeChunks.push({value: "{", className:""});
-
-                        if(propertyRecord[key].value != null){
+                codeChunks = [...codeChunks, ...this.toTerraformPreviewParseProperty(propertyRecord[key], key, numberOfIndents + 1)];
                 
-                            const tagChunks = this.toTerraformPreviewParsePropertyRecord(propertyRecord[key].value as PropertyRecord);
-                            
-                            tagChunks.forEach((chunk) => {
-                                chunk.value = "  " + chunk.value;
-                            });
-
-                            codeChunks.push(...tagChunks);
-                            
-                        }
-
-                        codeChunks.push({value: "\n  }", className:""});
-
-                        break;
-                    }
-
-                    case "boolean": {
-                        codeChunks.push({value: propertyRecord[key].value ? "true" : "false", className:"terraformValue"});
-                        break;
-                    }
-
-                    case "link": {
-
-                        //this is hardcoded for 1 nested value currently
-
-                        const property: Property<any> = propertyRecord[key];
-                        const link: string[] | undefined = property.link;
-
-                        if(link == undefined){
-                            return[];
-                        }
-
-                        let dependantPropertyRecord: PropertyRecord = this.terraformProperties[link[0]];
-                        console.log(dependantPropertyRecord);
-
-                        let dependantProperty: Property<any> = dependantPropertyRecord[link[1]];
-
-                        codeChunks.push({value: dependantProperty.value, className:"terraformValue"});
-                        break;
-                    }
-
-                    default: {
-                        codeChunks.push({value: propertyRecord[key].value, className:"terraformValue"});
-                        break;
-                    }
-                }
             }
 
         }
             
+        return codeChunks;
+
+    }
+
+
+    toTerraformPreviewParseProperty(property: Property<any>, propertyName: string, numberOfIndents: number): CodeChunk[]{
+
+        if(property == null){
+            return [];
+        }
+
+        const codeChunks: CodeChunk[] = [];
+
+        let indent: string = "";
+
+        for(let i = 0; i < numberOfIndents; i++){
+            indent += "  ";
+        }
+
+        codeChunks.push({value: `\n${indent}`, className:"terraformProperty"})
+        codeChunks.push({value: propertyName, className:"terraformProperty"})
+        codeChunks.push({value: " = ", className:""})
+        codeChunks.push({value: "", className:""})
+
+        switch (property.type) {
+
+            case "tags": { 
+
+                codeChunks.push({value: "{", className:""});
+
+                if(property.value != null){
+                    
+                    const tagChunks = this.toTerraformPreviewParsePropertyRecord(property.value as PropertyRecord, numberOfIndents + 1);
+                    codeChunks.push(...tagChunks);
+                    
+                }
+
+                codeChunks.push({value: `\n${indent}}`, className:""});
+
+                break;
+            }
+
+            case "boolean": {
+                codeChunks.push({value: property.value ? "true" : "false", className:"terraformValue"});
+                break;
+            }
+
+            case "link": {
+
+                //this is hardcoded for 1 nested value currently
+
+                const link: string[] | undefined = property.link;
+
+                if(link == undefined){
+                    return[];
+                }
+
+                let dependantPropertyRecord: PropertyRecord = this.terraformProperties[link[0]];
+                console.log(dependantPropertyRecord);
+
+                let dependantProperty: Property<any> = dependantPropertyRecord[link[1]];
+
+                codeChunks.push({value: dependantProperty.value, className:"terraformValue"});
+                break;
+            }
+
+            case "array": {
+
+                codeChunks.push({value: "[", className:"terraformValue"});
+       
+                if(property.value != null){
+
+                    let arrayChunks: CodeChunk[] = [];
+
+                    property.value.forEach((value: Property<any>, index: number) => {
+                        console.log(value)
+                        arrayChunks = [...arrayChunks, ...this.toTerraformPreviewParseProperty(value, index.toString(), numberOfIndents + 1)];
+                    })
+
+                    codeChunks.push(...arrayChunks);
+                    
+                }
+
+                codeChunks.push({value: `\n${indent}]`, className:"terraformValue"});
+                break;
+            }
+
+            default: {
+                codeChunks.push({value: property.value, className:"terraformValue"});
+                break;
+            }
+        }
+
         return codeChunks;
 
     }

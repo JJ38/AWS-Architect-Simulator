@@ -35,7 +35,7 @@ function PropertiesWidget(
     const iamTerraformProperties: Record<string, PropertyRecord> | undefined = componentData != null ? componentData?.iamProperties : undefined;
    
     const selectedResourceTerraform: CodeChunk[] | undefined = statePropertiesWidgetController.getSelectedResource(selectedNodeData as ResourceData)?.toTerraformPreview();
-
+    console.log(selectedResourceTerraform);
     return(
 
         <div className="propertiesWidgetWrapper">

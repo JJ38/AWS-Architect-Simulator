@@ -20,7 +20,7 @@ export default class EC2 extends Resource{
             },
             terraformProperties: {
                 "aws_instance": {
-                    "ami": {value: null, type: "string"},
+                    "ami": {value: "test", type: "string"},
                     "instance_type": {value: null, type: "string"},
                     "subnet_id": {value: null, type: "string"},
                     "vpc_security_group_ids": {value: null, type: "string"},
