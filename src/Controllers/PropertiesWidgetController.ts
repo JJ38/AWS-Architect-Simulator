@@ -17,13 +17,13 @@ export class PropertiesWidgetController {
     }
 
 
-    public getEdgeTerraform(componentData: ComponentData | undefined): CodeChunk[]{
+    public getEdgeTerraform(componentData: ComponentData | undefined, stateNodes: AppNode[]): CodeChunk[]{
+        
+        console.log(componentData);
 
         if(componentData == undefined){
             return [];
         }
-
-        let codeChunks: CodeChunk[] = [];
 
         //get both resources.
         const callerName = componentData.metaData.callerName;
@@ -36,24 +36,30 @@ export class PropertiesWidgetController {
         const callerResource = resourceContainer[callerName!];
         const receiverResource = resourceContainer[receiverName!];
         
-
         if(componentData.resources == null || componentData.resources == null){
             return [];
         }
+       
+        const callerID: string = componentData?.resources?.callerID;
+        const receiverID: string = componentData?.resources?.receiverID;
 
-        const callerInstance = new callerResource(componentData.resources?.callerData);
-        const receiverInstance = new receiverResource(componentData.resources!.receiverData);
+        //get nodes by id then create them to get latest node values
+        const callerAppNode = stateNodes.find((node: AppNode) => node.id == callerID);
+        const receiverAppNode = stateNodes.find((node: AppNode) => node.id == receiverID);
+
+        if(callerAppNode == undefined || receiverAppNode == undefined){
+            return [];
+        }
+
+        const callerInstance = new callerResource(callerAppNode.data);
+        const receiverInstance = new receiverResource(receiverAppNode.data);
 
         //call receiver and caller terraformPreview for each.
 
         const edgeType = componentData.metaData.edgeType;
-
-        const callerTerraform: Record<string, PropertyRecord> = callerInstance.toTerraformEdgePropertiesCaller(edgeType, receiverInstance) ?? {};
-        const receiverTerraform: Record<string, PropertyRecord> = receiverInstance.toTerraformEdgePropertiesReceiver(edgeType, callerInstance) ?? {};
-
-        //combine and return;
-
-        console.log(componentData);
+        
+        const callerTerraform: Record<string, PropertyRecord> = callerInstance.toTerraformEdgePropertiesCaller(edgeType, receiverInstance, callerInstance) ?? {};
+        const receiverTerraform: Record<string, PropertyRecord> = receiverInstance.toTerraformEdgePropertiesReceiver(edgeType, callerInstance, receiverInstance) ?? {};
 
         return [...callerInstance.toTerraformPreview([callerTerraform]), ...receiverInstance.toTerraformPreview([receiverTerraform])];
     }   
@@ -66,9 +72,7 @@ export class PropertiesWidgetController {
         }
 
         const resource: ResourceStatics = resourceContainer[selectedNodeData?.service?.name!];
-
-        console.log(selectedNodeData);
-        
+   
         const resourceInstance = new resource(selectedNodeData);
         
         return resourceInstance;

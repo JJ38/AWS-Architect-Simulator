@@ -72,7 +72,7 @@ export default class S3 extends Resource{
         }
 
         record['resource_name'] = resourcePropertyRecord;
-    
+
 
         return record;
         

@@ -170,8 +170,8 @@ export class CanvasController{
         let receiverInstance: Resource;
         let callerName: string;
         let receiverName: string;
-        let callerData: ResourceData;
-        let receiverData: ResourceData;
+        let callerID: string;
+        let receiverID: string;
 
         
         if(defaultEdge == "pull"){
@@ -180,8 +180,8 @@ export class CanvasController{
             receiverInstance = new sourceResource(sourceNode.data);
             callerName = targetServiceName;
             receiverName = sourceServiceName;
-            callerData = targetNode.data;
-            receiverData = sourceNode.data;
+            callerID = targetNode.id;
+            receiverID = sourceNode.id;
 
         }else{
 
@@ -189,8 +189,8 @@ export class CanvasController{
             receiverInstance = new targetResource(targetNode.data);
             callerName = sourceServiceName;
             receiverName = targetServiceName;
-            callerData = sourceNode.data;
-            receiverData = targetNode.data;
+            callerID = sourceNode.id;
+            receiverID= targetNode.id;
 
         }
 
@@ -206,33 +206,10 @@ export class CanvasController{
                 }
             },
             resources:{
-                callerData: callerData,
-                receiverData: receiverData
+                callerID: callerID,
+                receiverID: receiverID
             }
         };
-
-        const callerTerraform: Record<string, PropertyRecord> | null = callerInstance.toTerraformEdgePropertiesCaller(defaultEdge, receiverInstance);
-        const receiverTerraform: Record<string, PropertyRecord> | null = receiverInstance.toTerraformEdgePropertiesReceiver(defaultEdge, callerInstance);
-
-        console.log(callerTerraform);
-
-        // if(callerTerraform != null){
-
-        //     Object.keys(callerTerraform).map((key) => {
-        //         params['data']['terraformProperties'][key] = callerTerraform[key];
-        //     });
-
-        // }
-
-        // if(receiverTerraform != null){
-
-        //     Object.keys(receiverTerraform).map((key) => {
-        //         params['data']['terraformProperties'][key] = receiverTerraform[key];
-        //     });
-
-        // }
-
-        console.log(params);
 
         this.setEdges((edgesSnapshot) => addEdge(params, edgesSnapshot))
     

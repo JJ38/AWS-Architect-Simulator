@@ -30,8 +30,8 @@ export default abstract class Resource{
     
 
     abstract validate(): ValidationResult;
-    abstract toTerraformEdgePropertiesCaller(edgeType: EdgeType, counterPart: Resource): Record<string, PropertyRecord> | null;
-    abstract toTerraformEdgePropertiesReceiver(edgeType: EdgeType, counterPart: Resource): Record<string, PropertyRecord> | null;
+    abstract toTerraformEdgePropertiesCaller(edgeType: EdgeType, counterPart: Resource, resource?: Resource): Record<string, PropertyRecord> | null;
+    abstract toTerraformEdgePropertiesReceiver(edgeType: EdgeType, counterPart: Resource, resource?: Resource): Record<string, PropertyRecord> | null;
 
 
     toTerraformPreview(propertyRecords: Record<string, PropertyRecord>[]): CodeChunk[]{
@@ -42,10 +42,6 @@ export default abstract class Resource{
         propertyRecords.forEach((propertyRecord) => {
             codeChunks = [...codeChunks, ...this.toTerraformResource(propertyRecord)];
         });
-
-        // if(this.iamProperties != undefined){
-        //     codeChunks = [...codeChunks, ...this.toTerraformResource(this.iamProperties)];
-        // }
 
         return codeChunks;
 
@@ -162,7 +158,6 @@ export default abstract class Resource{
                     let arrayChunks: CodeChunk[] = [];
 
                     property.value.forEach((value: Property<any>, index: number) => {
-                        console.log(value)
                         arrayChunks = [...arrayChunks, ...this.toTerraformPreviewParseProperty(value, null, numberOfIndents + 1)];
                     })
 

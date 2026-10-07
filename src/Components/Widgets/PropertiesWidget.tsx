@@ -8,6 +8,7 @@ function PropertiesWidget(
     { 
         stateSelectedNodeID, 
         selectedNodeData,
+        stateNodes,
         setNodes, 
         stateSelectedEdgeID,
         selectedEdgeData, 
@@ -18,6 +19,7 @@ function PropertiesWidget(
     { 
         stateSelectedNodeID: string | null, 
         selectedNodeData: ComponentData | undefined,
+        stateNodes: AppNode[],
         setNodes: React.Dispatch<React.SetStateAction<AppNode[]>>, 
         stateSelectedEdgeID: string | null,
         selectedEdgeData: ComponentData | undefined,
@@ -38,7 +40,6 @@ function PropertiesWidget(
     const componentTerraformProperties: Record<string, PropertyRecord> | undefined = componentData != null ? componentData?.terraformProperties : undefined;
     const iamTerraformProperties: Record<string, PropertyRecord> | undefined = componentData != null ? componentData?.iamProperties : undefined;
    
-
     let selectedComponentTerraform: CodeChunk[] | undefined;
 
     if(selectedComponentType == "Node"){
@@ -59,7 +60,7 @@ function PropertiesWidget(
 
     }else if(selectedComponentType == "Edge"){
         
-        selectedComponentTerraform = statePropertiesWidgetController.getEdgeTerraform(componentData);
+        selectedComponentTerraform = statePropertiesWidgetController.getEdgeTerraform(componentData, stateNodes);
     }
     
     return(
@@ -247,14 +248,12 @@ function getPropertyInput(
     switch(inputType){
 
         case "text":{
-
             const text = <p key={key}>{property.value}</p>
             return text;
         }
 
 
         case "link":{
-
             const text = <p key={key}>{propertiesWidgetController.getDependantProperty(property, componentData)}</p>
             return text;
         }

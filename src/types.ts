@@ -25,7 +25,7 @@ type BaseComponentData = {
     componentProperties: Record<string, PropertyRecord>,
     terraformProperties: Record<string, PropertyRecord>,
     iamProperties?: Record<string, PropertyRecord>,
-    resources?: Record<string, ResourceData>, 
+    resources?: Record<string, string>, 
 }
 
 export type ResourceData = BaseComponentData & {

@@ -108,6 +108,7 @@ export default function Canvas(
       <PropertiesWidget 
         stateSelectedNodeID={stateSelectedNodeID} 
         selectedNodeData={selectedNode?.data}
+        stateNodes={stateNodes}
         setNodes={setNodes}
         selectedEdgeData={selectedEdge?.data}
         stateSelectedEdgeID={stateSelectedEdgeID}

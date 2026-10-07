@@ -8,6 +8,7 @@ export default class Lambda extends Resource{
     public static sourceTypes: EdgeType[] = ["sync", "async"];
     public static targetTypes: EdgeType[] = ["sync", "async", "pull"]
     public static permissionType: PermissionType = "IAM";
+    public static iamRoleName: string = "lambda_role";
 
     public static create(id: string, service: Service): ResourceData{
 
@@ -63,7 +64,7 @@ export default class Lambda extends Resource{
             },
             componentProperties: {},
             iamProperties: {
-                "aws_iam_role": IamFactory.makeIamRole("", "lambda.amazonaws.com")
+                "aws_iam_role": IamFactory.makeIamRole(this.iamRoleName, "lambda.amazonaws.com")
             }
         }
 
@@ -71,11 +72,12 @@ export default class Lambda extends Resource{
 
     }
 
-    toTerraformEdgePropertiesCaller(edgeType: EdgeType, counterPart: Resource): Record<string, PropertyRecord>{
+    toTerraformEdgePropertiesCaller(edgeType: EdgeType, counterPart: Resource, resource?: Lambda): Record<string, PropertyRecord>{
         
         const record: Record<string, PropertyRecord> = {};
-        
-        record['aws_iam_policy'] = IamFactory.makeIamPolicy("policy_name", "role");
+        const roleName = resource?.iamProperties?.aws_iam_role.name.value;
+
+        record['aws_iam_policy'] = IamFactory.makeIamPolicy("policy_name", roleName);
 
         return record;
 
@@ -92,7 +94,6 @@ export default class Lambda extends Resource{
         }
 
         record['resource_name_receiver'] = resourcePropertyRecord;
-    
 
         return record;
 

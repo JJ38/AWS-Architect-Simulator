@@ -46,13 +46,18 @@ export class IamFactory{
     }
 
     //the doors the badge lets you go through
-    public static makeIamPolicy(policyName: string, role: string): Record<string, Property<any>>{
+    public static makeIamPolicy(policyName: string, roleName: string): Record<string, Property<any>>{
+
+        //add in dependant property on node for roleName.
+        //pass in node data
+        //pass in path
+
         
         //https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy
         const policy: Record<string, Property<any>> = { 
 
             "name": {value: policyName, type: "string"},
-            "role": {value: role, type: "string"},    
+            "role": {value: `aws_iam_role.${roleName}.id`, type: "string"},    
             "policy": {
                 value: {
                     "Version": {value: "2012-10-17", type: "text"},
