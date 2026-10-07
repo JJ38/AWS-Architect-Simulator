@@ -19,53 +19,53 @@ export default class EC2 extends Resource{
 
             },
             terraformProperties: {
-                "aws_instance": {
-                    "ami": {value: null, type: "string"},
-                    "instance_type": {value: null, type: "string"},
-                    "subnet_id": {value: null, type: "string"},
-                    "vpc_security_group_ids": {value: null, type: "string"},
-                    "key_name": {value: null, type: "string"},
-                    "associate_public_ip_address": {value: null, type: "boolean"},
-                    "iam_instance_profile": {value: null, type: "string"},
-                    "user_data": {value: null, type: "string"},
-                    "user_data_replace_on_change": {value: null, type: "boolean"},
-                    "availability_zone": {value: null, type: "string"}, //make this a select input with the available AZs in the region
-                    "monitoring": {value: null, type: "boolean"},
-                    "disable_api_termination": {value: null, type: "boolean"},
-                    "disable_api_stop": {value: null, type: "boolean"},
-                    "ebs_optimized": {value: null, type: "boolean"},
-                    "tenancy": {value: null, type: "string"},   
-                    "credit_specification": {
-                        value: {
-                            "cpu_credits": {value: null, type: "string"}
-                        },                  
-                        type: "tags"
-                    },
-                    "metadata_options":  {
-                        value: {
-                            "http_tokens": {value: null, type: "string"}
-                        },                  
-                        type: "tags"
-                    },
-                    "root_block_device":  {
-                        value: {
-                            "volume_size": {value: null, type: "number"},
-                            "volume_type": {value: null, type: "string"},
-                            "delete_on_termination": {value: true, type: "boolean"},
-                        },                  
-                        type: "tags"
-                    },
-                    "tags":  {
-                        value: {
-                            "Name": {value: null, type: "string"}
-                        },                  
-                        type: "tags"
-                    },
-                }
+                // "aws_instance": {
+                //     "ami": {value: null, type: "string"},
+                //     "instance_type": {value: null, type: "string"},
+                //     "subnet_id": {value: null, type: "string"},
+                //     "vpc_security_group_ids": {value: null, type: "string"},
+                //     "key_name": {value: null, type: "string"},
+                //     "associate_public_ip_address": {value: null, type: "boolean"},
+                //     "iam_instance_profile": {value: null, type: "string"},
+                //     "user_data": {value: null, type: "string"},
+                //     "user_data_replace_on_change": {value: null, type: "boolean"},
+                //     "availability_zone": {value: null, type: "string"}, //make this a select input with the available AZs in the region
+                //     "monitoring": {value: null, type: "boolean"},
+                //     "disable_api_termination": {value: null, type: "boolean"},
+                //     "disable_api_stop": {value: null, type: "boolean"},
+                //     "ebs_optimized": {value: null, type: "boolean"},
+                //     "tenancy": {value: null, type: "string"},   
+                //     "credit_specification": {
+                //         value: {
+                //             "cpu_credits": {value: null, type: "string"}
+                //         },                  
+                //         type: "tags"
+                //     },
+                //     "metadata_options":  {
+                //         value: {
+                //             "http_tokens": {value: null, type: "string"}
+                //         },                  
+                //         type: "tags"
+                //     },
+                //     "root_block_device":  {
+                //         value: {
+                //             "volume_size": {value: null, type: "number"},
+                //             "volume_type": {value: null, type: "string"},
+                //             "delete_on_termination": {value: true, type: "boolean"},
+                //         },                  
+                //         type: "tags"
+                //     },
+                //     "tags":  {
+                //         value: {
+                //             "Name": {value: null, type: "string"}
+                //         },                  
+                //         type: "tags"
+                //     },
+                // }
             },
             componentProperties: {},
             iamProperties: {
-                "aws_iam_role": IamFactory.makeIamRole("", "lambda.amazonaws.com")
+                "aws_iam_role": IamFactory.makeIamRole("", "ec2.amazonaws.com")
             }
         }
 

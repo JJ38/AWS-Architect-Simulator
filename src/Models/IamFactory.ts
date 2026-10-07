@@ -9,28 +9,30 @@ export class IamFactory{
 
         const IamRole: Record<string, Property<any>> = {
 
-            "name": {value: roleName, type: "string"},
+            // "name": {value: roleName, type: "string"},
             "assume_role_policy": {
                 value: {
                     "Version": {value: "2012-10-17", type: "text"},
                     "Statement": {
-                        value: [{
-                            value:{
-                                "Sid": {value: null, type: "string"},
-                                "Effect": {value: "allow", type: "select", options: effect},
-                                "Principal": {
-                                    value: {
-                                        "Service": {value: principalService, type: "text"}, //drop down of services. Whos allowed to assume the role
-                                        "AWS": {value: null, type: "string"}, //account id or arn, maybe select in future.
-                                        "Federated": {value: null, type: "select", options: ['add list of providers']}, //drop down of providers
-                                        "*": {value: "*", type: "text"}
-                                    }, 
-                                    type: "tags"
-                                },
-                                "Action": {value: null, type: "string"}
-                            }, 
-                            type: "tags"
-                        }],
+                        value: [
+                            {
+                                value:{
+                                    "Sid": {value: null, type: "string"},
+                                    "Effect": {value: "allow", type: "select", options: effect},
+                                    "Principal": {
+                                        value: {
+                                            "Service": {value: principalService, type: "text"},
+                                            // "AWS": {value: null, type: "string"}, //account id or arn, maybe select in future.
+                                            // "Federated": {value: null, type: "select", options: ['add list of providers']}, //drop down of providers
+                                            // "*": {value: "*", type: "text"}
+                                        }, 
+                                        type: "tags"
+                                    },
+                                    "Action": {value: null, type: "string"}
+                                }, 
+                                type: "tags"
+                            }
+                        ],
                         type: "array"
                     }
                 },

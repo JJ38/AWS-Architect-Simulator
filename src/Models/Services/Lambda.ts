@@ -63,7 +63,7 @@ export default class Lambda extends Resource{
             },
             componentProperties: {},
             iamProperties: {
-                "aws_iam_role": IamFactory.makeIamRole("", "ec2.amazonaws.com")
+                "aws_iam_role": IamFactory.makeIamRole("", "lambda.amazonaws.com")
             }
         }
 

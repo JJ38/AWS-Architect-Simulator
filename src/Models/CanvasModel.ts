@@ -14,7 +14,6 @@ export class CanvasModel{
     };
         
     public constructor(){
-        console.log("Created canvas model")
     }
 
 }

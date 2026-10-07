@@ -245,7 +245,7 @@ export class PropertiesWidgetController {
         componentID: string | null,
         componentSetter: React.Dispatch<React.SetStateAction<any>>
     ){  
-
+        console.log("keyboardInputOnChange");
         if(!this.validProperty(nodeProperty, componentID)) return;
 
         const newNodeProperty = structuredClone(nodeProperty);

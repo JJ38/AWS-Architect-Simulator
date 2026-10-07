@@ -28,7 +28,6 @@ export default function Canvas(
   }
 ){
 
-
   const [stateGhostNodes, setGhostNodes] = useState<AppNode[]>([]);
   const [stateSelectedNodeID, setSelectedNodeID] = useState<string | null>(null);
   const [stateSelectedEdgeID, setSelectedEdgeID] = useState<string | null>(null);

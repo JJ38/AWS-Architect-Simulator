@@ -160,7 +160,12 @@ function renderPropertyRow(
     componentSetter: React.Dispatch<React.SetStateAction<any>> | null,
     key?: number
 ){
-    if(property.type === "tags"){
+
+    console.log("renderPropertyRow");
+    console.log(property);
+
+    if(property.type === "tags" || property.type === "array"){
+        console.log("tags or array");
         return getPropertyInput(
             propertiesWidgetController,
             componentData,
@@ -198,7 +203,7 @@ function getPropertyInput(
     componentData: ComponentData | undefined, 
     property: Property<any>, 
     propertyCategory: PropertyCategory,
-    propertyRecordPath: string[], // this assumes no nested values currently
+    propertyRecordPath: string[],
     inputName: string, 
     componentID: string | null,  
     componentSetter: React.Dispatch<React.SetStateAction<any>> | null,
@@ -209,6 +214,8 @@ function getPropertyInput(
     }
 
     const inputType = property.type;
+
+    console.log(inputType);
 
     switch(inputType){
 
@@ -306,9 +313,39 @@ function getPropertyInput(
 
         case "array": {
 
-            console.log("array");
-            console.log(property.value);
-            return <div></div>
+
+            return <details key={inputName} className='propertyBlockWrapper'>
+                <summary className='propertyRecordSectionSummary'>{inputName}</summary>
+                <div className='propertyRecordSectionWrapper'>
+                    {
+                        property.value.map((value: number, index: number) => {
+
+                            console.log(property);
+                            console.log(property.value);
+                            console.log(property.value[index]);
+                            console.log(index);
+
+                            const newPropertyRecordPath = Array.from(propertyRecordPath);
+                            newPropertyRecordPath.push(inputName);
+
+                            console.log(newPropertyRecordPath);
+
+                            return renderPropertyRow(
+                                index.toString(),
+                                property.value[index],
+                                propertiesWidgetController,
+                                componentData,
+                                propertyCategory,
+                                newPropertyRecordPath,
+                                componentID,
+                                componentSetter,
+                                index
+                            );
+                        })
+                    }
+                </div>
+            </details>;
+        
         }
     }
 

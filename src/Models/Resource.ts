@@ -36,8 +36,6 @@ export default abstract class Resource{
 
         const codeChunks: CodeChunk[] = [];
 
-        console.log(this.terraformProperties);
-
         for(const recordName of Object.keys(this.terraformProperties as Record<string, PropertyRecord>)){
 
             codeChunks.push({value: "resource ", className:"terraformKeyword"})
@@ -58,8 +56,6 @@ export default abstract class Resource{
 
     toTerraformPreviewParsePropertyRecord(propertyRecord: PropertyRecord): CodeChunk[]{
 
-        console.log(Object.keys(propertyRecord));
-
         const codeChunks: CodeChunk[] = [];
 
         for(const key of Object.keys(propertyRecord)){
@@ -67,9 +63,8 @@ export default abstract class Resource{
             if(propertyRecord[key].value != null){
 
                 codeChunks.push({value: "\n  ", className:"terraformProperty"})
-
                 codeChunks.push({value: key, className:"terraformProperty"})
-                codeChunks.push({value: " = ", className:""})
+                codeChunks.push({value: "-=-", className:""})
 
                 switch (propertyRecord[key].type) {
 
@@ -105,8 +100,6 @@ export default abstract class Resource{
 
                         const property: Property<any> = propertyRecord[key];
                         const link: string[] | undefined = property.link;
-
-                        console.log(link);
 
                         if(link == undefined){
                             return[];
