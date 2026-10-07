@@ -1,5 +1,5 @@
 import Resource from "../Resource";
-import type { EdgeType, PermissionType, PropertyRecord, ResourceData, Service, ValidationResult } from "../../types.ts";
+import type { EdgeType, PermissionType, Property, PropertyRecord, ResourceData, Service, ValidationResult } from "../../types.ts";
 import { IamFactory } from "../IamFactory.ts";
 
 
@@ -73,17 +73,17 @@ export default class Lambda extends Resource{
 
     toTerraformEdgePropertiesCaller(edgeType: EdgeType, counterPart: Resource): Record<string, PropertyRecord>{
         
-
+        const record: Record<string, PropertyRecord> = {};
         
-    
+        record['aws_iam_policy'] = IamFactory.makeIamPolicy("policy_name", "role");
 
-        return {};
+        return record;
 
     }
 
-    toTerraformEdgePropertiesReceiver(edgeType: EdgeType, counterPart: Resource){
+    toTerraformEdgePropertiesReceiver(edgeType: EdgeType, counterPart: Resource): Record<string, PropertyRecord>{
 
-        const record: Record<string, PropertyRecord> = { };
+        const record: Record<string, PropertyRecord> = {};
 
         const resourcePropertyRecord: PropertyRecord = {
             "resource_attribute_name_wdw": {

@@ -9,8 +9,8 @@ export class IamFactory{
 
         const IamRole: Record<string, Property<any>> = {
 
-            // "name": {value: roleName, type: "string"},
-            "assume_role_policy": {
+            "name": {value: roleName, type: "string"},
+            "assume_role_policy": { //states what service is allowed to assume this role
                 value: {
                     "Version": {value: "2012-10-17", type: "text"},
                     "Statement": {
@@ -28,12 +28,12 @@ export class IamFactory{
                                         }, 
                                         type: "tags"
                                     },
-                                    "Action": {value: null, type: "string"}
+                                    "Action": {value: "todo", type: "text"}
                                 }, 
                                 type: "tags"
                             }
                         ],
-                        type: "array"
+                        type: "propertyArray"
                     }
                 },
                 type: "tags"
@@ -46,16 +46,24 @@ export class IamFactory{
     }
 
     //the doors the badge lets you go through
-    makeIamRolePolicy(policyName: string, role: string): Record<string, Property<any>>{
+    public static makeIamPolicy(policyName: string, role: string): Record<string, Property<any>>{
         
         //https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy
         const policy: Record<string, Property<any>> = { 
 
-            "name": {value: null, type: "string"},
+            "name": {value: policyName, type: "string"},
             "role": {value: role, type: "string"},    
             "policy": {
                 value: {
-
+                    "Version": {value: "2012-10-17", type: "text"},
+                    "Statement": {
+                        value:{
+                            // "Action": {value: [], type: "stringArray"},
+                            "Effect": {value: "Allow", type: "select", options: effect},
+                            "*": {value: "*", type: "text"}
+                        },
+                        type: "tags"
+                    }
                 }, 
                 type: "tags"
             },

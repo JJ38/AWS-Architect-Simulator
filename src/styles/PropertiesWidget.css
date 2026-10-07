@@ -62,6 +62,10 @@
 
 }
 
+.terraformSnippetWrapper > pre{
+    margin: 0px;
+}
+
 .terraformCode{
 
     display: block;

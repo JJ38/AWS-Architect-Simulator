@@ -1,15 +1,12 @@
-import type { Component } from "react";
 import { resourceContainer } from "../constants";
 import type { ResourceStatics } from "../Models/Resource";
 import type Resource from "../Models/Resource";
-import type { AppEdge, AppNode, Property, AppComponent, PropertyCategory, ResourceData, ComponentData, PropertyRecord } from "../types";
+import type { AppEdge, AppNode, Property, AppComponent, PropertyCategory, ResourceData, ComponentData, PropertyRecord, CodeChunk } from "../types";
 
 export class PropertiesWidgetController {
 
-
     private setNodes: React.Dispatch<React.SetStateAction<AppNode[]>>;
     private setEdges: React.Dispatch<React.SetStateAction<AppEdge[]>>;
-
 
     public constructor(
         setNodes: React.Dispatch<React.SetStateAction<AppNode[]>>, 
@@ -18,6 +15,48 @@ export class PropertiesWidgetController {
         this.setEdges = setEdges;
         this.setNodes = setNodes;
     }
+
+
+    public getEdgeTerraform(componentData: ComponentData | undefined): CodeChunk[]{
+
+        if(componentData == undefined){
+            return [];
+        }
+
+        let codeChunks: CodeChunk[] = [];
+
+        //get both resources.
+        const callerName = componentData.metaData.callerName;
+        const receiverName = componentData.metaData.receiverName;
+    
+        if(callerName == null || receiverName == null){
+            return [];
+        }
+
+        const callerResource = resourceContainer[callerName!];
+        const receiverResource = resourceContainer[receiverName!];
+        
+
+        if(componentData.resources == null || componentData.resources == null){
+            return [];
+        }
+
+        const callerInstance = new callerResource(componentData.resources?.callerData);
+        const receiverInstance = new receiverResource(componentData.resources!.receiverData);
+
+        //call receiver and caller terraformPreview for each.
+
+        const edgeType = componentData.metaData.edgeType;
+
+        const callerTerraform: Record<string, PropertyRecord> = callerInstance.toTerraformEdgePropertiesCaller(edgeType, receiverInstance) ?? {};
+        const receiverTerraform: Record<string, PropertyRecord> = receiverInstance.toTerraformEdgePropertiesReceiver(edgeType, callerInstance) ?? {};
+
+        //combine and return;
+
+        console.log(componentData);
+
+        return [...callerInstance.toTerraformPreview([callerTerraform]), ...receiverInstance.toTerraformPreview([receiverTerraform])];
+    }   
 
     
     public getSelectedResource(selectedNodeData: ResourceData | undefined): Resource | undefined{
@@ -128,26 +167,6 @@ export class PropertiesWidgetController {
         
     }
     
-
-    public onSelectChange(
-        event: React.ChangeEvent<HTMLSelectElement, HTMLSelectElement>, 
-        nodeProperty: Property<any>, 
-        propertyCategory: PropertyCategory,
-        propertyRecordName: string[],
-        inputName: string, 
-        componentID: string | null,
-        componentSetter: React.Dispatch<React.SetStateAction<any>>
-    ){
-
-        if(!this.validProperty(nodeProperty, componentID)) return;
-
-        const newNodeProperty = structuredClone(nodeProperty);
-        newNodeProperty.value = event.target.value;
-
-        this.updateComponentProperty(newNodeProperty, propertyCategory, propertyRecordName, componentID!, inputName, componentSetter);
-
-    }
-
     private validProperty(nodeProperty: Property<any>, componentID: string | null): boolean{
 
         if(nodeProperty == undefined){
@@ -236,6 +255,27 @@ export class PropertiesWidgetController {
         }));
 
     }
+
+
+    public onSelectChange(
+        event: React.ChangeEvent<HTMLSelectElement, HTMLSelectElement>, 
+        nodeProperty: Property<any>, 
+        propertyCategory: PropertyCategory,
+        propertyRecordName: string[],
+        inputName: string, 
+        componentID: string | null,
+        componentSetter: React.Dispatch<React.SetStateAction<any>>
+    ){
+
+        if(!this.validProperty(nodeProperty, componentID)) return;
+
+        const newNodeProperty = structuredClone(nodeProperty);
+        newNodeProperty.value = event.target.value;
+
+        this.updateComponentProperty(newNodeProperty, propertyCategory, propertyRecordName, componentID!, inputName, componentSetter);
+
+    }
+
 
     //make generic and pass in setter
     public keyboardInputOnChange(

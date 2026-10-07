@@ -2,6 +2,7 @@ import { memo, useState } from 'react';
 import { PropertiesWidgetController } from '../../Controllers/PropertiesWidgetController';
 import type { AppEdge, AppNode, CodeChunk, ComponentData, Property, PropertyCategory, PropertyRecord, ResourceData } from '../../types';
 import '../../styles/PropertiesWidget.css'
+import type Resource from '../../Models/Resource';
 
 function PropertiesWidget(
     { 
@@ -27,15 +28,40 @@ function PropertiesWidget(
  
     const [statePropertiesWidgetController] = useState(() => new PropertiesWidgetController(setNodes, setEdges));
 
-    const componentID: string | null = stateSelectedNodeID != undefined ? stateSelectedNodeID : stateSelectedEdgeID != null ? stateSelectedEdgeID : null;
-    const componentData = stateSelectedNodeID != undefined ? selectedNodeData : stateSelectedEdgeID != null ? selectedEdgeData : undefined;
-    const componentSetter: React.Dispatch<React.SetStateAction<any>> | null = stateSelectedNodeID != undefined ? setNodes : selectedEdgeData != null ? setEdges : null;
+    const selectedComponentType: string | null = stateSelectedNodeID != undefined ? "Node" : stateSelectedEdgeID != null ? "Edge" : null
+
+    const componentID: string | null = selectedComponentType == "Node" ? stateSelectedNodeID : selectedComponentType == "Edge" ? stateSelectedEdgeID : null;
+    const componentData = selectedComponentType == "Node"? selectedNodeData : selectedComponentType == "Edge" ? selectedEdgeData : undefined;
+    const componentSetter: React.Dispatch<React.SetStateAction<any>> | null = selectedComponentType == "Node" ? setNodes : selectedComponentType == "Edge" ? setEdges : null;
+    
     const componentProperties: Record<string, PropertyRecord> | undefined = componentData != null ? componentData?.componentProperties : undefined;
     const componentTerraformProperties: Record<string, PropertyRecord> | undefined = componentData != null ? componentData?.terraformProperties : undefined;
     const iamTerraformProperties: Record<string, PropertyRecord> | undefined = componentData != null ? componentData?.iamProperties : undefined;
    
-    const selectedResourceTerraform: CodeChunk[] | undefined = statePropertiesWidgetController.getSelectedResource(selectedNodeData as ResourceData)?.toTerraformPreview();
-    console.log(selectedResourceTerraform);
+
+    let selectedComponentTerraform: CodeChunk[] | undefined;
+
+    if(selectedComponentType == "Node"){
+
+        const resource: Resource | undefined = statePropertiesWidgetController.getSelectedResource(componentData as ResourceData);
+
+        if(resource == undefined){
+            return;
+        }
+
+        const properties = [resource.terraformProperties];
+
+        if(resource.iamProperties != null){
+            properties.push(resource.iamProperties);
+        }
+
+        selectedComponentTerraform = resource.toTerraformPreview(properties);
+
+    }else if(selectedComponentType == "Edge"){
+        
+        selectedComponentTerraform = statePropertiesWidgetController.getEdgeTerraform(componentData);
+    }
+    
     return(
 
         <div className="propertiesWidgetWrapper">
@@ -83,7 +109,7 @@ function PropertiesWidget(
                     <pre>
                         <code className='terraformCode'>
                             {
-                                selectedResourceTerraform?.map((codeChunk: CodeChunk, index: number) => {
+                                selectedComponentTerraform?.map((codeChunk: CodeChunk, index: number) => {
                                     return <span key={index} className={codeChunk.className}>{codeChunk.value}</span>
                                 })
                             }
@@ -121,6 +147,11 @@ function generateUIProperties(
                         {
                             
                             Object.keys(properties[propertyRecordPath]).map((inputName, index) => {
+
+                                if(properties[propertyRecordPath][inputName] == null){
+                                    console.log("properties[propertyRecordPath][inputName]");
+                                    return;
+                                }
 
                                 const shouldShowProperty = propertiesWidgetController.shouldShowProperty(properties[propertyRecordPath][inputName], componentData);
 
@@ -161,7 +192,7 @@ function renderPropertyRow(
     key?: number
 ){
 
-    if(property.type === "tags" || property.type === "array"){
+    if(property.type === "tags" || property.type === "propertyArray"){
 
         return getPropertyInput(
             propertiesWidgetController,
@@ -207,6 +238,7 @@ function getPropertyInput(
     key?: number
 ){
     if(componentSetter == null){
+        console.log("componentSetter == null")
         return;
     }
 
@@ -306,7 +338,7 @@ function getPropertyInput(
             return <textarea name="" id=""></textarea>
         }
 
-        case "array": {
+        case "propertyArray": {
 
 
             return <details key={inputName} className='propertyBlockWrapper'>

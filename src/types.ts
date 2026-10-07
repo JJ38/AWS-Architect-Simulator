@@ -24,7 +24,8 @@ type BaseComponentData = {
     metaData: Record<string, any>,
     componentProperties: Record<string, PropertyRecord>,
     terraformProperties: Record<string, PropertyRecord>,
-    iamProperties?: Record<string, PropertyRecord> 
+    iamProperties?: Record<string, PropertyRecord>,
+    resources?: Record<string, ResourceData>, 
 }
 
 export type ResourceData = BaseComponentData & {
@@ -65,7 +66,8 @@ export type PropertyType =
 | "edgeType"
 | "link"
 | "json"
-| "array"
+| "propertyArray"
+| "stringArray"
 | "text"
 | "string"
 | "boolean"

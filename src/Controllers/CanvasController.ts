@@ -170,6 +170,8 @@ export class CanvasController{
         let receiverInstance: Resource;
         let callerName: string;
         let receiverName: string;
+        let callerData: ResourceData;
+        let receiverData: ResourceData;
 
         
         if(defaultEdge == "pull"){
@@ -178,6 +180,8 @@ export class CanvasController{
             receiverInstance = new sourceResource(sourceNode.data);
             callerName = targetServiceName;
             receiverName = sourceServiceName;
+            callerData = targetNode.data;
+            receiverData = sourceNode.data;
 
         }else{
 
@@ -185,41 +189,50 @@ export class CanvasController{
             receiverInstance = new targetResource(targetNode.data);
             callerName = sourceServiceName;
             receiverName = targetServiceName;
+            callerData = sourceNode.data;
+            receiverData = targetNode.data;
 
         }
 
         params['type'] = "standardEdge";
         params['data'] = {
             metaData:{
-                "sourceServiceName": sourceServiceName,
-                "targetServiceName": targetServiceName,
+                "callerName": callerName,
+                "receiverName": receiverName,
             },
             componentProperties:{
                 "behaviour": {
                     "edgeType": { value: defaultEdge, type: "edgeType", options: validEdgeType },
                 }
             },
-            terraformProperties: {}
+            resources:{
+                callerData: callerData,
+                receiverData: receiverData
+            }
         };
 
         const callerTerraform: Record<string, PropertyRecord> | null = callerInstance.toTerraformEdgePropertiesCaller(defaultEdge, receiverInstance);
-        const receiverTerraform: Record<string, PropertyRecord> | null = callerInstance.toTerraformEdgePropertiesReceiver(defaultEdge, receiverInstance);
+        const receiverTerraform: Record<string, PropertyRecord> | null = receiverInstance.toTerraformEdgePropertiesReceiver(defaultEdge, callerInstance);
 
-        if(callerTerraform != null){
+        console.log(callerTerraform);
 
-            Object.keys(callerTerraform).map((key) => {
-                params['data']['terraformProperties'][key] = callerTerraform[key];
-            });
+        // if(callerTerraform != null){
 
-        }
+        //     Object.keys(callerTerraform).map((key) => {
+        //         params['data']['terraformProperties'][key] = callerTerraform[key];
+        //     });
 
-        if(receiverTerraform != null){
+        // }
 
-            Object.keys(receiverTerraform).map((key) => {
-                params['data']['terraformProperties'][key] = receiverTerraform[key];
-            });
+        // if(receiverTerraform != null){
 
-        }
+        //     Object.keys(receiverTerraform).map((key) => {
+        //         params['data']['terraformProperties'][key] = receiverTerraform[key];
+        //     });
+
+        // }
+
+        console.log(params);
 
         this.setEdges((edgesSnapshot) => addEdge(params, edgesSnapshot))
     

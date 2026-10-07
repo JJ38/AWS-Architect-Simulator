@@ -34,13 +34,18 @@ export default abstract class Resource{
     abstract toTerraformEdgePropertiesReceiver(edgeType: EdgeType, counterPart: Resource): Record<string, PropertyRecord> | null;
 
 
-    toTerraformPreview(): CodeChunk[]{
+    toTerraformPreview(propertyRecords: Record<string, PropertyRecord>[]): CodeChunk[]{
 
-        let codeChunks: CodeChunk[] = this.toTerraformResource(this.terraformProperties)
+        // let codeChunks: CodeChunk[] = this.toTerraformResource(this.terraformProperties)
+        let codeChunks: CodeChunk[] = [];
 
-        if(this.iamProperties != undefined){
-            codeChunks = [...codeChunks, ...this.toTerraformResource(this.iamProperties)];
-        }
+        propertyRecords.forEach((propertyRecord) => {
+            codeChunks = [...codeChunks, ...this.toTerraformResource(propertyRecord)];
+        });
+
+        // if(this.iamProperties != undefined){
+        //     codeChunks = [...codeChunks, ...this.toTerraformResource(this.iamProperties)];
+        // }
 
         return codeChunks;
 
@@ -59,7 +64,7 @@ export default abstract class Resource{
             codeChunks.push({value: "{", className:"terraformBracket"})
             
             codeChunks.push(...this.toTerraformPreviewParsePropertyRecord(properties[recordName], 0));
-            codeChunks.push({value: "\n}\n", className:"terraformBracket"})
+            codeChunks.push({value: "\n}\n\n", className:"terraformBracket"})
 
         }
 
@@ -135,7 +140,6 @@ export default abstract class Resource{
             case "link": {
 
                 //this is hardcoded for 1 nested value currently
-
                 const link: string[] | undefined = property.link;
 
                 if(link == undefined){
@@ -143,15 +147,13 @@ export default abstract class Resource{
                 }
 
                 let dependantPropertyRecord: PropertyRecord = this.terraformProperties[link[0]];
-                console.log(dependantPropertyRecord);
-
                 let dependantProperty: Property<any> = dependantPropertyRecord[link[1]];
 
                 codeChunks.push({value: dependantProperty.value, className:"terraformValue"});
                 break;
             }
 
-            case "array": {
+            case "propertyArray": {
 
                 codeChunks.push({value: "[", className:"terraformValue"});
        
