@@ -17,6 +17,7 @@ export default abstract class Resource{
     public service: Service;
     public resourceName: string;
     public terraformProperties: Record<string, PropertyRecord>;
+    public iamProperties?: Record<string, PropertyRecord>;
 
 
     public constructor(data: ResourceData){
@@ -24,6 +25,7 @@ export default abstract class Resource{
         this.service = data.service;
         this.resourceName = data.resourceName;
         this.terraformProperties = data.terraformProperties;
+        this.iamProperties = data.iamProperties;
     }
     
 
@@ -34,9 +36,22 @@ export default abstract class Resource{
 
     toTerraformPreview(): CodeChunk[]{
 
+        let codeChunks: CodeChunk[] = this.toTerraformResource(this.terraformProperties)
+        console.log(this.iamProperties);
+
+        if(this.iamProperties != null){
+            codeChunks = [...codeChunks, ...this.toTerraformResource(this.iamProperties)];
+        }
+
+        return codeChunks;
+
+    }
+
+    toTerraformResource(properties: Record<string, PropertyRecord>): CodeChunk[]{
+
         const codeChunks: CodeChunk[] = [];
 
-        for(const recordName of Object.keys(this.terraformProperties as Record<string, PropertyRecord>)){
+        for(const recordName of Object.keys(properties as Record<string, PropertyRecord>)){
 
             codeChunks.push({value: "resource ", className:"terraformKeyword"})
             codeChunks.push({value: recordName + " ", className:"terraformParameter"})
@@ -44,13 +59,12 @@ export default abstract class Resource{
 
             codeChunks.push({value: "{", className:"terraformBracket"})
             
-            codeChunks.push(...this.toTerraformPreviewParsePropertyRecord(this.terraformProperties[recordName]));
+            codeChunks.push(...this.toTerraformPreviewParsePropertyRecord(properties[recordName]));
             codeChunks.push({value: "\n}\n", className:"terraformBracket"})
 
         }
 
         return codeChunks;
-
     }
 
 

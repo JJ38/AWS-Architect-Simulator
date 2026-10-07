@@ -161,11 +161,8 @@ function renderPropertyRow(
     key?: number
 ){
 
-    console.log("renderPropertyRow");
-    console.log(property);
-
     if(property.type === "tags" || property.type === "array"){
-        console.log("tags or array");
+
         return getPropertyInput(
             propertiesWidgetController,
             componentData,
@@ -214,8 +211,6 @@ function getPropertyInput(
     }
 
     const inputType = property.type;
-
-    console.log(inputType);
 
     switch(inputType){
 
@@ -320,15 +315,8 @@ function getPropertyInput(
                     {
                         property.value.map((value: number, index: number) => {
 
-                            console.log(property);
-                            console.log(property.value);
-                            console.log(property.value[index]);
-                            console.log(index);
-
                             const newPropertyRecordPath = Array.from(propertyRecordPath);
                             newPropertyRecordPath.push(inputName);
-
-                            console.log(newPropertyRecordPath);
 
                             return renderPropertyRow(
                                 index.toString(),

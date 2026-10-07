@@ -27,6 +27,8 @@ export class PropertiesWidgetController {
         }
 
         const resource: ResourceStatics = resourceContainer[selectedNodeData?.service?.name!];
+
+        console.log(selectedNodeData);
         
         const resourceInstance = new resource(selectedNodeData);
         
