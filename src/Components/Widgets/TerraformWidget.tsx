@@ -203,7 +203,9 @@ export default function TerraformWidget({
                                                 const resource: ResourceStatics = resourceContainer[node.data.service.name!];
                                                 const resourceInstance = new resource(node.data);
 
-                                                const codeChunks: CodeChunk[] = resourceInstance.toTerraformPreview();
+                                                const terraformProperties = resourceInstance.terraformProperties;
+
+                                                const codeChunks: CodeChunk[] = resourceInstance.toTerraformPreview([terraformProperties]);
 
                                                 codeChunks.push({value: "\n", className:""});
                                                 codeChunks.push({value: "\n", className:""});

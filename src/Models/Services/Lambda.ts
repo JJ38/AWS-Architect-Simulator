@@ -37,35 +37,34 @@ export default class Lambda extends Resource{
                     "reserved_concurrent_executions": {value: null, type: "number"},
                     "publish": {value: null, type: "boolean"},
                     "environment": {
-                        value: null,
+                        value: {},
                         type: "tags"
                     },
                     "vpc_config": {
-                        value: null,
+                        value: {},
                         type: "tags"
                     },
                     "dead_letter_config": {
-                        value: null,
+                        value: {},
                         type: "tags"
                     },
                     "ephemeral_storage": {
-                        value: null,
+                        value: {},
                         type: "tags"
                     },
                     "layers": {
-                        value: null,
+                        value: {},
                         type: "tags"
                     },
                     "tags": {
-                        value: null,
+                        value: {},
                         type: "tags"
                     },
-                }
+                },
+                "aws_iam_role": IamFactory.makeIamRole(this.iamRoleName, "lambda.amazonaws.com")
             },
             componentProperties: {},
-            iamProperties: {
-                "aws_iam_role": IamFactory.makeIamRole(this.iamRoleName, "lambda.amazonaws.com")
-            }
+            
         }
 
         return resourceData;
@@ -75,7 +74,7 @@ export default class Lambda extends Resource{
     toTerraformEdgePropertiesCaller(edgeType: EdgeType, counterPart: Resource, resource?: Lambda): Record<string, PropertyRecord>{
         
         const record: Record<string, PropertyRecord> = {};
-        const roleName = resource?.iamProperties?.aws_iam_role.name.value;
+        const roleName = resource?.terraformProperties?.aws_iam_role.name.value;
 
         record['aws_iam_policy'] = IamFactory.makeIamPolicy("policy_name", roleName);
 

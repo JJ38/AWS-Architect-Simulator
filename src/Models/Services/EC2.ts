@@ -1,5 +1,5 @@
 import Resource from "../Resource";
-import type { EdgeType, PermissionType, ResourceData, Service, ValidationResult } from "../../types.ts";
+import type { EdgeType, PermissionType, PropertyRecord, ResourceData, Service, ValidationResult } from "../../types.ts";
 import { IamFactory } from "../IamFactory.ts";
 
 export default class EC2 extends Resource{
@@ -61,19 +61,24 @@ export default class EC2 extends Resource{
                         },                  
                         type: "tags"
                     },
-                }
+                },
+                "aws_iam_role": IamFactory.makeIamRole("", "ec2.amazonaws.com")
             },
             componentProperties: {},
-            iamProperties: {
-                "aws_iam_role": IamFactory.makeIamRole("", "ec2.amazonaws.com")
-            }
         }
 
     }
 
 
-    toTerraformEdgePropertiesCaller(edgeType: EdgeType, counterPart: Resource){
-        return null;
+    toTerraformEdgePropertiesCaller(edgeType: EdgeType, counterPart: Resource, resource: Resource){
+
+        const record: Record<string, PropertyRecord> = {};
+        const roleName = resource?.terraformProperties?.aws_iam_role.name.value;
+
+        record['aws_iam_policy'] = IamFactory.makeIamPolicy("policy_name", roleName);
+
+        return record;
+        
     }
 
     toTerraformEdgePropertiesReceiver(edgeType: EdgeType, counterPart: Resource){

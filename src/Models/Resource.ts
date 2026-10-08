@@ -36,7 +36,6 @@ export default abstract class Resource{
 
     toTerraformPreview(propertyRecords: Record<string, PropertyRecord>[]): CodeChunk[]{
 
-        // let codeChunks: CodeChunk[] = this.toTerraformResource(this.terraformProperties)
         let codeChunks: CodeChunk[] = [];
 
         propertyRecords.forEach((propertyRecord) => {
