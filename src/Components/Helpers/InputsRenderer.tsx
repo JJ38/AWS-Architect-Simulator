@@ -13,10 +13,10 @@ function getPropertyInput(
     componentSetter: React.Dispatch<React.SetStateAction<any>> | null,
     key?: number
 ){
-    if(componentSetter == null){
-        console.log("componentSetter == null")
-        return;
-    }
+    // if(componentSetter == null){
+    //     console.log("componentSetter == null")
+    //     return;
+    // }
 
     const inputType = property.type;
 

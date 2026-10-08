@@ -6,6 +6,7 @@ import '../../styles/TerraformWidget.css';
 import type { AppEdge, AppNode, CodeChunk } from "../../types";
 import { resourceContainer } from "../../constants";
 import type { ResourceStatics } from "../../Models/Resource";
+import { InputsRenderer } from "../Helpers/InputsRenderer";
 
 
 
@@ -36,85 +37,93 @@ export default function TerraformWidget({
 
            <div className="terraformSettingsWrapper">
 
-                {
 
-                    stateShowDownloadTerraformForm &&
+                    {
 
-                    <div className="terraformFormWrapper">
+                        stateShowDownloadTerraformForm &&
 
-                        <h4>Provider</h4>
+                        <div className="terraformSettingsInputsWrapper">
 
-                        <select id="">
-                            <option value="aws">aws</option>
-                        </select>
-
-                        <div className="formSection">
-                            <h4>Backend</h4>
-
-                            <h5>Bucket name:</h5>
-
-                            <input id="bucket_name" type="text" name="bucket_name"/>
-                            <label htmlFor="bucket_name"></label>
-
-                            <h5>File Path:</h5>
-
-                            <input id="bucket_key" type="text" name="bucket_key" />
-                            <label htmlFor="bucket_key"></label>
-
-                            <h5>Region:</h5>
-
-                            <select id="">
-
-                                <option value="us-east-1">us-east-1</option>
-                                <option value="us-east-2">us-east-2</option>
-
-                                <option value="us-west-1">us-west-1</option>
-                                <option value="us-west-2">us-west-2</option>
-
-                                <option value="ap-south-1">ap-south-1</option>
-
-                                <option value="ap-northeast-3">ap-northeast-3</option>
-                                <option value="ap-northeast-2">ap-northeast-2</option>
-
-                                <option value="ap-southeast-1">ap-southeast-1</option>
-                                <option value="ap-southeast-2">ap-southeast-2</option>
-
-                                <option value="ap-northeast-1">ap-northeast-1</option>
-
-                                <option value="ap-south-1">ca-central-1</option>
-
-                                <option value="ap-south-1">eu-central-1</option>
-
-                                <option value="eu-west-1">eu-west-1</option>
-                                <option value="eu-west-2">eu-west-2</option>
-                                <option value="eu-west-3">eu-west-3</option>
-
-                                <option value="eu-north-1">eu-north-1</option>
-
-                                <option value="sa-east-1">sa-east-1</option>
-
-                            </select>  
-
-
-                            <h5>Lockfile:</h5>
-
-                            <fieldset>
-
-                                <input type="radio" id="lockfile_yes" name="lockfile_yes" value="true"/>
-                                <label htmlFor="lockfile_yes">Yes</label>
-
-                                <input type="radio" id="lockfile_no" name="lockfile_no" value="false"/>
-                                <label htmlFor="lockfile_no">No</label>
-                                
-                            </fieldset>
-
-                            <br/>
+                            {InputsRenderer(stateTerraformWidgetController, stateTerraformWidgetController.deploymentProperties, "terraform", undefined, null, null)}
 
                         </div>
 
-                    </div>
+                        // <div className="terraformFormWrapper">
 
-                }
+                        //     <h4>Provider</h4>
+
+                        //     <select id="">
+                        //         <option value="aws">aws</option>
+                        //     </select>
+
+                        //     <div className="formSection">
+                        //         <h4>Backend</h4>
+
+                        //         <h5>Bucket name:</h5>
+
+                        //         <input id="bucket_name" type="text" name="bucket_name"/>
+                        //         <label htmlFor="bucket_name"></label>
+
+                        //         <h5>File Path:</h5>
+
+                        //         <input id="bucket_key" type="text" name="bucket_key" />
+                        //         <label htmlFor="bucket_key"></label>
+
+                        //         <h5>Region:</h5>
+
+                        //         <select id="">
+
+                        //             <option value="us-east-1">us-east-1</option>
+                        //             <option value="us-east-2">us-east-2</option>
+
+                        //             <option value="us-west-1">us-west-1</option>
+                        //             <option value="us-west-2">us-west-2</option>
+
+                        //             <option value="ap-south-1">ap-south-1</option>
+
+                        //             <option value="ap-northeast-3">ap-northeast-3</option>
+                        //             <option value="ap-northeast-2">ap-northeast-2</option>
+
+                        //             <option value="ap-southeast-1">ap-southeast-1</option>
+                        //             <option value="ap-southeast-2">ap-southeast-2</option>
+
+                        //             <option value="ap-northeast-1">ap-northeast-1</option>
+
+                        //             <option value="ap-south-1">ca-central-1</option>
+
+                        //             <option value="ap-south-1">eu-central-1</option>
+
+                        //             <option value="eu-west-1">eu-west-1</option>
+                        //             <option value="eu-west-2">eu-west-2</option>
+                        //             <option value="eu-west-3">eu-west-3</option>
+
+                        //             <option value="eu-north-1">eu-north-1</option>
+
+                        //             <option value="sa-east-1">sa-east-1</option>
+
+                        //         </select>  
+
+
+                        //         <h5>Lockfile:</h5>
+
+                        //         <fieldset>
+
+                        //             <input type="radio" id="lockfile_yes" name="lockfile_yes" value="true"/>
+                        //             <label htmlFor="lockfile_yes">Yes</label>
+
+                        //             <input type="radio" id="lockfile_no" name="lockfile_no" value="false"/>
+                        //             <label htmlFor="lockfile_no">No</label>
+                                    
+                        //         </fieldset>
+
+                        //         <br/>
+
+                        //     </div> 
+
+                        // </div>
+
+                    }
+
             
                 <div className="saveWidgetButtonWrapper">
 
@@ -173,6 +182,7 @@ export default function TerraformWidget({
 
             {
                 stateShowDownloadTerraformForm &&
+                    
 
                     <div className="terraformTabs">
 

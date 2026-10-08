@@ -87,7 +87,25 @@
 }
 
 .terraformSettingsWrapper{
-    min-width: 300px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+}
+
+.terraformSettingsInputsWrapper{
+
+    border-radius: 5px;
+    /* border: 2px solid rgb(20, 20, 20); */
+    /* padding: 10px; */
+    min-width: 200px;
+    max-width: 300px;
+    max-height: 80%;
+    /* background-color: rgb(60, 60, 60); */
+    color: white;
+    overflow-y: auto;
+
 }
 
 .terraformFormWrapper{

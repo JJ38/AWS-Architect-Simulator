@@ -1,10 +1,10 @@
 import type { Node } from "@xyflow/react";
 import { TerraformConverter } from "../Models/TerraformConverter.ts";
-import type { AppEdge, AppNode, CodeChunk, EdgeType, Property } from "../types.ts";
+import type { AppEdge, AppNode, CodeChunk, ComponentData, EdgeType, InputsController, Property, PropertyCategory } from "../types.ts";
 import { regions, resourceContainer } from "../constants.ts";
 import type { ResourceStatics } from "../Models/Resource.ts";
 
-export class TerraformWidgetController{
+export class TerraformWidgetController implements InputsController{
 
     public setShowTerraformWidget: React.Dispatch<React.SetStateAction<boolean>>;
     public setNodes: React.Dispatch<React.SetStateAction<AppNode[]>>;
@@ -13,7 +13,7 @@ export class TerraformWidgetController{
     public setShowDownloadTerraformForm: React.Dispatch<React.SetStateAction<boolean>>
     public setDeploymentSettings: React.Dispatch<React.SetStateAction<Record<string, any>>>
 
-    private mainProperties: Record<string, Record<string, Property<any>>> = {
+    public deploymentProperties: Record<string, Record<string, Property<any>>> = {
 
         "terraform": {
 
@@ -24,7 +24,7 @@ export class TerraformWidgetController{
                        "source": {value: "hashicorp/aws", type:"string"},
                        "version": {value: "~> 5.0", type:"string"}
                     },
-                    type: "nestedTags"
+                    type: "tags"
                 },
                 type: "tags"
             },
@@ -36,7 +36,6 @@ export class TerraformWidgetController{
                     "key": {value: "aws-architect-simulator/terraform.tfstate", type: "string"},
                     "region": {value: null, type: "string", options: regions},
                     "use_lockfile": {value: false, type: "boolean"}
-
                 },
                 type:"tags"
 
@@ -61,6 +60,22 @@ export class TerraformWidgetController{
         this.setShowDownloadTerraformForm = setShowDownloadTerraformForm;
         this.setDeploymentSettings = setDeploymentSettings;
     }   
+
+    public keyboardInputOnChange(event: React.ChangeEvent<HTMLInputElement, HTMLInputElement>, nodeProperty: Property<any>, propertyCategory: PropertyCategory, propertyRecordName: string[], inputName: string, componentID: string | null, componentSetter: React.Dispatch<React.SetStateAction<any>>): void {
+      
+    }
+    public getDependantProperty(property: Property<any>, componentData: ComponentData | undefined): any{
+       
+    }
+    public checkBoxOnChange(event: React.ChangeEvent<HTMLInputElement, HTMLInputElement>, nodeProperty: Property<any>, propertyCategory: PropertyCategory, propertyRecordName: string[], inputName: string, componentID: string | null, componentSetter: React.Dispatch<React.SetStateAction<any>>): void {
+
+    }
+    public onSelectChange(event: React.ChangeEvent<HTMLSelectElement, HTMLSelectElement>, nodeProperty: Property<any>, propertyCategory: PropertyCategory, propertyRecordName: string[], inputName: string, componentID: string | null, componentSetter: React.Dispatch<React.SetStateAction<any>>): void {
+        
+    }
+    public shouldShowProperty(property: Property<any>, componentData: ComponentData | undefined): boolean {
+        return true
+    }
 
     public handleCancelClick(){
         this.setShowTerraformWidget(false);
