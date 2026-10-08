@@ -1,7 +1,8 @@
 import type { Node } from "@xyflow/react";
 import { TerraformConverter } from "../Models/TerraformConverter.ts";
-import type { AppEdge, AppNode, CodeChunk, Property } from "../types.ts";
-import { regions } from "../constants.ts";
+import type { AppEdge, AppNode, CodeChunk, EdgeType, Property } from "../types.ts";
+import { regions, resourceContainer } from "../constants.ts";
+import type { ResourceStatics } from "../Models/Resource.ts";
 
 export class TerraformWidgetController{
 
@@ -128,6 +129,85 @@ export class TerraformWidgetController{
         return codeChunks;
     }
 
+    public getNodesTerraformPreview(stateNodes: AppNode[]): CodeChunk[]{
+
+        let codeChunks: CodeChunk[] = [];
+
+        stateNodes?.map(
+            (node: AppNode) => {
+
+                const resource: ResourceStatics = resourceContainer[node.data.service.name!];
+                const resourceInstance = new resource(node.data);
+
+                const terraformProperties = resourceInstance.terraformProperties;
+
+                codeChunks = [...codeChunks, ...resourceInstance.toTerraformPreview([terraformProperties])];
+
+                codeChunks.push({value: "\n", className:""});
+                codeChunks.push({value: "\n", className:""});
+
+            }
+        )
+
+        return codeChunks;
+
+    }
+
+
+    public getEdgesTerraformPreview(stateEdges: AppEdge[], stateNodes: AppNode[]): CodeChunk[]{
+
+        let codeChunks: CodeChunk[] = [];
+
+        stateEdges?.map(
+            (edge: AppEdge) => {
+
+                //get resources on both sides of edge
+                const callerID = edge.data?.resources?.callerID;
+                const receiverID = edge.data?.resources?.receiverID;
+
+                if(callerID === undefined || receiverID === undefined){
+                    return [];
+                }
+
+                //create instances
+
+                const callerNode = stateNodes.find((node: AppNode) => node.id === callerID);
+                const receiverNode = stateNodes.find((node: AppNode) => node.id === receiverID);
+
+                if(callerNode === undefined || receiverNode === undefined){
+                    return [];
+                }       
+
+
+                const callerResource: ResourceStatics = resourceContainer[callerNode.data.service.name!];
+                const callerResourceInstance = new callerResource(callerNode.data);
+
+                const receiverResource: ResourceStatics = resourceContainer[receiverNode.data.service.name!];
+                const receiverResourceInstance = new receiverResource(receiverNode.data); 
+
+                //get terraform previews
+
+                const edgeType: EdgeType = edge.data?.componentProperties.behaviour.edgeType.value;
+
+                const callerEdgeTerraform = callerResourceInstance.toTerraformEdgePropertiesCaller(edgeType, receiverResourceInstance, callerResourceInstance) ?? {};
+                const receiverEdgeTerraform = receiverResourceInstance.toTerraformEdgePropertiesReceiver(edgeType, callerResourceInstance, receiverResourceInstance)?? {};
+
+                const callerEdgeTerraformPreview = callerResourceInstance.toTerraformPreview([callerEdgeTerraform]);
+                const receiverEdgeTerraformPreview = receiverResourceInstance.toTerraformPreview([receiverEdgeTerraform]);
+
+
+                //combine and return;
+                codeChunks = [...codeChunks, ...callerEdgeTerraformPreview, ...receiverEdgeTerraformPreview];
+
+                codeChunks.push({value: "\n", className:""});
+                codeChunks.push({value: "\n", className:""});
+
+            }
+        )
+
+        return codeChunks;
+
+    }
 
 
 }

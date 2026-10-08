@@ -80,8 +80,9 @@
 }
 
 
-#tab-provider:checked ~ #panel-provider,
-#tab-resource:checked ~ #panel-resource {
+#tab-main:checked ~ #panel-main,
+#tab-nodes:checked ~ #panel-nodes,
+#tab-edges:checked ~ #panel-edges {
   display: block;
 }
 

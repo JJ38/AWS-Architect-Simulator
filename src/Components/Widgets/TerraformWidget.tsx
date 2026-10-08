@@ -177,46 +177,54 @@ export default function TerraformWidget({
                     <div className="terraformTabs">
 
 
-                        <input type="radio" className="terraformTabRadio" name="resource" id="tab-provider" defaultChecked/>
-                        <label htmlFor="tab-provider" className="terraformTab">Main</label>
+                        <input type="radio" className="terraformTabRadio" name="tab" id="tab-main" defaultChecked/>
+                        <label htmlFor="tab-main" className="terraformTab">Main</label>
 
-                        <input type="radio" className="terraformTabRadio" name="resource" id="tab-resource"/>
-                        <label htmlFor="tab-resource" className="terraformTab">Resource</label>
+                        <input type="radio" className="terraformTabRadio" name="tab" id="tab-nodes"/>
+                        <label htmlFor="tab-nodes" className="terraformTab">Nodes</label>
+
+                        <input type="radio" className="terraformTabRadio" name="tab" id="tab-edges"/>
+                        <label htmlFor="tab-edges" className="terraformTab">Edges</label>
 
 
-                         <div id="panel-provider" className='terraformWidgetSnippetWrapper'>
+                        <div id="panel-main" className='terraformWidgetSnippetWrapper'>
                             <pre>
                                 <code className='terraformCode'>
-                                    wadwad
+                                    todo add main preview
                                 </code>
                             </pre>
                         </div>
 
 
-                        <div id="panel-resource" className='terraformWidgetSnippetWrapper'>
+
+                        <div id="panel-nodes" className='terraformWidgetSnippetWrapper'>
+                            <pre>
+                                <code className='terraformCode'>
+                                     {
+
+                                        stateTerraformWidgetController.getNodesTerraformPreview(stateNodes).map(
+                                            (codeChunk: CodeChunk, index: number) => {
+                                                return <span key={index} className={codeChunk.className}>{codeChunk.value}</span>
+                                            }
+                                        )
+                                    
+                                    }
+                                </code>
+                            </pre>
+                        </div>
+
+
+                        <div id="panel-edges" className='terraformWidgetSnippetWrapper'>
                             <pre>
                                 <code className='terraformCode'>
                                     {
-                                        stateNodes?.map(
-                                            (node: AppNode) => {
 
-                                                const resource: ResourceStatics = resourceContainer[node.data.service.name!];
-                                                const resourceInstance = new resource(node.data);
-
-                                                const terraformProperties = resourceInstance.terraformProperties;
-
-                                                const codeChunks: CodeChunk[] = resourceInstance.toTerraformPreview([terraformProperties]);
-
-                                                codeChunks.push({value: "\n", className:""});
-                                                codeChunks.push({value: "\n", className:""});
-
-                                                return codeChunks.map(
-                                                    (codeChunk: CodeChunk, index: number) => {
-                                                        return <span key={index} className={codeChunk.className}>{codeChunk.value}</span>
-                                                    }
-                                                )
+                                        stateTerraformWidgetController.getEdgesTerraformPreview(stateEdges, stateNodes).map(
+                                            (codeChunk: CodeChunk, index: number) => {
+                                                return <span key={index} className={codeChunk.className}>{codeChunk.value}</span>
                                             }
                                         )
+                                    
                                     }
                                 </code>
                             </pre>
