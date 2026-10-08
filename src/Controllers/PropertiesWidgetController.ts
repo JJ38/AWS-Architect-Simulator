@@ -1,9 +1,9 @@
 import { resourceContainer } from "../constants";
 import type { ResourceStatics } from "../Models/Resource";
 import type Resource from "../Models/Resource";
-import type { AppEdge, AppNode, Property, AppComponent, PropertyCategory, ResourceData, ComponentData, PropertyRecord, CodeChunk } from "../types";
+import type { AppEdge, AppNode, Property, AppComponent, PropertyCategory, ResourceData, ComponentData, PropertyRecord, CodeChunk, InputsController } from "../types";
 
-export class PropertiesWidgetController {
+export class PropertiesWidgetController implements InputsController {
 
     private setNodes: React.Dispatch<React.SetStateAction<AppNode[]>>;
     private setEdges: React.Dispatch<React.SetStateAction<AppEdge[]>>;
@@ -81,7 +81,6 @@ export class PropertiesWidgetController {
     public shouldShowProperty(property: Property<any>, componentData: ComponentData | undefined): boolean {
 
         if(property.dependant != undefined){
-                //check if dependant value is set. if not return
 
             let dependant = componentData?.terraformProperties;
             let dependantProperty: Property<any> | undefined;
@@ -291,7 +290,7 @@ export class PropertiesWidgetController {
         componentID: string | null,
         componentSetter: React.Dispatch<React.SetStateAction<any>>
     ){  
-        console.log("keyboardInputOnChange");
+
         if(!this.validProperty(nodeProperty, componentID)) return;
 
         const newNodeProperty = structuredClone(nodeProperty);

@@ -514,3 +514,20 @@ added or removed later without ever touching the identity. That's why the
 role is a *fixed* thing a resource always has (made once, e.g. in
 `Lambda.create()`), while the policy is what each new edge/connection keeps
 adding to.
+
+## 25. `.tsx` doesn't mean "this file is a component"
+
+Follow-on from entry 16: the extension is decided purely by "does this file's
+source contain JSX syntax," not by whether what's inside is architecturally
+a component. A plain helper function that happens to build and return a JSX
+element — `getPropertyInput(...)`, called like any normal function call, not
+rendered like `<GetPropertyInput />` — still needs `.tsx` the moment its body
+writes `<div>`/`<input>`/etc. literally, even though nothing about it follows
+component conventions (no default export, no fixed props shape, not subject
+to the rules of hooks).
+
+Practical effect for a controller/view split: event-handling and state-
+mutation logic with no JSX in it stays in a `.ts` controller as before; any
+function that constructs JSX — even a non-component helper — has to move to
+a `.tsx` file instead. The controller/view boundary doesn't change; only the
+file extension of the pieces that literally contain markup does.

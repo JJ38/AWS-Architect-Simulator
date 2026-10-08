@@ -4,8 +4,25 @@ import { useNotification } from '../../Providers/NotificationProvider';
 import { SaveWidgetController } from '../../Controllers/SaveWidgetController';
 import '../../styles/SaveWidget.css'
 import RoundedButton from '../Buttons/RoundedButton'
+import type { AppEdge, AppNode } from '../../types';
 
-export default function SavePopUp({ setShowSaveWidget, stateLoadedSaveName, setLoadedSaveName, stateNodes, stateEdges }: {setShowSaveWidget: React.Dispatch<React.SetStateAction<boolean>>; stateLoadedSaveName: string | null; setLoadedSaveName: React.Dispatch<React.SetStateAction<string | null>>; stateNodes: Node[], stateEdges: Edge[]}){
+export default function SaveWidget({ 
+    setShowSaveWidget, 
+    stateLoadedSaveName, 
+    setLoadedSaveName, 
+    stateNodes, 
+    stateEdges,
+    stateDeploymentSettings 
+}
+    : 
+{
+    setShowSaveWidget: React.Dispatch<React.SetStateAction<boolean>>; 
+    stateLoadedSaveName: string | null; 
+    setLoadedSaveName: React.Dispatch<React.SetStateAction<string | null>>; 
+    stateNodes: AppNode[], 
+    stateEdges: AppEdge[],
+    stateDeploymentSettings: Record<string, any>
+}){
 
     const showNotification = useNotification();
     const [stateSelectedSave, setSelectedSave] = useState<string | null>(null);
@@ -27,14 +44,14 @@ export default function SavePopUp({ setShowSaveWidget, stateLoadedSaveName, setL
                     stateLoadedSaveName &&
 
                     <RoundedButton
-                        onClickHandler={() => stateSaveWidgetController.handleSaveClick(stateLoadedSaveName, stateNodes, stateEdges)}
+                        onClickHandler={() => stateSaveWidgetController.handleSaveClick(stateLoadedSaveName, stateNodes, stateEdges, stateDeploymentSettings)}
                         buttonText='Save'
                     />
 
                 }
 
                 <RoundedButton
-                    onClickHandler={() => stateSaveWidgetController.handleSaveAsClick(stateNodes, stateEdges, setLoadedSaveName)}
+                    onClickHandler={() => stateSaveWidgetController.handleSaveAsClick(stateNodes, stateEdges, stateDeploymentSettings, setLoadedSaveName)}
                     buttonText='Save As'
                 />
 

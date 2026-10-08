@@ -56,6 +56,40 @@ export interface Property<T>{
 
 }
 
+export interface InputsController{
+
+    keyboardInputOnChange(
+        event: React.ChangeEvent<HTMLInputElement, HTMLInputElement>, 
+        nodeProperty: Property<any>, 
+        propertyCategory: PropertyCategory,
+        propertyRecordName: string[],
+        inputName: string, 
+        componentID: string | null,
+        componentSetter: React.Dispatch<React.SetStateAction<any>>
+    ): void,
+    getDependantProperty(property: Property<any>, componentData: ComponentData | undefined): any,
+    checkBoxOnChange(
+          event: React.ChangeEvent<HTMLInputElement, HTMLInputElement>, 
+        nodeProperty: Property<any>, 
+        propertyCategory: PropertyCategory,
+        propertyRecordName: string[],
+        inputName: string, 
+        componentID: string | null,
+        componentSetter: React.Dispatch<React.SetStateAction<any>>
+    ): void,
+    onSelectChange(
+        event: React.ChangeEvent<HTMLSelectElement, HTMLSelectElement>, 
+        nodeProperty: Property<any>, 
+        propertyCategory: PropertyCategory,
+        propertyRecordName: string[],
+        inputName: string, 
+        componentID: string | null,
+        componentSetter: React.Dispatch<React.SetStateAction<any>>
+    ): void,
+    shouldShowProperty(property: Property<any>, componentData: ComponentData | undefined): boolean
+
+}
+
 export type PropertyCategory =
 | "component"
 | "terraform" 

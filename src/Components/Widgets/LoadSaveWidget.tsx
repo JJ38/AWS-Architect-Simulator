@@ -7,18 +7,20 @@ import SavePill from '../SavePill';
 import { useConfirmation } from '../../Providers/ConfirmationProvider';
 import type { AppEdge, AppNode } from '../../types';
 
-export default function LoadSavePopUp(
+export default function LoadWidget(
     { 
         setShowLoadWidget, 
         setEdges, 
-        setNodes, 
+        setNodes,
+        setDeploymentSettings, 
         setLoadedSaveName 
     }
         : 
     {
         setShowLoadWidget: React.Dispatch<React.SetStateAction<boolean>>; 
         setEdges: React.Dispatch<React.SetStateAction<AppEdge[]>>; 
-        setNodes: React.Dispatch<React.SetStateAction<AppNode[]>>; 
+        setNodes: React.Dispatch<React.SetStateAction<AppNode[]>>;
+        setDeploymentSettings: React.Dispatch<React.SetStateAction<Record<string,any>>>; 
         setLoadedSaveName: React.Dispatch<React.SetStateAction<string | null>>
     }){
 

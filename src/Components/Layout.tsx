@@ -65,6 +65,7 @@ export default function Layout() {
                                 setShowLoadWidget={setShowLoadWidget}
                                 setEdges={setEdges}
                                 setNodes={setNodes}
+                                setDeploymentSettings={setDeploymentSettings}
                                 setLoadedSaveName={setLoadedSaveName}
                             />
                     }
@@ -77,6 +78,7 @@ export default function Layout() {
                                 setLoadedSaveName={setLoadedSaveName}
                                 stateNodes={stateNodes}
                                 stateEdges={stateEdges}
+                                stateDeploymentSettings={stateDeploymentSettings}
                             />
                     }
 
