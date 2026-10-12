@@ -20,7 +20,7 @@ export default class S3 extends Resource{
             },
             terraformProperties: {
                 "aws_s3_bucket": {
-                    "bucket": { value: id, type: "string", anchor: true},
+                    "bucket": { value: id, type: "string"},
                     "bucket_prefix": { value: null, type: "string"},
                     "force_destroy": { value: false, type: "boolean"},
                     "tags": { value: {}, type: "tags"}

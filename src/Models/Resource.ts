@@ -107,7 +107,6 @@ export default abstract class Resource{
             codeChunks.push({value: " = ", className:""})
         }
 
-        codeChunks.push({value: "", className:""})
 
         switch (property.type) {
 

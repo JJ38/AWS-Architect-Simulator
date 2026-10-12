@@ -1,4 +1,4 @@
-import type { AppEdge, AppNode, CodeChunk } from "../types";
+import type { AppEdge, AppNode } from "../types";
 import type { ResourceStatics } from "./Resource";
 import { resourceContainer } from "../constants";
 
