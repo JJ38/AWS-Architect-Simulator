@@ -9,6 +9,7 @@ import type Resource from '../Models/Resource.ts';
 import { useNotification } from '../Providers/NotificationProvider.tsx';
 import ThemeToggle from './ThemeToggle.tsx';
 import { useTheme } from '../Providers/ThemeProvider.tsx';
+import TrafficWidget from './Widgets/TrafficWidget.tsx';
 
 export default function Canvas(
   {
@@ -127,6 +128,9 @@ export default function Canvas(
         title={title}
       >
       </PropertiesWidget>
+      <TrafficWidget>
+  
+      </TrafficWidget>
     </div>
 
   );

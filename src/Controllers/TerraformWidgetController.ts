@@ -116,7 +116,7 @@ export class TerraformWidgetController implements InputsController{
             this.showNotification(false, "Error - conversion failed");
             return;
         } 
-
+        console.log("jiioawjdoawiodwa")
         this.showNotification(true, "Successfully converted to terraform");
         
     }
