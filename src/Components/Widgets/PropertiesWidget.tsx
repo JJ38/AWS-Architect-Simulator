@@ -64,6 +64,8 @@ function PropertiesWidget(
         selectedComponentTerraform = statePropertiesWidgetController.getEdgeTerraform(componentData, stateNodes);
     }
     
+    console.log("PropertiesWidget");
+
     return(
 
         <div className="propertiesWidgetWrapper">

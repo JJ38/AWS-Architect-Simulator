@@ -14,6 +14,7 @@ export class PropertiesWidgetController implements InputsController {
     ){
         this.setEdges = setEdges;
         this.setNodes = setNodes;
+        console.log("properties widget controller.");
     }
 
 

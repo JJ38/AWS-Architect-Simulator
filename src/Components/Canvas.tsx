@@ -8,6 +8,7 @@ import PropertiesWidget from './Widgets/PropertiesWidget.tsx';
 import type Resource from '../Models/Resource.ts';
 import { useNotification } from '../Providers/NotificationProvider.tsx';
 import ThemeToggle from './ThemeToggle.tsx';
+import { useTheme } from '../Providers/ThemeProvider.tsx';
 
 export default function Canvas(
   {
@@ -35,6 +36,8 @@ export default function Canvas(
   const { screenToFlowPosition } = useReactFlow();
 
   const showNotification = useNotification();
+  const { theme } = useTheme();
+
 
   const [stateCanvasController] = useState(() => new CanvasController(
     showNotification,
@@ -86,6 +89,8 @@ export default function Canvas(
 
   }, [stateSelectedNodeID, setNodes, stateSelectedEdgeID, setEdges]);
 
+  // console.log(stateNodes.)
+
   return (
     <div className="reactFlowWrapper">
       <ReactFlow
@@ -103,7 +108,7 @@ export default function Canvas(
         onPaneClick={(event) => stateCanvasController.handlePaneClick(event, stateSelectedService, stateNodes)}
         onPaneMouseMove={(event) => stateCanvasController.handlePaneMouseMove(event, stateSelectedService)}
         snapGrid={[20,20]}
-        colorMode='dark'//dark, light, system
+        colorMode={theme}//dark, light, system
         elementsSelectable={false}
       >
         <Background variant={BackgroundVariant.Lines} gap={20} color="var(--border)" />
