@@ -1,0 +1,63 @@
+.trafficChartSvg{
+
+    width: 100%;
+    height: 220px;
+    touch-action: none;
+    user-select: none;
+
+}
+
+.trafficChartGridline{
+    stroke: var(--chart-gridline);
+    stroke-width: 1;
+}
+
+.trafficChartAxisLabel{
+    fill: var(--chart-axis-text);
+    font-size: 9px;
+    font-family: var(--font-sans);
+}
+
+.trafficChartArea{
+    fill: var(--chart-series);
+    fill-opacity: 0.12;
+    stroke: none;
+}
+
+.trafficChartLine{
+    fill: none;
+    stroke: var(--chart-series);
+    stroke-width: 2;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+}
+
+.trafficChartPoint{
+    fill: var(--chart-series);
+    stroke: var(--surface-panel);
+    stroke-width: 2;
+}
+
+.trafficChartPointActive{
+    fill: var(--accent);
+    r: 6;
+}
+
+.trafficChartPointHit{
+    fill: transparent;
+    cursor: ns-resize;
+}
+
+.trafficChartPeakLabel{
+    fill: var(--text-secondary);
+    font-size: 10px;
+    font-weight: 600;
+    font-family: var(--font-sans);
+}
+
+.trafficChartDragLabel{
+    fill: var(--text-primary);
+    font-size: 10px;
+    font-weight: 600;
+    font-family: var(--font-sans);
+}

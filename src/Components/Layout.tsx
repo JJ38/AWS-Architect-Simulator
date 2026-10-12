@@ -9,6 +9,7 @@ import '../styles/Layout.css';
 import SaveWidget from './Widgets/SaveWidget.tsx';
 import TerraformWidget from './Widgets/TerraformWidget.tsx';
 import ConfirmationProvider from '../Providers/ConfirmationProvider.tsx';
+import ThemeProvider from '../Providers/ThemeProvider.tsx';
 
 export default function Layout() {
 
@@ -23,6 +24,7 @@ export default function Layout() {
 
 
     return (
+        <ThemeProvider>
         <NotificationProvider>
             <ConfirmationProvider>
                 <div className="layout">
@@ -85,6 +87,7 @@ export default function Layout() {
                 </div>
             </ConfirmationProvider>
         </NotificationProvider>
+    </ThemeProvider>
     );
 }
 

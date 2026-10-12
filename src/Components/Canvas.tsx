@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
-import { ReactFlow, applyNodeChanges, applyEdgeChanges, useReactFlow, addEdge } from '@xyflow/react';
+import { ReactFlow, applyNodeChanges, applyEdgeChanges, useReactFlow, addEdge, Background, BackgroundVariant } from '@xyflow/react';
 import type { AppEdge, AppNode, CodeChunk, EdgeType, Service } from '../types.ts';
 import { CanvasController } from '../Controllers/CanvasController.ts';
 import '@xyflow/react/dist/style.css';
@@ -7,6 +7,7 @@ import '../styles/Canvas.css';
 import PropertiesWidget from './Widgets/PropertiesWidget.tsx';
 import type Resource from '../Models/Resource.ts';
 import { useNotification } from '../Providers/NotificationProvider.tsx';
+import ThemeToggle from './ThemeToggle.tsx';
 
 export default function Canvas(
   {
@@ -104,7 +105,12 @@ export default function Canvas(
         snapGrid={[20,20]}
         colorMode='dark'//dark, light, system
         elementsSelectable={false}
-      />
+      >
+        <Background variant={BackgroundVariant.Lines} gap={20} color="var(--border)" />
+      </ReactFlow>
+      <div className="canvasTopRightControls">
+        <ThemeToggle />
+      </div>
       <PropertiesWidget 
         stateSelectedNodeID={stateSelectedNodeID} 
         selectedNodeData={selectedNode?.data}

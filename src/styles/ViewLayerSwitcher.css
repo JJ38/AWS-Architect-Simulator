@@ -1,0 +1,40 @@
+.viewLayerSwitcher{
+
+    display: flex;
+    flex-direction: row;
+    background-color: var(--surface-panel);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 3px;
+    box-shadow: 0 1px 4px var(--shadow);
+
+}
+
+.viewLayerSwitcherButton{
+
+    border: none;
+    background: none;
+    border-radius: 999px;
+    padding: 6px 14px;
+    font-family: var(--font-sans);
+    font-size: 0.85em;
+    cursor: pointer;
+    color: var(--text-secondary);
+    transition: background-color 0.15s ease, color 0.15s ease;
+
+}
+
+.viewLayerSwitcherButton:hover{
+    background-color: var(--surface-panel-raised);
+    color: var(--text-primary);
+}
+
+.viewLayerSwitcherButtonActive{
+    background-color: var(--accent);
+    color: var(--accent-contrast);
+}
+
+.viewLayerSwitcherButtonActive:hover{
+    background-color: var(--accent);
+    color: var(--accent-contrast);
+}
