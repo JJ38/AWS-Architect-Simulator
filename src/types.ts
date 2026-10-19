@@ -110,6 +110,8 @@ export type PropertyType =
 | "nestedTags"
 | "checkbox"
 | "select"
+| "block"
+| "tatement"
 | "radio";
 
 export type EdgeType = "sync" | "async" | "pull";

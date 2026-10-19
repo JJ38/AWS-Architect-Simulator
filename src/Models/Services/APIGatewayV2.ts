@@ -31,7 +31,7 @@ export default class APIGatewayV2 extends Resource{
                     "disable_execute_api_endpoint": {value: null, type: "boolean"},
                     "cors_configuration": {
                         value: null,
-                        type: "tags"
+                        type: "block"
                     },
                     "tags": {
                         value: null,

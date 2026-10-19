@@ -27,7 +27,7 @@ export default class SQS extends Resource{
                     "receive_wait_time_seconds": {value: null, type: "number"},
                     "redrive_policy": {
                         value: null,
-                        type: "tags"
+                        type: "block"
                     },
                     "tags": {
                         value: {},

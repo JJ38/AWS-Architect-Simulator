@@ -23,7 +23,10 @@ export default class S3 extends Resource{
                     "bucket": { value: id, type: "string"},
                     "bucket_prefix": { value: null, type: "string"},
                     "force_destroy": { value: false, type: "boolean"},
-                    "tags": { value: {}, type: "tags"}
+                    "tags": { 
+                        value: {
+                        "FakeTag": { value: "test", type: "string" }
+                    }, type: "tags"}
                 },
                 "aws_s3_bucket_versioning": {
                     "bucket": { 
@@ -36,7 +39,7 @@ export default class S3 extends Resource{
                         value: { 
                             "status": { value: "Enabled", type: "string" }
                         }, 
-                        type: "tags"
+                        type: "block"
                     }
                 },
                 "aws_s3_bucket_public_access_block": {
