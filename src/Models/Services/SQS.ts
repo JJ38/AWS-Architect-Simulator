@@ -26,7 +26,16 @@ export default class SQS extends Resource{
                     "message_retention_seconds": {value: null, type: "number"},
                     "receive_wait_time_seconds": {value: null, type: "number"},
                     "redrive_policy": {
-                        value: null,
+                        value: {
+                            deadLetterTargetArn: {
+                                value: null,
+                                type: "string"
+                            },
+                            maxReceiveCount: {
+                                value: 5,
+                                type: "number"
+                            },
+                        },
                         type: "block"
                     },
                     "tags": {
