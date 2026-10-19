@@ -24,9 +24,9 @@ export class TerraformWidgetController implements InputsController{
                        "source": {value: "hashicorp/aws", type:"string"},
                        "version": {value: "~> 5.0", type:"string"}
                     },
-                    type: "tags"
+                    type: "block"
                 },
-                type: "tags"
+                type: "block"
             },
 
             "backend": {
@@ -37,7 +37,7 @@ export class TerraformWidgetController implements InputsController{
                     "region": {value: null, type: "string", options: regions},
                     "use_lockfile": {value: false, type: "boolean"}
                 },
-                type:"tags"
+                type:"block"
 
             }
 
@@ -116,7 +116,7 @@ export class TerraformWidgetController implements InputsController{
             this.showNotification(false, "Error - conversion failed");
             return;
         } 
-        console.log("jiioawjdoawiodwa")
+        console.log("Output: \n",terraformConverter.resourceTerraform)
         this.showNotification(true, "Successfully converted to terraform");
         
     }

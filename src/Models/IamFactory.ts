@@ -26,17 +26,17 @@ export class IamFactory{
                                             // "Federated": {value: null, type: "select", options: ['add list of providers']}, //drop down of providers
                                             // "*": {value: "*", type: "text"}
                                         }, 
-                                        type: "tags"
+                                        type: "block"
                                     },
                                     "Action": {value: "todo", type: "text"}
                                 }, 
-                                type: "tags"
+                                type: "block"
                             }
                         ],
                         type: "propertyArray"
                     }
                 },
-                type: "tags"
+                type: "block"
             }
 
         }
@@ -67,10 +67,10 @@ export class IamFactory{
                             "Effect": {value: "Allow", type: "select", options: effect},
                             "*": {value: "*", type: "text"}
                         },
-                        type: "tags"
+                        type: "block"
                     }
                 }, 
-                type: "tags"
+                type: "block"
             },
             "name_prefix": {value: null, type: "string"},
             
