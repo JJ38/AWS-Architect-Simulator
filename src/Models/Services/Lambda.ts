@@ -31,30 +31,30 @@ export default class Lambda extends Resource{
                     "memory_size": {value: null, type: "number"},
                     "package_type": {value: null, type: "string"},
                     "architectures": {
-                        value: null,
-                        type: "tags"
+                        value: {},
+                        type: "block"
                     },
                     "reserved_concurrent_executions": {value: null, type: "number"},
                     "publish": {value: null, type: "boolean"},
                     "environment": {
                         value: {},
-                        type: "tags"
+                        type: "block"
                     },
                     "vpc_config": {
                         value: {},
-                        type: "tags"
+                        type: "block"
                     },
                     "dead_letter_config": {
                         value: {},
-                        type: "tags"
+                        type: "block"
                     },
                     "ephemeral_storage": {
                         value: {},
-                        type: "tags"
+                        type: "block"
                     },
                     "layers": {
                         value: {},
-                        type: "tags"
+                        type: "block"
                     },
                     "tags": {
                         value: {},

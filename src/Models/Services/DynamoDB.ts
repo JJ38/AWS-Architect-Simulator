@@ -31,13 +31,13 @@ export default class DyanmoDB extends Resource{
                     "billing_mode": {value: "PAY_PER_REQUEST", type: "select", options: dynamodb_billing_mode},
                     "attribute": {
                         value: null,
-                        type: "tags"
+                        type: "block"
                     },
                     "stream_enabled": {value: null, type: "boolean"},
                     "stream_view_type": {value: null, type: "string"},
                     "point_in_time_recovery": {
                         value: null,
-                        type: "tags"
+                        type: "block"
                     },
                     "deletion_protection_enabled": {value: null, type: "boolean"},
                     "read_capacity": {

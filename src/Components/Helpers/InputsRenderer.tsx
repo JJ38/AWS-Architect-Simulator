@@ -108,6 +108,39 @@ function getPropertyInput(
             </details>;
         }
 
+        case "block":{
+
+
+            if(property.value == null){
+                return;
+            }
+            
+            return <details key={inputName} className='propertyBlockWrapper'>
+                <summary className='propertyRecordSectionSummary'>{inputName}</summary>
+                <div className='propertyRecordSectionWrapper'>
+                    {
+                        Object.keys(property.value).map((key: string, index: number) => {
+
+                            const newPropertyRecordPath = Array.from(propertyRecordPath);
+                            newPropertyRecordPath.push(inputName);
+
+                            return renderPropertyRow(
+                                key,
+                                property.value[key],
+                                inputsController,
+                                componentData,
+                                propertyCategory,
+                                newPropertyRecordPath,
+                                componentID,
+                                componentSetter,
+                                index
+                            );
+                        })
+                    }
+                </div>
+            </details>;  
+        }
+
         case "json": {
             return <textarea name="" id=""></textarea>
         }
@@ -160,7 +193,7 @@ function renderPropertyRow(
     key?: number
 ){
 
-    if(property.type === "tags" || property.type === "propertyArray"){
+    if(property.type === "tags" || property.type === "propertyArray" || property.type === "block"){
 
         return getPropertyInput(
             inputsController,

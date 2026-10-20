@@ -39,13 +39,13 @@ export default class EC2 extends Resource{
                         value: {
                             "cpu_credits": {value: null, type: "string"}
                         },                  
-                        type: "tags"
+                        type: "block"
                     },
                     "metadata_options":  {
                         value: {
                             "http_tokens": {value: null, type: "string"}
                         },                  
-                        type: "tags"
+                        type: "block"
                     },
                     "root_block_device":  {
                         value: {
@@ -53,7 +53,7 @@ export default class EC2 extends Resource{
                             "volume_type": {value: null, type: "string"},
                             "delete_on_termination": {value: true, type: "boolean"},
                         },                  
-                        type: "tags"
+                        type: "block"
                     },
                     "tags":  {
                         value: {
