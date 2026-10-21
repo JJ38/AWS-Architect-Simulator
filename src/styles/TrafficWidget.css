@@ -20,3 +20,23 @@
 .costWrapper{
     display: flex;
 }
+
+.trafficChartSVG{
+    padding: 10px
+}
+
+.intervalButton{
+
+    r: 2px;
+    fill: white;
+    stroke: none;
+
+}
+
+
+.intervalButton:hover{
+
+    cursor: pointer;
+    r: 5px;
+
+}
