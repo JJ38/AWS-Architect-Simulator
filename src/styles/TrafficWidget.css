@@ -50,3 +50,8 @@
     font-size: 0.7rem;
     user-select: none;
 }
+
+.yAxisLabel{
+    font-size: 0.6rem;
+    fill: white;
+}
