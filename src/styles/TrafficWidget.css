@@ -22,7 +22,8 @@
 }
 
 .trafficChartSVG{
-    padding: 10px
+    /* padding: 10px */
+    border: solid 1px pink;
 }
 
 .intervalButton{
@@ -39,4 +40,12 @@
     cursor: pointer;
     r: 5px;
 
+}
+
+.intervalLabelContainer{
+    fill: pink;
+}
+
+.intervalLabel{
+    font-size: 0.7rem;
 }

@@ -3,26 +3,24 @@ import type { Coords } from "../types";
 
 export class TrafficWidgetController{
 
-    private intervalIndex: number | null = null;
     private setIntervalPositions: React.Dispatch<React.SetStateAction<Coords[]>>;
+    private setSelectedIntervalIndex: React.Dispatch<React.SetStateAction<number | null>>
 
-    public constructor(setIntervalPositions: React.Dispatch<React.SetStateAction<Coords[]>>){
+    public constructor(setIntervalPositions: React.Dispatch<React.SetStateAction<Coords[]>>, setSelectedIntervalIndex: React.Dispatch<React.SetStateAction<number | null>>){
         this.setIntervalPositions = setIntervalPositions;
+        this.setSelectedIntervalIndex = setSelectedIntervalIndex;
     }
 
 
-    //TODO change this to be a handler on the svg not the button.
-    public intervalOnMouseMoveHandler(event: React.MouseEvent<SVGSVGElement, MouseEvent>, chartHeight: number, graphOffsetY: number){
+    public intervalOnMouseMoveHandler(event: React.MouseEvent<SVGSVGElement, MouseEvent>, numberOfIncrements: number, stateSelectedIntervalIndex: number | null){
 
-        console.log("mouse move")
-        if(this.intervalIndex === null){
+        if(stateSelectedIntervalIndex === null){
             return;
         }
-        
 
         this.setIntervalPositions((stateIntervalPositions) => {
 
-            const index: number | null = this.intervalIndex;
+            const index: number | null = stateSelectedIntervalIndex;
 
             if(index === null){ // needs to be checked again due to potential race condition
                 console.log("index === null");
@@ -36,8 +34,8 @@ export class TrafficWidgetController{
                 newY = 0;
             }
 
-            if(newY > (chartHeight - (graphOffsetY * 2))){
-                newY = chartHeight - (graphOffsetY * 2);
+            if(newY > numberOfIncrements){
+                newY = numberOfIncrements;
             }
 
             const newCoords: Coords = {x: oldCoords.x, y: newY};
@@ -49,17 +47,16 @@ export class TrafficWidgetController{
     }
 
     public intervalOnMouseDownHandler(intervalIndex: number){
-        this.intervalIndex = intervalIndex;
 
         console.log("mouse out")
-        this.intervalIndex = intervalIndex;
+        this.setSelectedIntervalIndex(intervalIndex);
 
     }
 
     public deselectInterval(){
 
         console.log("deselectInterval")
-        this.intervalIndex = null;
+        this.setSelectedIntervalIndex(null);
 
     }
 

@@ -7,13 +7,18 @@ import type { Coords } from '../../types';
 
 export default function TrafficWidget(){    
 
-    let trafficChartWidth = 200; // pixels
-    let trafficChartHeight = 100; // pixels
+    let trafficChartWidth = 200; // pixels including padding thats defined by offset below
+    let svgHeight = 120; // pixels including padding thats defined by offset below
     //7 days, 24 hours etc.
 
-
     const graphOffsetX = 5; // to stop svg being cutoff when rendering near the border. Artificial padding. Need to offset in svg calculations
-    const graphOffsetY = 5;
+    const graphPaddingTop = 20;
+    const graphPaddingBottom = 5;
+    const intervalLabelWidth = 55;
+    const intervalLabelHeight = 18;
+    const intervalLabelRadius = 5;
+
+    const numberOfIncrements = svgHeight - graphPaddingTop - graphPaddingBottom; //Number of unique positions in the y axis the button can be dragged to.
 
     const yValue = 50;
 
@@ -22,7 +27,9 @@ export default function TrafficWidget(){
     let xAxisMaxValue = intervals.length;
 
     const [stateIntervalPositions, setIntervalPositions] = useState<Coords[]>(intervals);
-    const [stateTrafficWidgetController] = useState<TrafficWidgetController>(new TrafficWidgetController(setIntervalPositions));
+    const [stateSelectedIntervalIndex, setSelectedIntervalIndex] = useState<number | null>(null);
+
+    const [stateTrafficWidgetController] = useState<TrafficWidgetController>(new TrafficWidgetController(setIntervalPositions, setSelectedIntervalIndex));
 
     return (
         <div className="trafficWidgetWrapper">
@@ -34,37 +41,16 @@ export default function TrafficWidget(){
 
             <svg 
                 className="trafficChartSVG" 
-                viewBox={`0 0 ${trafficChartWidth} ${trafficChartHeight}`} 
+                viewBox={`0 0 ${trafficChartWidth} ${svgHeight}`} 
                 width="100%"
                 height="100%"
-                onMouseMove={(event) => stateTrafficWidgetController.intervalOnMouseMoveHandler(event, trafficChartHeight, graphOffsetY)}
+                onMouseMove={(event) => stateTrafficWidgetController.intervalOnMouseMoveHandler(event, numberOfIncrements, stateSelectedIntervalIndex)}
                 onMouseUp={() => stateTrafficWidgetController.deselectInterval()}
                 onMouseLeave={() => stateTrafficWidgetController.deselectInterval()}
                 > {/* viewbox = min-x min-y width height */}
 
-                <line x1={graphOffsetX} y1={0 + graphOffsetY} x2={graphOffsetX} y2={trafficChartHeight - graphOffsetY} stroke="red"/>
-                <line x1={graphOffsetX} y1={trafficChartHeight - graphOffsetY} x2={trafficChartWidth - graphOffsetX} y2={trafficChartHeight - graphOffsetY} stroke="yellow"/>
-
-                {
-                    
-                    stateIntervalPositions.map((interval, i) => {
-
-                        const intervalSpacing = (trafficChartWidth - (graphOffsetX * 2)) / (xAxisMaxValue - 1);
-                        const xCoord = intervalSpacing * i; // standard shift right from y axis + number of shifts right
-                      
-                        return <circle 
-                            className="intervalButton" 
-                            key={`interval${i}`} 
-                            cx={xCoord + graphOffsetX} 
-                            cy={trafficChartHeight - graphOffsetY - interval.y} 
-                            r="2" 
-                            stroke="orange"
-                            onMouseDown={() => stateTrafficWidgetController.intervalOnMouseDownHandler(i)} 
-                        />
-
-                    })
-
-                }
+                <line x1={graphOffsetX} y1={0 + graphPaddingTop} x2={graphOffsetX} y2={svgHeight - graphPaddingBottom} stroke="red"/>
+                <line x1={graphOffsetX} y1={svgHeight - graphPaddingBottom} x2={trafficChartWidth - graphOffsetX} y2={svgHeight - graphPaddingBottom} stroke="yellow"/>
 
                 {
 
@@ -77,9 +63,9 @@ export default function TrafficWidget(){
                             return <line 
                                 key={`line${i}`} 
                                 x1={xCoord - intervalSpacing + graphOffsetX} 
-                                y1={trafficChartHeight - graphOffsetY - (stateIntervalPositions[i - 1].y)} 
+                                y1={svgHeight - graphPaddingBottom - (stateIntervalPositions[i - 1].y)} 
                                 x2={xCoord + graphOffsetX} 
-                                y2={trafficChartHeight - graphOffsetY - interval.y} 
+                                y2={svgHeight - graphPaddingBottom - interval.y} 
                                 stroke="blue"
                             />
                         }
@@ -87,6 +73,47 @@ export default function TrafficWidget(){
                     })
 
                 }
+
+                {
+                    
+                    stateIntervalPositions.map((interval, i) => {
+
+                        const intervalSpacing = (trafficChartWidth - (graphOffsetX * 2)) / (xAxisMaxValue - 1);
+                        const xCoord = intervalSpacing * i;
+                        
+                        return <circle 
+                            className="intervalButton" 
+                            key={`interval${i}`} 
+                            cx={xCoord + graphOffsetX} 
+                            cy={svgHeight - graphPaddingBottom - interval.y} 
+                            r="2" 
+                            stroke="orange"
+                            onMouseDown={() => stateTrafficWidgetController.intervalOnMouseDownHandler(i)} 
+                        />
+
+                    })
+
+                }
+
+                {
+                    
+                    stateIntervalPositions.map((interval, i) => {
+
+                        const intervalSpacing = (trafficChartWidth - (graphOffsetX * 2)) / (xAxisMaxValue - 1);
+                        const xCoord = intervalSpacing * i;
+
+                        if(stateSelectedIntervalIndex === i){
+                            return <g>
+                                <rect className="intervalLabelContainer" x={xCoord + graphOffsetX - (intervalLabelWidth / 2)} y={svgHeight - graphPaddingBottom - interval.y - 8 - (intervalLabelHeight / 2)} width={intervalLabelWidth} height={intervalLabelHeight} rx={intervalLabelRadius} ry={intervalLabelRadius}></rect>
+                                <text className="intervalLabel" x={xCoord + graphOffsetX} y={svgHeight - graphPaddingBottom - interval.y - 8} textAnchor='middle' dominantBaseline='middle'>x Req/s</text>
+                            </g>
+                        }
+                        
+                    })
+
+
+                }
+
 
             </svg>
         
