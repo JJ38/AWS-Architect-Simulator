@@ -1,3 +1,4 @@
+import { yAxisIncrements, yAxisMaxValues } from "../constants";
 import type { Coords, TrafficPeriod } from "../types";
 
 
@@ -11,6 +12,7 @@ export class TrafficWidgetController{
     private setWidgetWidth: React.Dispatch<React.SetStateAction<number>>;
     private setWidgetHeight: React.Dispatch<React.SetStateAction<number>>;
     private setIsResizingWidget: React.Dispatch<React.SetStateAction<boolean>>;
+    private setYAxisMaxValue: React.Dispatch<React.SetStateAction<number>>;
 
     public constructor(
         setIntervalPositions: React.Dispatch<React.SetStateAction<Coords[]>>,
@@ -20,7 +22,8 @@ export class TrafficWidgetController{
         setSelectedTrafficPeriod: React.Dispatch<React.SetStateAction<TrafficPeriod>>,
         setWidgetWidth: React.Dispatch<React.SetStateAction<number>>,
         setWidgetHeight: React.Dispatch<React.SetStateAction<number>>,
-        setIsResizingWidget: React.Dispatch<React.SetStateAction<boolean>>
+        setIsResizingWidget: React.Dispatch<React.SetStateAction<boolean>>,
+        setYAxisMaxValue: React.Dispatch<React.SetStateAction<number>>
     ){
         this.setIntervalPositions = setIntervalPositions;
         this.setSelectedIntervalIndex = setSelectedIntervalIndex;
@@ -30,16 +33,16 @@ export class TrafficWidgetController{
         this.setWidgetWidth = setWidgetWidth;
         this.setWidgetHeight = setWidgetHeight;
         this.setIsResizingWidget = setIsResizingWidget;
+        this.setYAxisMaxValue = setYAxisMaxValue;
     }
 
 
-    public intervalOnMouseMoveHandler(event: React.MouseEvent<SVGSVGElement, MouseEvent>, numberOfIncrements: number, stateSelectedIntervalIndex: number | null, svgHeight: number, graphPaddingBottom: number, graphPaddingTop: number, yAxisMaxValue: number){
+    public intervalOnMouseMoveHandler(event: React.MouseEvent<SVGSVGElement, MouseEvent>, numberOfIncrements: number, stateSelectedIntervalIndex: number | null, svgHeight: number, graphPaddingBottom: number, graphPaddingTop: number, stateYAxisMaxValue: number){
 
         if(stateSelectedIntervalIndex === null){
             return;
         }
 
-       
         const svgRect = event.currentTarget.getBoundingClientRect();
         const mouseYInPixels = event.clientY - svgRect.top;
         const mouseYInSVGUnits = mouseYInPixels * (svgHeight / svgRect.height);
@@ -64,38 +67,47 @@ export class TrafficWidgetController{
 
         });
 
-        const intervalFractionOfMaxRequests = newY / graphHeightSVGUnits;
-        const newIntervalRequestsPerSecond =  Math.round(intervalFractionOfMaxRequests * yAxisMaxValue)
-
+        const newIntervalRequestsPerSecond = this.convertToRequestPerSecond(newY, graphHeightSVGUnits, stateYAxisMaxValue);
         this.setIntervalRequestPerSecond(newIntervalRequestsPerSecond);
-
 
     }
 
-    public intervalOnMouseDownHandler(intervalIndex: number){
+    public intervalOnMouseDownHandler(intervalIndex: number, stateIntervalPositions: Coords[], graphHeightSVGUnits: number, stateYAxisMaxValue: number){
 
-        console.log("mouse out")
+        const newIntervalRequestsPerSecond = this.convertToRequestPerSecond(stateIntervalPositions[intervalIndex].y, graphHeightSVGUnits, stateYAxisMaxValue);
+        this.setIntervalRequestPerSecond(newIntervalRequestsPerSecond);
         this.setSelectedIntervalIndex(intervalIndex);
 
     }
 
-    public deselectInterval(){
+    public deselectInterval(stateSelectedIntervalIndex?: number | null, stateIntervalRequestPerSecond?: number, stateIntervalPositions?: Coords[], graphHeightSVGUnits?: number, yAxisMaxValue?: number){
 
-        console.log("deselectInterval")
+        //is interval currently selected
+        if(stateSelectedIntervalIndex != null){
+
+            if(stateIntervalRequestPerSecond === undefined || yAxisMaxValue === undefined || graphHeightSVGUnits === undefined || stateIntervalPositions === undefined){
+                return;
+            }
+
+            this.rightSizeChart(stateIntervalPositions, graphHeightSVGUnits, yAxisMaxValue);
+
+        }
+
         this.setSelectedIntervalIndex(null);
 
     }
 
-    public numberOfIntervalsInputOnChange(value: string, stateIntervalPositions: Coords[]){
+    public numberOfIntervalsInputOnChange(value: string, stateIntervalPositions: Coords[], maxNumberOfIntervals: number, graphHeightSVGUnits: number, yAxisMaxValue: number){
 
         const input = Number(value);
 
-        if(input < 0 || input > 31){
+        if(input < 0 || input > maxNumberOfIntervals){
             return;
         }
 
         this.setNumberOfIntervals(input);
-    
+        this.rightSizeChart(stateIntervalPositions, graphHeightSVGUnits, yAxisMaxValue);
+
         if(input > stateIntervalPositions.length){
 
             const numberOfCoordsToAdd = input - stateIntervalPositions.length;
@@ -129,10 +141,7 @@ export class TrafficWidgetController{
     }
 
     public periodButtonOnClick(trafficPeriod: TrafficPeriod){
-
-        console.log(trafficPeriod);
         this.setSelectedTrafficPeriod(trafficPeriod);
-
     }
 
     public resizeHandleOnMouseDown(){
@@ -151,5 +160,90 @@ export class TrafficWidgetController{
     public resizeHandleOnMouseUp(){
         this.setIsResizingWidget(false);
     }
+
+    private rightSizeChart(stateIntervalPositions: Coords[], graphHeightSVGUnits: number, yAxisMaxValue: number){
+
+        const zoomOutThreshold = 0.95; //is there a value that is 95% of the max y axis value
+
+        const valueAboveZoomOutThreshold: Coords | undefined = stateIntervalPositions.find((value) =>{ 
+            if(value.y / graphHeightSVGUnits > zoomOutThreshold){
+                return value;
+            }
+        });
+
+        //if so is it in top 5%
+        if(valueAboveZoomOutThreshold != undefined){
+
+            const newYAxisMaxValue = yAxisMaxValues.find((value, i) => {
+
+                if(i - 1 === yAxisMaxValues.length){
+                    return;
+                }
+
+                if(value > yAxisMaxValue && yAxisMaxValue < yAxisMaxValues[i + 1]){
+                    return value
+                }
+
+            }) ?? yAxisMaxValues[yAxisMaxValues.length - 1]
+
+            this.setYAxisMaxValue(newYAxisMaxValue);
+            this.calibrateChartIntervals(yAxisMaxValue, newYAxisMaxValue, graphHeightSVGUnits, stateIntervalPositions);
+
+        }else{
+
+            const intervalsY: number[] = stateIntervalPositions.map((value) =>{ 
+                return value.y;
+            });
+
+            intervalsY.sort((a, b) => a - b);
+            console.log(intervalsY);
+            const highestIntervalY: number = intervalsY[intervalsY.length - 1];
+
+            //if all values are in the bottom 50%   
+            if(highestIntervalY < graphHeightSVGUnits / 2){
+
+                const highestNumberOfRequestsPerSecond = this.convertToRequestPerSecond(highestIntervalY, graphHeightSVGUnits, yAxisMaxValue);
+                const newYAxisMaxValue = yAxisMaxValues.find((value, i) => {
+
+                    if(i === 0){
+                        return;
+                    }
+
+                    if(value > highestNumberOfRequestsPerSecond && highestNumberOfRequestsPerSecond > yAxisMaxValues[i - 1]){
+                        return value;
+                    }
+
+                }) ?? yAxisMaxValues[0];
+
+                this.setYAxisMaxValue(newYAxisMaxValue);
+                this.calibrateChartIntervals(yAxisMaxValue, newYAxisMaxValue, graphHeightSVGUnits, stateIntervalPositions);
+                
+            }
+
+        }
+
+    }
+    
+    private calibrateChartIntervals(oldYAxisMaxValue: number, newYAxisMaxValue: number, graphHeightSVGUnits: number, stateIntervalPositions: Coords[]){
+
+        const intervalRequestPerSecond = stateIntervalPositions.map((interval) => {
+            return this.convertToRequestPerSecond(interval.y, graphHeightSVGUnits, oldYAxisMaxValue);
+        });
+
+        const newIntervalPositions = stateIntervalPositions.map((interval, i) => {
+
+            const newY = intervalRequestPerSecond[i] != 0 ? intervalRequestPerSecond[i] / newYAxisMaxValue : 0;
+            return {x:interval.x, y: newY * graphHeightSVGUnits}
+        }); 
+
+        this.setIntervalPositions(newIntervalPositions);
+        
+    }
+
+    private convertToRequestPerSecond(yPos: number, graphHeightSVGUnits: number, yAxisMaxValue: number){
+        return Math.round((yPos / graphHeightSVGUnits) * yAxisMaxValue);
+    }
+
+
 
 }

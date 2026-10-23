@@ -3,6 +3,7 @@ import '../../styles/TrafficWidget.css'
 import { TrafficWidgetController } from '../../Controllers/TrafficWidgetController';
 import type { Coords, TrafficPeriod } from '../../types';
 import RoundedButton from '../Buttons/RoundedButton';
+import { yAxisIncrements } from '../../constants';
 
 
 
@@ -14,14 +15,13 @@ export default function TrafficWidget(){
     // fixed 200x120, so growing the widget adds more drawing room instead of scaling the grid up.
     const [svgWidth, setSvgWidth] = useState<number>(200);
     const [svgHeight, setSvgHeight] = useState<number>(120);
+    const [stateYAxisMaxValue, setYAxisMaxValue] = useState<number>(100);
 
    
     let intervals: Coords[] = Array.from({ length: 24 }, () => ({ x: 0, y: 0 }));
-    let yAxisMaxValue = 200;
-    let xAxisMaxValue = intervals.length;
 
     //Below are in svg space no in pixels
-    const graphPaddingLeft = 5 + (5 * (yAxisMaxValue.toString().length));
+    const graphPaddingLeft = 5 + (5 * (stateYAxisMaxValue.toString().length));
     const graphPaddingRight = 5;
     const graphPaddingTop = 20;
     const graphPaddingBottom = 5;
@@ -32,6 +32,7 @@ export default function TrafficWidget(){
 
     const minNumberOfYAxisLabels = 2;
     const maxNumberOfYAxisLabels = 6;
+    const maxNumberOfIntervals = 60;
 
     const minWidgetWidth = 200; // matches .trafficWidgetWrapper's CSS min-width
     const minWidgetHeight = 100; // matches .trafficWidgetWrapper's CSS min-height
@@ -40,18 +41,19 @@ export default function TrafficWidget(){
     
     const heightOfGraphSVGUnits = svgHeight - graphPaddingBottom - graphPaddingTop;
 
-    const yAxisLabels: {numberOfRequests: number, fractionOfMax: number}[] = getYAxisLabels(yAxisMaxValue, minNumberOfYAxisLabels, maxNumberOfYAxisLabels);
+    const yAxisLabels: {numberOfRequests: number, fractionOfMax: number}[] = getYAxisLabels(stateYAxisMaxValue, minNumberOfYAxisLabels, maxNumberOfYAxisLabels);
 
     const [stateIntervalPositions, setIntervalPositions] = useState<Coords[]>(intervals);
     const [stateSelectedIntervalIndex, setSelectedIntervalIndex] = useState<number | null>(null);
     const [stateIntervalRequestPerSecond, setIntervalRequestPerSecond] = useState<number>(0);
     const [stateNumberOfIntervals, setNumberOfIntervals] = useState<number>(24);
     const [stateSelectedTrafficPeriod, setSelectedTrafficPeriod] = useState<TrafficPeriod>("Hour");
+
     const [stateWidgetWidth, setWidgetWidth] = useState<number>(300);
     const [stateWidgetHeight, setWidgetHeight] = useState<number>(320);
     const [stateIsResizingWidget, setIsResizingWidget] = useState<boolean>(false);
 
-    const [stateTrafficWidgetController] = useState<TrafficWidgetController>(new TrafficWidgetController(setIntervalPositions, setSelectedIntervalIndex, setIntervalRequestPerSecond, setNumberOfIntervals, setSelectedTrafficPeriod, setWidgetWidth, setWidgetHeight, setIsResizingWidget));
+    const [stateTrafficWidgetController] = useState<TrafficWidgetController>(new TrafficWidgetController(setIntervalPositions, setSelectedIntervalIndex, setIntervalRequestPerSecond, setNumberOfIntervals, setSelectedTrafficPeriod, setWidgetWidth, setWidgetHeight, setIsResizingWidget, setYAxisMaxValue));
 
     useEffect(() => {
 
@@ -90,6 +92,7 @@ export default function TrafficWidget(){
 
     }, []);
 
+    const graphHeightSVGUnits = svgHeight - graphPaddingBottom - graphPaddingTop;
 
     return (
         <div className="trafficWidgetWrapper" style={{ width: stateWidgetWidth, height: stateWidgetHeight }}>
@@ -98,11 +101,11 @@ export default function TrafficWidget(){
 
             <div className="costWrapper">
                 <p>Cost 100$</p>
-                <p>/period</p>
+                <p>/ {stateNumberOfIntervals + " "  + stateSelectedTrafficPeriod + "s"}</p>
             </div>
 
             <div className="timeFrameWrapper">
-                <input name="intervalInput" className='numberOfIntervalsInput' type="number" max="31" min="1" value={stateNumberOfIntervals} onChange={(event) => stateTrafficWidgetController.numberOfIntervalsInputOnChange(event.target.value, stateIntervalPositions)}/>
+                <input name="intervalInput" className='numberOfIntervalsInput' type="number" max={maxNumberOfIntervals} min="1" value={stateNumberOfIntervals} onChange={(event) => stateTrafficWidgetController.numberOfIntervalsInputOnChange(event.target.value, stateIntervalPositions, maxNumberOfIntervals, graphHeightSVGUnits, stateYAxisMaxValue)}/>
                 <RoundedButton className={`roundedButton ${stateSelectedTrafficPeriod === 'Hour' && 'selectedPeriodButton'}`} onClickHandler={() => stateTrafficWidgetController.periodButtonOnClick('Hour')} buttonText={'Hours'}></RoundedButton>
                 <RoundedButton className={`roundedButton ${stateSelectedTrafficPeriod === 'Day' && 'selectedPeriodButton'}`} onClickHandler={() => stateTrafficWidgetController.periodButtonOnClick('Day')} buttonText={'Days'}></RoundedButton>
                 <RoundedButton className={`roundedButton ${stateSelectedTrafficPeriod === 'Month' && 'selectedPeriodButton'}`} onClickHandler={() => stateTrafficWidgetController.periodButtonOnClick('Month')} buttonText={'Months'}></RoundedButton>
@@ -115,15 +118,15 @@ export default function TrafficWidget(){
                 viewBox={`0 0 ${svgWidth} ${svgHeight}`}
                 width="100%"
                 height="100%"
-                onMouseMove={(event) => stateTrafficWidgetController.intervalOnMouseMoveHandler(event, numberOfIncrements, stateSelectedIntervalIndex, svgHeight, graphPaddingBottom, graphPaddingTop, yAxisMaxValue)}
-                onMouseUp={() => stateTrafficWidgetController.deselectInterval()} 
+                onMouseMove={(event) => stateTrafficWidgetController.intervalOnMouseMoveHandler(event, numberOfIncrements, stateSelectedIntervalIndex, svgHeight, graphPaddingBottom, graphPaddingTop, stateYAxisMaxValue)}
+                onMouseUp={() => stateTrafficWidgetController.deselectInterval(stateSelectedIntervalIndex, stateIntervalRequestPerSecond, stateIntervalPositions, graphHeightSVGUnits, stateYAxisMaxValue)} 
                 onMouseLeave={() => stateTrafficWidgetController.deselectInterval()}
                 > {/* viewbox = min-x min-y width height */}
                 
-                <text className="yAxisLabel" x={graphPaddingLeft - 3} y={0 + graphPaddingTop} textAnchor='end' dominantBaseline='middle'>{yAxisMaxValue}</text>
+                <text className="yAxisLabel" x={graphPaddingLeft - 3} y={0 + graphPaddingTop} textAnchor='end' dominantBaseline='middle'>{stateYAxisMaxValue}</text>
 
-                <line x1={graphPaddingLeft} y1={0 + graphPaddingTop} x2={graphPaddingLeft} y2={svgHeight - graphPaddingBottom} stroke="red"/>
-                <line x1={graphPaddingLeft} y1={svgHeight - graphPaddingBottom} x2={svgWidth - graphPaddingRight} y2={svgHeight - graphPaddingBottom} stroke="yellow"/>
+                <line x1={graphPaddingLeft} y1={0 + graphPaddingTop} x2={graphPaddingLeft} y2={svgHeight - graphPaddingBottom}/>
+                <line x1={graphPaddingLeft} y1={svgHeight - graphPaddingBottom} x2={svgWidth - graphPaddingRight} y2={svgHeight - graphPaddingBottom}/>
 
                 {
                     yAxisLabels.map((label) => {
@@ -173,7 +176,7 @@ export default function TrafficWidget(){
                             cy={svgHeight - graphPaddingBottom - interval.y} 
                             r="2" 
                             stroke="orange"
-                            onMouseDown={() => stateTrafficWidgetController.intervalOnMouseDownHandler(i)} 
+                            onMouseDown={() => stateTrafficWidgetController.intervalOnMouseDownHandler(i, stateIntervalPositions, graphHeightSVGUnits, stateYAxisMaxValue)} 
                         />
 
                     })
@@ -205,13 +208,12 @@ export default function TrafficWidget(){
 
 }
 
-function getYAxisLabels(yAxisMaxValue: number, minNumberOfYAxisLabels: number, maxNumberOfYAxisLabels: number){
+function getYAxisLabels(stateYAxisMaxValue: number, minNumberOfYAxisLabels: number, maxNumberOfYAxisLabels: number){
 
     //list of acceptable increments. Loop through to find one that divides in the acceptable range of min - max y axis labels. Choose highest
-    const yAxisIncrements: number[] = [1, 2, 5, 10, 20, 25, 50, 75, 100, 200, 250, 500, 750, 1000] 
 
     const increment: number | undefined = yAxisIncrements.find((increment: number) => {
-        const numberOfIncrements = yAxisMaxValue / increment;
+        const numberOfIncrements = stateYAxisMaxValue / increment;
         if(numberOfIncrements > minNumberOfYAxisLabels && numberOfIncrements < maxNumberOfYAxisLabels){
             return increment;
         }
@@ -224,12 +226,19 @@ function getYAxisLabels(yAxisMaxValue: number, minNumberOfYAxisLabels: number, m
         return yAxisLabels;
     }
 
-    const numberOfYAxisLabels: number = Math.floor(yAxisMaxValue / increment);
+    const numberOfYAxisLabels: number = Math.floor(stateYAxisMaxValue / increment);
 
     for(let i = 0; i < numberOfYAxisLabels; i++){
         yAxisLabels.push({
             numberOfRequests: increment * (i + 1), 
-            fractionOfMax: increment * (i + 1) / yAxisMaxValue
+            fractionOfMax: increment * (i + 1) / stateYAxisMaxValue
+        });
+    }
+
+    if(yAxisLabels[yAxisLabels.length - 1].numberOfRequests != stateYAxisMaxValue){
+        yAxisLabels.push({
+            numberOfRequests: stateYAxisMaxValue, 
+            fractionOfMax: 1
         });
     }
 
