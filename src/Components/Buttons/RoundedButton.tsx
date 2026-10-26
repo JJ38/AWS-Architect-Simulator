@@ -1,10 +1,10 @@
 import '../../styles/RoundedButton.css'
 
-export default function RoundedButton({ onClickHandler, buttonText }: { onClickHandler: () => void; buttonText: string }){
+export default function RoundedButton({ onClickHandler, buttonText, className }: { onClickHandler: () => void; buttonText: string, className: string }){
 
     return(
         <div 
-            className="roundedButton" 
+            className={className} 
             onClick={onClickHandler}
         >
             {buttonText}

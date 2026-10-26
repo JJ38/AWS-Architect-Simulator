@@ -531,3 +531,33 @@ mutation logic with no JSX in it stays in a `.ts` controller as before; any
 function that constructs JSX — even a non-component helper — has to move to
 a `.tsx` file instead. The controller/view boundary doesn't change; only the
 file extension of the pieces that literally contain markup does.
+
+## 26. `value` vs `defaultValue` on an `<input>`
+
+An input is either **controlled** (`value` + `onChange`) or **uncontrolled**
+(`defaultValue`, no `value` at all) — the two aren't interchangeable, and
+mixing their mental models is the common bug:
+
+- **Controlled (`value`):** React re-applies `value` after *every* render,
+  not just the first. The input's displayed text is a direct reflection of
+  state — it's "always this," not "starts as this." Set `value` to a literal
+  (`value={7}`) and the input is permanently locked to `7` forever, no matter
+  what the user types or what `onChange` does — the DOM gets forced back to
+  `7` on the very next render regardless.
+- **Uncontrolled (`defaultValue`):** React sets it once, on mount, then steps
+  back — the DOM owns the value from then on. Typing doesn't flow through
+  React/state unless you explicitly read it later via a `ref`.
+
+For a controlled input, "the default value" is whatever you pass to the
+`useState` call that backs it (`useState<number>(10)`), not a literal in the
+JSX — `value` should point at that state variable, and the state's initial
+argument *is* the default:
+
+```tsx
+const [stateCount, setCount] = useState<number>(10); // the default lives here
+<input value={stateCount} onChange={(e) => setCount(Number(e.target.value))} />
+```
+
+Reach for `defaultValue` instead only when you genuinely don't need to react
+to every keystroke (no state tracking it at all) — otherwise it's a step back
+from a controlled input you were already building correctly.

@@ -125,3 +125,11 @@ export interface CodeChunk{
 }
 
 export type PermissionType = "IAM" | "Service" | "Passive"; // A passive service should only ever show up as a pull source
+export type TrafficPeriod = "Hour" | "Day" | "Month";
+
+export interface Coords{
+
+    x: number,
+    y: number
+
+}
