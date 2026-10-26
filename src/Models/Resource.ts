@@ -1,10 +1,10 @@
-import type { CodeChunk, EdgeType, PermissionType, Property, PropertyRecord, ResourceData, Service, ValidationResult } from "../types";
+import type { CodeChunk, ComponentData, EdgeType, PermissionType, Property, PropertyRecord, ResourceData, Service, ValidationResult } from "../types";
 
 
 export interface ResourceStatics{
 
     new(data: ResourceData): Resource;
-    create(id: string, service: Service): ResourceData;
+    createData(id: string): ComponentData;
     sourceTypes: EdgeType[];
     targetTypes: EdgeType[];
     permissionType: PermissionType;
@@ -20,12 +20,12 @@ export default abstract class Resource{
     public iamProperties?: Record<string, PropertyRecord>;
 
 
-    public constructor(data: ResourceData){
+    public constructor(data: ResourceData, componentData: ComponentData){
         this.id = data.id;
         this.service = data.service;
         this.resourceName = data.resourceName;
-        this.terraformProperties = data.terraformProperties;
-        this.iamProperties = data.iamProperties;
+        this.terraformProperties = componentData.terraformProperties;
+        this.iamProperties = componentData.iamProperties;
     }
     
 
@@ -33,6 +33,17 @@ export default abstract class Resource{
     abstract toTerraformEdgePropertiesCaller(edgeType: EdgeType, counterPart: Resource, resource?: Resource): Record<string, PropertyRecord> | null;
     abstract toTerraformEdgePropertiesReceiver(edgeType: EdgeType, counterPart: Resource, resource?: Resource): Record<string, PropertyRecord> | null;
 
+    public static createResource(id: string, service: Service): ResourceData{
+
+        return {
+
+            id: id,
+            service: service,
+            resourceName: id,
+
+        }
+
+    }
 
     toTerraformPreview(propertyRecords: Record<string, PropertyRecord>[]): CodeChunk[]{
 

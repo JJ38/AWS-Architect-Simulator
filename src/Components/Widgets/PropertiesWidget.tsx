@@ -9,7 +9,6 @@ function PropertiesWidget(
     { 
         stateSelectedNodeID, 
         selectedNodeData,
-        // stateNodes,
         setNodes, 
         stateSelectedEdgeID,
         selectedEdgeData, 
@@ -20,7 +19,6 @@ function PropertiesWidget(
     { 
         stateSelectedNodeID: string | null, 
         selectedNodeData: ComponentData | undefined,
-        // stateNodes: AppNode[],
         setNodes: React.Dispatch<React.SetStateAction<AppNode[]>>, 
         stateSelectedEdgeID: string | null,
         selectedEdgeData: ComponentData | undefined,
@@ -43,26 +41,26 @@ function PropertiesWidget(
    
     let selectedComponentTerraform: CodeChunk[] | undefined;
 
-    if(selectedComponentType == "Node"){
+    // if(selectedComponentType == "Node"){
 
-        const resource: Resource | undefined = statePropertiesWidgetController.getSelectedResource(componentData as ResourceData);
+    //     const resource: Resource | undefined = statePropertiesWidgetController.getSelectedResource(componentData as ResourceData);
 
-        if(resource == undefined){
-            return;
-        }
+    //     if(resource == undefined){
+    //         return;
+    //     }
 
-        const properties = [resource.terraformProperties];
+    //     const properties = [resource.terraformProperties];
 
-        if(resource.iamProperties != null){
-            properties.push(resource.iamProperties);
-        }
+    //     if(resource.iamProperties != null){
+    //         properties.push(resource.iamProperties);
+    //     }
 
-        selectedComponentTerraform = resource.toTerraformPreview(properties);
+    //     selectedComponentTerraform = resource.toTerraformPreview(properties);
 
-    }else if(selectedComponentType == "Edge"){
+    // }else if(selectedComponentType == "Edge"){
         
-        selectedComponentTerraform = statePropertiesWidgetController.getEdgeTerraform(componentData);
-    }
+    //     selectedComponentTerraform = statePropertiesWidgetController.getEdgeTerraform(componentData);
+    // }
     
     console.log("PropertiesWidget");
 

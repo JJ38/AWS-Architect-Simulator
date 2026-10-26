@@ -1,4 +1,4 @@
-import type { EdgeType, PermissionType, ResourceData, Service, ValidationResult } from "../../types";
+import type { ComponentData, EdgeType, PermissionType, ResourceData, Service, ValidationResult } from "../../types";
 import Resource from "../Resource";
 
 //incomplete look at all types
@@ -14,16 +14,12 @@ export default class DyanmoDB extends Resource{
     public static permissionType: PermissionType = "Passive";
 
 
-    public static create(id: string, service: Service): ResourceData{
+    public static createData(id: string): ComponentData{
 
         return {
 
             id: id,
-            service: service,
-            resourceName: id,
-            metaData:{
-
-            },
+            metaData:{},
             terraformProperties: {
                 "aws_dynamodb_table": {
                     "name": {value: id, type: "string"},

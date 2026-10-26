@@ -1,5 +1,5 @@
 import { type XYPosition, type Node, type ViewportHelperFunctions, type Edge, addEdge } from "@xyflow/react";
-import type { AppEdge, AppNode, EdgeType, ResourceData, Service } from "../types";
+import type { AppEdge, AppNode, ComponentData, EdgeType, ResourceData, Service } from "../types";
 import { CanvasModel } from "../Models/CanvasModel.ts";
 import { resourceContainer, serviceImageSize } from "../constants.ts";
 import type Resource from "../Models/Resource.ts";
@@ -14,7 +14,9 @@ export class CanvasController{
     private screenToFlowPosition: ViewportHelperFunctions['screenToFlowPosition'];
     private setGhostNodes: React.Dispatch<React.SetStateAction<AppNode[]>>;
     private setNodes: React.Dispatch<React.SetStateAction<AppNode[]>>; 
+    private setNodesData: React.Dispatch<React.SetStateAction<ComponentData[]>>; 
     private setEdges: React.Dispatch<React.SetStateAction<AppEdge[]>>; 
+    private setEdgesData: React.Dispatch<React.SetStateAction<ComponentData[]>>; 
     private setSelectedNodeID: React.Dispatch<React.SetStateAction<string | null>>
     private setSelectedEdgeID: React.Dispatch<React.SetStateAction<string | null>>
     private setSelectedService: React.Dispatch<React.SetStateAction<Service | null>>
@@ -25,7 +27,9 @@ export class CanvasController{
         screenToFlowPosition: ViewportHelperFunctions['screenToFlowPosition'], 
         setGhostNodes: React.Dispatch<React.SetStateAction<AppNode[]>>,
         setNodes: React.Dispatch<React.SetStateAction<AppNode[]>>, 
+        setNodesData: React.Dispatch<React.SetStateAction<ComponentData[]>>, 
         setEdges: React.Dispatch<React.SetStateAction<AppEdge[]>>, 
+        setEdgesData: React.Dispatch<React.SetStateAction<ComponentData[]>>, 
         setSelectedNodeID: React.Dispatch<React.SetStateAction<string | null>>,
         setSelectedEdgeID: React.Dispatch<React.SetStateAction<string | null>>,
         setSelectedService: React.Dispatch<React.SetStateAction<Service | null>>
@@ -34,7 +38,9 @@ export class CanvasController{
         this.screenToFlowPosition = screenToFlowPosition;
         this.setGhostNodes = setGhostNodes;
         this.setNodes = setNodes;
+        this.setNodesData = setNodesData;
         this.setEdges = setEdges;
+        this.setEdgesData = setEdgesData;
         this.setSelectedNodeID = setSelectedNodeID;
         this.setSelectedEdgeID = setSelectedEdgeID;
         this.setSelectedService = setSelectedService;
@@ -46,20 +52,28 @@ export class CanvasController{
 
         const newNode: Node = { 
             id: nodeID, 
+            data: {
+                service: selectedService
+            }, //dont use
             position: position ?? {x:0, y:0}, 
-            data: {        
-                terraformProperties: null
-            },
             type: 'imageNode', 
             measured: { width: 1, height: 1 },
         };
 
         if(selectedService.terraformType == "resource"){   
+            
             const resourceFactory: ResourceStatics = resourceContainer[selectedService.name!];
-            newNode['data'] = resourceFactory.create(nodeID, selectedService);
+            const data = resourceFactory.createData(nodeID);
+
+            console.log(data);
+            console.log(newNode);
+
+            this.setNodesData((stateNodesData: ComponentData[]) => [...stateNodesData, data as ComponentData]);
+            this.setNodes((stateNodes: AppNode[]) => [...stateNodes, newNode as AppNode]);
+
         }
 
-        this.setNodes((stateNodes: AppNode[]) => [...stateNodes, newNode as AppNode]);
+        console.log()
  
         this.setSelectedNodeID(nodeID);
         this.setGhostNodes([]);
@@ -195,7 +209,8 @@ export class CanvasController{
         }
 
         params['type'] = "standardEdge";
-        params['data'] = {
+        const edgeData: ComponentData = {
+            id: "stubbed",
             metaData:{
                 "callerName": callerName,
                 "receiverName": receiverName,
@@ -205,13 +220,16 @@ export class CanvasController{
                     "edgeType": { value: defaultEdge, type: "edgeType", options: validEdgeType },
                 }
             },
+            terraformProperties:{},
             resources:{
                 callerID: callerID,
                 receiverID: receiverID
             }
         };
 
-        this.setEdges((edgesSnapshot) => addEdge(params, edgesSnapshot))
+    
+        this.setEdges((edgesSnapshot) => addEdge(params, edgesSnapshot));
+        this.setEdgesData((edgesData) => [...edgesData, edgeData]);
     
     }
 

@@ -1,5 +1,5 @@
 import Resource from "../Resource";
-import type { EdgeType, PermissionType, ResourceData, Service, ValidationResult } from "../../types.ts";
+import type { ComponentData, EdgeType, PermissionType, ResourceData, Service, ValidationResult } from "../../types.ts";
 
 
 export default class APIGatewayV2 extends Resource{
@@ -9,17 +9,12 @@ export default class APIGatewayV2 extends Resource{
     public static permissionType: PermissionType = "Service";
     
 
-
-    public static create(id: string, service: Service): ResourceData{
+    public static createData(id: string, service: Service): ComponentData{
 
         return {
 
             id: id,
-            service: service,
-            resourceName: id,
-            metaData:{
-
-            },
+            metaData: {},
             terraformProperties: {
                 "aws_apigatewayv2_api": {
                     "name": {value: null, type: "string"},

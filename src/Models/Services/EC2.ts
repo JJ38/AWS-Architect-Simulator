@@ -1,5 +1,5 @@
 import Resource from "../Resource";
-import type { EdgeType, PermissionType, PropertyRecord, ResourceData, Service, ValidationResult } from "../../types.ts";
+import type { ComponentData, EdgeType, PermissionType, PropertyRecord, ResourceData, Service, ValidationResult } from "../../types.ts";
 import { IamFactory } from "../IamFactory.ts";
 
 export default class EC2 extends Resource{
@@ -8,16 +8,12 @@ export default class EC2 extends Resource{
     public static targetTypes: EdgeType[] = ["sync"];
     public static permissionType: PermissionType = "IAM";
     
-    public static create(id: string, service: Service): ResourceData{
+    public static createData(id: string, service: Service): ComponentData{
 
         return {
 
             id: id,
-            service: service,
-            resourceName: id,
-            metaData:{
-
-            },
+            metaData:{},
             terraformProperties: {
                 "aws_instance": {
                     "ami": {value: "test", type: "string"},
