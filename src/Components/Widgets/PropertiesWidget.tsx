@@ -9,7 +9,7 @@ function PropertiesWidget(
     { 
         stateSelectedNodeID, 
         selectedNodeData,
-        stateNodes,
+        // stateNodes,
         setNodes, 
         stateSelectedEdgeID,
         selectedEdgeData, 
@@ -20,7 +20,7 @@ function PropertiesWidget(
     { 
         stateSelectedNodeID: string | null, 
         selectedNodeData: ComponentData | undefined,
-        stateNodes: AppNode[],
+        // stateNodes: AppNode[],
         setNodes: React.Dispatch<React.SetStateAction<AppNode[]>>, 
         stateSelectedEdgeID: string | null,
         selectedEdgeData: ComponentData | undefined,
@@ -61,7 +61,7 @@ function PropertiesWidget(
 
     }else if(selectedComponentType == "Edge"){
         
-        selectedComponentTerraform = statePropertiesWidgetController.getEdgeTerraform(componentData, stateNodes);
+        selectedComponentTerraform = statePropertiesWidgetController.getEdgeTerraform(componentData);
     }
     
     console.log("PropertiesWidget");

@@ -18,7 +18,7 @@ export class PropertiesWidgetController implements InputsController {
     }
 
 
-    public getEdgeTerraform(componentData: ComponentData | undefined, stateNodes: AppNode[]): CodeChunk[]{
+    public getEdgeTerraform(componentData: ComponentData | undefined): CodeChunk[]{
         
         console.log(componentData);
 
@@ -43,6 +43,13 @@ export class PropertiesWidgetController implements InputsController {
        
         const callerID: string = componentData?.resources?.callerID;
         const receiverID: string = componentData?.resources?.receiverID;
+
+        let stateNodes: AppNode[] = [];
+
+        this.setNodes((appNodes: AppNode[]) => {
+            stateNodes = appNodes;
+            return appNodes;
+        });
 
         //get nodes by id then create them to get latest node values
         const callerAppNode = stateNodes.find((node: AppNode) => node.id == callerID);
