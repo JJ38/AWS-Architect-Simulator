@@ -32,11 +32,11 @@ export function StandardEdge({
     targetPosition,
   });
 
-  
+  console.log(data);
   return (
     <>
       <BaseEdge id={id} path={edgePath} className={`standardEdge`}/>
-      <BaseEdge id={`${id}-pulse`} path={edgePath} interactionWidth={0} className={`standardEdge-pulse standardEdge-${data?.componentProperties.behaviour.edgeType.value}`}/>
+      <BaseEdge id={`${id}-pulse`} path={edgePath} interactionWidth={0} className={`standardEdge-pulse standardEdge-${data?.edgeType}`}/>
     </>
   );
 }

@@ -65,15 +65,10 @@ export class CanvasController{
             const resourceFactory: ResourceStatics = resourceContainer[selectedService.name!];
             const data = resourceFactory.createData(nodeID);
 
-            console.log(data);
-            console.log(newNode);
-
             this.setNodesData((stateNodesData: ComponentData[]) => [...stateNodesData, data as ComponentData]);
             this.setNodes((stateNodes: AppNode[]) => [...stateNodes, newNode as AppNode]);
 
         }
-
-        console.log()
  
         this.setSelectedNodeID(nodeID);
         this.setGhostNodes([]);
@@ -138,21 +133,33 @@ export class CanvasController{
     }
 
     public handleEdgeClick(edge: Edge, stateSelectedEdgeID: string | null){
+
+        console.log(edge);
+        console.log(stateSelectedEdgeID);
+
      
         if(edge.id !== stateSelectedEdgeID){
+            console.log("edge.id !== stateSelectedEdgeID");
             this.setSelectedEdgeID(edge.id);
             this.setSelectedNodeID(null);
         }
 
     }
 
-    public onConnect(params: any, stateNodes: AppNode[]){
+    public onConnect(params: any, stateNodes: AppNode[], stateNodesData: ComponentData[]){
 
         const sourceID = params.source;
         const targetID = params.target;
     
         const sourceNode = stateNodes.find((node: AppNode) => node.id == sourceID);
         const targetNode = stateNodes.find((node: AppNode) => node.id == targetID);
+
+        const sourceNodeData = stateNodesData.find((data: ComponentData) => data.id == sourceID);
+        const targetNodeData = stateNodesData.find((data: ComponentData) => data.id == targetID);
+
+        if(sourceNodeData === undefined || targetNodeData === undefined){
+            return;
+        }
 
         if(sourceNode == undefined || targetNode == undefined){
             return;
@@ -171,14 +178,14 @@ export class CanvasController{
         const sourceEdgeTypes = sourceResource.sourceTypes;
         const targetEdgeTypes = targetResource.targetTypes;
     
-        const validEdgeType = sourceEdgeTypes.filter((edgeType: EdgeType) => targetEdgeTypes.includes(edgeType));
+        const validEdgeTypes = sourceEdgeTypes.filter((edgeType: EdgeType) => targetEdgeTypes.includes(edgeType));
 
-        if(validEdgeType.length == 0){
+        if(validEdgeTypes.length == 0){
             this.showNotification(false, "Invalid connection");
             return;
         }
 
-        const defaultEdge = validEdgeType[0] ?? "";
+        const defaultEdge = validEdgeTypes[0] ?? "";
 
         let callerInstance: Resource;
         let receiverInstance: Resource;
@@ -190,8 +197,8 @@ export class CanvasController{
         
         if(defaultEdge == "pull"){
 
-            callerInstance = new targetResource(targetNode.data);
-            receiverInstance = new sourceResource(sourceNode.data);
+            callerInstance = new targetResource(targetNode.data.service, targetNodeData);
+            receiverInstance = new sourceResource(sourceNode.data.service, sourceNodeData);
             callerName = targetServiceName;
             receiverName = sourceServiceName;
             callerID = targetNode.id;
@@ -199,8 +206,8 @@ export class CanvasController{
 
         }else{
 
-            callerInstance = new sourceResource(sourceNode.data);
-            receiverInstance = new targetResource(targetNode.data);
+            callerInstance = new sourceResource(sourceNode.data.service, sourceNodeData);
+            receiverInstance = new targetResource(targetNode.data.service, targetNodeData);
             callerName = sourceServiceName;
             receiverName = targetServiceName;
             callerID = sourceNode.id;
@@ -208,7 +215,6 @@ export class CanvasController{
 
         }
 
-        params['type'] = "standardEdge";
         const edgeData: ComponentData = {
             id: "stubbed",
             metaData:{
@@ -217,7 +223,7 @@ export class CanvasController{
             },
             componentProperties:{
                 "behaviour": {
-                    "edgeType": { value: defaultEdge, type: "edgeType", options: validEdgeType },
+                    "edgeType": { value: defaultEdge, type: "edgeType", options: validEdgeTypes },
                 }
             },
             terraformProperties:{},
@@ -227,7 +233,9 @@ export class CanvasController{
             }
         };
 
-    
+        params['type'] = "standardEdge";
+        params['data'] = {edgeType: edgeData.componentProperties.behaviour.edgeType.value} //this is the data based to the edge. data param in standardEdge.tsx
+
         this.setEdges((edgesSnapshot) => addEdge(params, edgesSnapshot));
         this.setEdgesData((edgesData) => [...edgesData, edgeData]);
     

@@ -1,7 +1,7 @@
 import { resourceContainer } from "../constants";
 import type { ResourceStatics } from "../Models/Resource";
 import type Resource from "../Models/Resource";
-import type { AppEdge, AppNode, Property, AppComponent, PropertyCategory, ResourceData, ComponentData, PropertyRecord, CodeChunk, InputsController, Service } from "../types";
+import type { AppEdge, AppNode, Property, AppComponent, PropertyCategory, ComponentData, PropertyRecord, CodeChunk, InputsController, Service } from "../types";
 
 export class PropertiesWidgetController implements InputsController {
 
@@ -14,14 +14,11 @@ export class PropertiesWidgetController implements InputsController {
     ){
         this.setEdges = setEdges;
         this.setNodes = setNodes;
-        console.log("properties widget controller.");
     }
 
 
     public getEdgeTerraform(componentData: ComponentData | undefined): CodeChunk[]{
         
-        console.log(componentData);
-
         if(componentData == undefined){
             return [];
         }
@@ -75,19 +72,12 @@ export class PropertiesWidgetController implements InputsController {
     
     public getSelectedResource(selectedNodeData: ComponentData | undefined, stateSelectedService: Service | null | undefined): Resource | undefined{
 
-        console.log(selectedNodeData);
-        console.log(stateSelectedService);
-
         if(selectedNodeData == null || stateSelectedService == null || stateSelectedService == undefined){
             return;
         }
         
         const resource: ResourceStatics = resourceContainer[stateSelectedService.name];
-        console.log(resource);
-
-   
         const resourceInstance = new resource(stateSelectedService, selectedNodeData);
-
         
         return resourceInstance;
     }

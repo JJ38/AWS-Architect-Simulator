@@ -67,7 +67,7 @@ export default function Canvas(
 
   const onNodesChange = useCallback((changes: any) => setNodes((nodesSnapshot) => applyNodeChanges(changes, nodesSnapshot)), []);
   const onEdgesChange = useCallback((changes: any) => setEdges((edgesSnapshot) => applyEdgeChanges(changes, edgesSnapshot)), []);
-  const onConnect = useCallback((params: any) => {stateCanvasController.onConnect(params, stateNodes)}, [stateNodes]);
+  const onConnect = useCallback((params: any) => {stateCanvasController.onConnect(params, stateNodes, stateNodesData)}, [stateNodes, stateNodesData]);
 
   const nodesWithSelection = stateNodes.map((node) => ({
     ...node,
