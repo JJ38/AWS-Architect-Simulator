@@ -21,6 +21,7 @@ export default function Canvas(
     setNodesData,
     stateEdges,
     setEdges,
+    stateEdgesData,
     setEdgesData
   }
     :
@@ -33,6 +34,7 @@ export default function Canvas(
     setNodesData: React.Dispatch<React.SetStateAction<ComponentData[]>>;
     stateEdges: AppEdge[];
     setEdges: React.Dispatch<React.SetStateAction<AppEdge[]>>;
+    stateEdgesData: ComponentData[];
     setEdgesData: React.Dispatch<React.SetStateAction<ComponentData[]>>;
   }
 ){
@@ -44,7 +46,6 @@ export default function Canvas(
 
   const showNotification = useNotification();
   const { theme } = useTheme();
-
 
   const [stateCanvasController] = useState(() => new CanvasController(
     showNotification,
@@ -60,7 +61,7 @@ export default function Canvas(
   ))
 
   const selectedNodeData = stateNodesData.find((data: ComponentData) => data.id == stateSelectedNodeID);
-  const selectedEdge = stateEdges.find((edge: AppEdge) => edge.id == stateSelectedEdgeID);
+  const selectedEdge = stateEdgesData.find((edge: ComponentData) => edge.id == stateSelectedEdgeID);
 
   // const title: string = stateCanvasController.getPropertiesWidgetTitle(selectedNodeData, stateNodes, selectedEdge);
 
@@ -98,6 +99,7 @@ export default function Canvas(
 
   }, [stateSelectedNodeID, setNodes, stateSelectedEdgeID, setEdges]);
 
+  const selectedNode = stateNodes.find((node) => stateSelectedNodeID === node.id);
 
   return (
     <div className="reactFlowWrapper">
@@ -124,16 +126,17 @@ export default function Canvas(
       <div className="canvasTopRightControls">
         <ThemeToggle />
       </div>
-      {/* <PropertiesWidget 
+      <PropertiesWidget 
         stateSelectedNodeID={stateSelectedNodeID} 
+        stateSelectedService={selectedNode?.data.service}
         selectedNodeData={selectedNodeData}
         setNodes={setNodes}
-        selectedEdgeData={selectedEdge?.data}
+        selectedEdgeData={selectedEdge}
         stateSelectedEdgeID={stateSelectedEdgeID}
         setEdges={setEdges}
         title={"title"}
       >
-      </PropertiesWidget> */}
+      </PropertiesWidget>
       <TrafficWidget>
   
       </TrafficWidget>

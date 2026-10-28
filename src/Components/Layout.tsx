@@ -25,6 +25,7 @@ export default function Layout() {
     const [stateShowTerraformWidget, setShowTerraformWidget] = useState<boolean>(false);
     const [stateLoadedSaveName, setLoadedSaveName] = useState<string | null>(null);
 
+    console.log(stateSelectedService);
 
     return (
         <ThemeProvider>
@@ -49,6 +50,7 @@ export default function Layout() {
                             setNodesData={setNodesData}
                             stateEdges={stateEdges}
                             setEdges={setEdges}
+                            stateEdgesData={stateEdgesData}
                             setEdgesData={setEdgesData}
                         />
                     </ReactFlowProvider>

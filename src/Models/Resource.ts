@@ -3,7 +3,7 @@ import type { CodeChunk, ComponentData, EdgeType, PermissionType, Property, Prop
 
 export interface ResourceStatics{
 
-    new(data: ResourceData): Resource;
+    new(service: Service, componentData: ComponentData): Resource;
     createData(id: string): ComponentData;
     sourceTypes: EdgeType[];
     targetTypes: EdgeType[];
@@ -20,10 +20,19 @@ export default abstract class Resource{
     public iamProperties?: Record<string, PropertyRecord>;
 
 
-    public constructor(data: ResourceData, componentData: ComponentData){
-        this.id = data.id;
-        this.service = data.service;
-        this.resourceName = data.resourceName;
+    // public constructor(data: ResourceData, componentData: ComponentData){
+    //     this.id = data.id;
+    //     this.service = data.service;
+    //     this.resourceName = data.resourceName;
+    //     this.terraformProperties = componentData.terraformProperties;
+    //     this.iamProperties = componentData.iamProperties;
+    // }
+
+
+     public constructor(service: Service, componentData: ComponentData){
+        this.id = componentData.id;
+        this.service = service;
+        this.resourceName = "data.resourceName";
         this.terraformProperties = componentData.terraformProperties;
         this.iamProperties = componentData.iamProperties;
     }

@@ -1,7 +1,7 @@
 import { resourceContainer } from "../constants";
 import type { ResourceStatics } from "../Models/Resource";
 import type Resource from "../Models/Resource";
-import type { AppEdge, AppNode, Property, AppComponent, PropertyCategory, ResourceData, ComponentData, PropertyRecord, CodeChunk, InputsController } from "../types";
+import type { AppEdge, AppNode, Property, AppComponent, PropertyCategory, ResourceData, ComponentData, PropertyRecord, CodeChunk, InputsController, Service } from "../types";
 
 export class PropertiesWidgetController implements InputsController {
 
@@ -73,15 +73,21 @@ export class PropertiesWidgetController implements InputsController {
     }   
 
     
-    public getSelectedResource(selectedNodeData: ResourceData | undefined): Resource | undefined{
-        
-        if(selectedNodeData == undefined || selectedNodeData.service == undefined){
+    public getSelectedResource(selectedNodeData: ComponentData | undefined, stateSelectedService: Service | null | undefined): Resource | undefined{
+
+        console.log(selectedNodeData);
+        console.log(stateSelectedService);
+
+        if(selectedNodeData == null || stateSelectedService == null || stateSelectedService == undefined){
             return;
         }
+        
+        const resource: ResourceStatics = resourceContainer[stateSelectedService.name];
+        console.log(resource);
 
-        const resource: ResourceStatics = resourceContainer[selectedNodeData?.service?.name!];
    
-        const resourceInstance = new resource(selectedNodeData);
+        const resourceInstance = new resource(stateSelectedService, selectedNodeData);
+
         
         return resourceInstance;
     }
