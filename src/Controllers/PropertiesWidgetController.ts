@@ -1,7 +1,7 @@
 import { resourceContainer } from "../constants";
 import type { ResourceStatics } from "../Models/Resource";
 import type Resource from "../Models/Resource";
-import type { AppEdge, AppNode, Property, AppComponent, PropertyCategory, ResourceData, ComponentData, PropertyRecord, CodeChunk, InputsController } from "../types";
+import type { AppEdge, AppNode, Property, AppComponent, PropertyCategory, ComponentData, PropertyRecord, CodeChunk, InputsController, Service } from "../types";
 
 export class PropertiesWidgetController implements InputsController {
 
@@ -14,14 +14,11 @@ export class PropertiesWidgetController implements InputsController {
     ){
         this.setEdges = setEdges;
         this.setNodes = setNodes;
-        console.log("properties widget controller.");
     }
 
 
-    public getEdgeTerraform(componentData: ComponentData | undefined, stateNodes: AppNode[]): CodeChunk[]{
+    public getEdgeTerraform(componentData: ComponentData | undefined): CodeChunk[]{
         
-        console.log(componentData);
-
         if(componentData == undefined){
             return [];
         }
@@ -43,6 +40,13 @@ export class PropertiesWidgetController implements InputsController {
        
         const callerID: string = componentData?.resources?.callerID;
         const receiverID: string = componentData?.resources?.receiverID;
+
+        let stateNodes: AppNode[] = [];
+
+        this.setNodes((appNodes: AppNode[]) => {
+            stateNodes = appNodes;
+            return appNodes;
+        });
 
         //get nodes by id then create them to get latest node values
         const callerAppNode = stateNodes.find((node: AppNode) => node.id == callerID);
@@ -66,15 +70,14 @@ export class PropertiesWidgetController implements InputsController {
     }   
 
     
-    public getSelectedResource(selectedNodeData: ResourceData | undefined): Resource | undefined{
-        
-        if(selectedNodeData == undefined || selectedNodeData.service == undefined){
+    public getSelectedResource(selectedNodeData: ComponentData | undefined, stateSelectedService: Service | null | undefined): Resource | undefined{
+
+        if(selectedNodeData == null || stateSelectedService == null || stateSelectedService == undefined){
             return;
         }
-
-        const resource: ResourceStatics = resourceContainer[selectedNodeData?.service?.name!];
-   
-        const resourceInstance = new resource(selectedNodeData);
+        
+        const resource: ResourceStatics = resourceContainer[stateSelectedService.name];
+        const resourceInstance = new resource(stateSelectedService, selectedNodeData);
         
         return resourceInstance;
     }

@@ -1,6 +1,6 @@
 import { memo, useState } from 'react';
 import { PropertiesWidgetController } from '../../Controllers/PropertiesWidgetController';
-import type { AppEdge, AppNode, CodeChunk, ComponentData, PropertyRecord, ResourceData } from '../../types';
+import type { AppEdge, AppNode, CodeChunk, ComponentData, PropertyRecord, ResourceData, Service } from '../../types';
 import '../../styles/PropertiesWidget.css'
 import type Resource from '../../Models/Resource';
 import { InputsRenderer } from '../Helpers/InputsRenderer.tsx'
@@ -8,8 +8,8 @@ import { InputsRenderer } from '../Helpers/InputsRenderer.tsx'
 function PropertiesWidget(
     { 
         stateSelectedNodeID, 
+        stateSelectedService,
         selectedNodeData,
-        stateNodes,
         setNodes, 
         stateSelectedEdgeID,
         selectedEdgeData, 
@@ -18,9 +18,9 @@ function PropertiesWidget(
     }
         : 
     { 
-        stateSelectedNodeID: string | null, 
+        stateSelectedNodeID: string | null,
+        stateSelectedService: Service | null | undefined, 
         selectedNodeData: ComponentData | undefined,
-        stateNodes: AppNode[],
         setNodes: React.Dispatch<React.SetStateAction<AppNode[]>>, 
         stateSelectedEdgeID: string | null,
         selectedEdgeData: ComponentData | undefined,
@@ -42,10 +42,11 @@ function PropertiesWidget(
     const iamTerraformProperties: Record<string, PropertyRecord> | undefined = componentData != null ? componentData?.iamProperties : undefined;
    
     let selectedComponentTerraform: CodeChunk[] | undefined;
-
+    console.log("PropertiesWidget");
+  
     if(selectedComponentType == "Node"){
 
-        const resource: Resource | undefined = statePropertiesWidgetController.getSelectedResource(componentData as ResourceData);
+        const resource: Resource | undefined = statePropertiesWidgetController.getSelectedResource(componentData, stateSelectedService);
 
         if(resource == undefined){
             return;
@@ -61,10 +62,9 @@ function PropertiesWidget(
 
     }else if(selectedComponentType == "Edge"){
         
-        selectedComponentTerraform = statePropertiesWidgetController.getEdgeTerraform(componentData, stateNodes);
+        // selectedComponentTerraform = statePropertiesWidgetController.getEdgeTerraform(componentData);
     }
     
-    console.log("PropertiesWidget");
 
     return(
 

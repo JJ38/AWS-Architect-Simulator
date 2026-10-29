@@ -1,4 +1,4 @@
-import type { EdgeType, PermissionType, ResourceData, Service, ValidationResult } from "../../types";
+import type { ComponentData, EdgeType, PermissionType, ResourceData, Service, ValidationResult } from "../../types";
 import Resource from "../Resource";
 
 //incomplete look at all types
@@ -14,29 +14,30 @@ export default class DyanmoDB extends Resource{
     public static permissionType: PermissionType = "Passive";
 
 
-    public static create(id: string, service: Service): ResourceData{
+    public static createData(id: string): ComponentData{
 
         return {
 
             id: id,
-            service: service,
-            resourceName: id,
-            metaData:{
-
-            },
+            metaData:{},
             terraformProperties: {
                 "aws_dynamodb_table": {
                     "name": {value: id, type: "string"},
                     "hash_key": {value: null, type: "number"},
                     "billing_mode": {value: "PAY_PER_REQUEST", type: "select", options: dynamodb_billing_mode},
                     "attribute": {
-                        value: null,
+                        value: {},
                         type: "block"
                     },
                     "stream_enabled": {value: null, type: "boolean"},
                     "stream_view_type": {value: null, type: "string"},
                     "point_in_time_recovery": {
-                        value: null,
+                        value: {
+                            enabled: {
+                                value: true,
+                                type: "boolean"
+                            }
+                        },
                         type: "block"
                     },
                     "deletion_protection_enabled": {value: null, type: "boolean"},
@@ -57,7 +58,7 @@ export default class DyanmoDB extends Resource{
                         }
                     }, //only if billing mode is PROVISIONED
                     "tags": {
-                        value: null,
+                        value: {},
                         type: "tags"
                     },
                 }

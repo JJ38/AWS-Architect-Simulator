@@ -1,5 +1,5 @@
 import Resource from "../Resource";
-import type { EdgeType, PermissionType, Property, PropertyRecord, ResourceData, Service, ValidationResult } from "../../types.ts";
+import type { ComponentData, EdgeType, PermissionType, Property, PropertyRecord, ResourceData, Service, ValidationResult } from "../../types.ts";
 import { IamFactory } from "../IamFactory.ts";
 
 
@@ -10,15 +10,11 @@ export default class Lambda extends Resource{
     public static permissionType: PermissionType = "IAM";
     public static iamRoleName: string = "lambda_role";
 
-    public static create(id: string, service: Service): ResourceData{
+    public static createData(id: string): ComponentData{
 
-        const resourceData: ResourceData = {
+        return {
             id: id,
-            service: service,
-            resourceName: id,
-            metaData:{
-
-            },
+            metaData:{},
             terraformProperties: {
                 "aws_lambda_function": {
                     "function_name": {value: null, type: "string"},
@@ -66,8 +62,6 @@ export default class Lambda extends Resource{
             componentProperties: {},
             
         }
-
-        return resourceData;
 
     }
 

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { ReactFlowProvider } from '@xyflow/react';
-import type { AppEdge, AppNode, Service } from '../types.ts';
+import type { AppEdge, AppNode, ComponentData, Service } from '../types.ts';
 import Sidebar from './Sidebar.tsx';
 import Canvas from './Canvas.tsx';
 import LoadWidget from './Widgets/LoadSaveWidget.tsx';
@@ -10,18 +10,22 @@ import SaveWidget from './Widgets/SaveWidget.tsx';
 import TerraformWidget from './Widgets/TerraformWidget.tsx';
 import ConfirmationProvider from '../Providers/ConfirmationProvider.tsx';
 import ThemeProvider from '../Providers/ThemeProvider.tsx';
+import { CapacityModel } from '../Models/CapacityModel.ts';
 
 export default function Layout() {
 
     const [stateSelectedService, setSelectedService] = useState<Service | null>(null);
     const [stateNodes, setNodes] = useState<AppNode[]>([]);
+    const [stateNodesData, setNodesData] = useState<ComponentData[]>([]);
     const [stateEdges, setEdges] = useState<AppEdge[]>([]);
+    const [stateEdgesData, setEdgesData] = useState<ComponentData[]>([]);
     const [stateDeploymentSettings, setDeploymentSettings] = useState<Record<string, any>>({});
     const [stateShowLoadWidget, setShowLoadWidget] = useState<boolean>(false);
     const [stateShowSaveWidget, setShowSaveWidget] = useState<boolean>(false);
     const [stateShowTerraformWidget, setShowTerraformWidget] = useState<boolean>(false);
     const [stateLoadedSaveName, setLoadedSaveName] = useState<string | null>(null);
 
+    console.log(stateSelectedService);
 
     return (
         <ThemeProvider>
@@ -42,8 +46,12 @@ export default function Layout() {
                             setSelectedService={setSelectedService}
                             stateNodes={stateNodes}
                             setNodes={setNodes}
+                            stateNodesData={stateNodesData}
+                            setNodesData={setNodesData}
                             stateEdges={stateEdges}
                             setEdges={setEdges}
+                            stateEdgesData={stateEdgesData}
+                            setEdgesData={setEdgesData}
                         />
                     </ReactFlowProvider>
 

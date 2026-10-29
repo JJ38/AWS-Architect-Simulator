@@ -1,5 +1,5 @@
 import Resource from "../Resource";
-import type { EdgeType, PermissionType, ResourceData, Service, ValidationResult } from "../../types.ts";
+import type { ComponentData, EdgeType, PermissionType, ResourceData, Service, ValidationResult } from "../../types.ts";
 
 export default class SQS extends Resource{
 
@@ -8,16 +8,12 @@ export default class SQS extends Resource{
     public static targetTypes: EdgeType[] = ["async"];
     public static permissionType: PermissionType = "Passive";
 
-    public static create(id: string, service: Service): ResourceData{
+    public static createData(id: string, service: Service): ComponentData{
 
         return {
 
             id: id,
-            service: service,
-            resourceName: id,
-            metaData:{
-
-            },
+            metaData:{},
             terraformProperties: {
                 "aws_sqs_queue": {
                     "name": {value: id, type: "string"},
@@ -26,7 +22,16 @@ export default class SQS extends Resource{
                     "message_retention_seconds": {value: null, type: "number"},
                     "receive_wait_time_seconds": {value: null, type: "number"},
                     "redrive_policy": {
-                        value: null,
+                        value: {
+                            deadLetterTargetArn: {
+                                value: null,
+                                type: "string"
+                            },
+                            maxReceiveCount: {
+                                value: 5,
+                                type: "number"
+                            },
+                        },
                         type: "block"
                     },
                     "tags": {
