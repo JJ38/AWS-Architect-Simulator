@@ -1,5 +1,5 @@
 import Resource from "../Resource";
-import type { ComponentData, EdgeType, PermissionType, PropertyRecord, ResourceData, Service, ValidationResult } from "../../types.ts";
+import type { ComponentData, EdgeType, PermissionType, PropertyRecord, ValidationResult } from "../../types.ts";
 import { IamFactory } from "../IamFactory.ts";
 
 export default class EC2 extends Resource{
@@ -8,7 +8,7 @@ export default class EC2 extends Resource{
     public static targetTypes: EdgeType[] = ["sync"];
     public static permissionType: PermissionType = "IAM";
     
-    public static createData(id: string, service: Service): ComponentData{
+    public static createData(id: string): ComponentData{
 
         return {
 

@@ -10,10 +10,12 @@ function PropertiesWidget(
         stateSelectedNodeID, 
         stateSelectedService,
         selectedNodeData,
-        setNodes, 
+        setNodes,
+        setNodesData, 
         stateSelectedEdgeID,
         selectedEdgeData, 
         setEdges,
+        setEdgesData,
         title
     }
         : 
@@ -22,27 +24,28 @@ function PropertiesWidget(
         stateSelectedService: Service | null | undefined, 
         selectedNodeData: ComponentData | undefined,
         setNodes: React.Dispatch<React.SetStateAction<AppNode[]>>, 
+        setNodesData: React.Dispatch<React.SetStateAction<ComponentData[]>>,
         stateSelectedEdgeID: string | null,
         selectedEdgeData: ComponentData | undefined,
         setEdges: React.Dispatch<React.SetStateAction<AppEdge[]>>,
+        setEdgesData: React.Dispatch<React.SetStateAction<ComponentData[]>>,
         title: string
     }
 ){
  
-    const [statePropertiesWidgetController] = useState(() => new PropertiesWidgetController(setNodes, setEdges));
+    const [statePropertiesWidgetController] = useState(() => new PropertiesWidgetController(setNodes, setEdges, setNodesData));
 
     const selectedComponentType: string | null = stateSelectedNodeID != undefined ? "Node" : stateSelectedEdgeID != null ? "Edge" : null
 
     const componentID: string | null = selectedComponentType == "Node" ? stateSelectedNodeID : selectedComponentType == "Edge" ? stateSelectedEdgeID : null;
     const componentData = selectedComponentType == "Node"? selectedNodeData : selectedComponentType == "Edge" ? selectedEdgeData : undefined;
-    const componentSetter: React.Dispatch<React.SetStateAction<any>> | null = selectedComponentType == "Node" ? setNodes : selectedComponentType == "Edge" ? setEdges : null;
+    const componentSetter: React.Dispatch<React.SetStateAction<any>> | null = selectedComponentType == "Node" ? setNodesData : selectedComponentType == "Edge" ? setEdgesData : null;
     
     const componentProperties: Record<string, PropertyRecord> | undefined = componentData != null ? componentData?.componentProperties : undefined;
     const componentTerraformProperties: Record<string, PropertyRecord> | undefined = componentData != null ? componentData?.terraformProperties : undefined;
     const iamTerraformProperties: Record<string, PropertyRecord> | undefined = componentData != null ? componentData?.iamProperties : undefined;
    
     let selectedComponentTerraform: CodeChunk[] | undefined;
-    console.log("PropertiesWidget");
   
     if(selectedComponentType == "Node"){
 
@@ -61,11 +64,11 @@ function PropertiesWidget(
         selectedComponentTerraform = resource.toTerraformPreview(properties);
 
     }else if(selectedComponentType == "Edge"){
-        
-        // selectedComponentTerraform = statePropertiesWidgetController.getEdgeTerraform(componentData);
+
+        console.log(componentData);
+        selectedComponentTerraform = statePropertiesWidgetController.getEdgeTerraform(componentData);
     }
     
-
     return(
 
         <div className="propertiesWidgetWrapper">
@@ -80,7 +83,6 @@ function PropertiesWidget(
                     <label htmlFor="snapgridCheckbox">Snap Grid</label>
                 </div> 
             }
-
             
             <div className="propertiesWrapper">
 

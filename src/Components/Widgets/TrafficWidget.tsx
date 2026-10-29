@@ -211,7 +211,6 @@ export default function TrafficWidget(){
 function getYAxisLabels(stateYAxisMaxValue: number, minNumberOfYAxisLabels: number, maxNumberOfYAxisLabels: number){
 
     //list of acceptable increments. Loop through to find one that divides in the acceptable range of min - max y axis labels. Choose highest
-
     const increment: number | undefined = yAxisIncrements.find((increment: number) => {
         const numberOfIncrements = stateYAxisMaxValue / increment;
         if(numberOfIncrements > minNumberOfYAxisLabels && numberOfIncrements < maxNumberOfYAxisLabels){
@@ -220,7 +219,6 @@ function getYAxisLabels(stateYAxisMaxValue: number, minNumberOfYAxisLabels: numb
     }); 
 
     const yAxisLabels: {numberOfRequests: number, fractionOfMax: number}[] = [];
-
 
     if(increment === undefined){
         return yAxisLabels;

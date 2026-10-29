@@ -7,18 +7,21 @@ export class PropertiesWidgetController implements InputsController {
 
     private setNodes: React.Dispatch<React.SetStateAction<AppNode[]>>;
     private setEdges: React.Dispatch<React.SetStateAction<AppEdge[]>>;
+    private setNodesData: React.Dispatch<React.SetStateAction<ComponentData[]>>;
 
     public constructor(
         setNodes: React.Dispatch<React.SetStateAction<AppNode[]>>, 
-        setEdges: React.Dispatch<React.SetStateAction<AppEdge[]>>
+        setEdges: React.Dispatch<React.SetStateAction<AppEdge[]>>,
+        setNodesData: React.Dispatch<React.SetStateAction<ComponentData[]>>
     ){
         this.setEdges = setEdges;
         this.setNodes = setNodes;
+        this.setNodesData = setNodesData;
     }
 
 
     public getEdgeTerraform(componentData: ComponentData | undefined): CodeChunk[]{
-        
+
         if(componentData == undefined){
             return [];
         }
@@ -48,6 +51,13 @@ export class PropertiesWidgetController implements InputsController {
             return appNodes;
         });
 
+        let stateNodesData: ComponentData[] = [];
+
+        this.setNodesData((appNodesData: ComponentData[]) => {
+            stateNodesData = appNodesData;
+            return appNodesData;
+        });
+
         //get nodes by id then create them to get latest node values
         const callerAppNode = stateNodes.find((node: AppNode) => node.id == callerID);
         const receiverAppNode = stateNodes.find((node: AppNode) => node.id == receiverID);
@@ -56,8 +66,16 @@ export class PropertiesWidgetController implements InputsController {
             return [];
         }
 
-        const callerInstance = new callerResource(callerAppNode.data);
-        const receiverInstance = new receiverResource(receiverAppNode.data);
+        const callerAppNodeData = stateNodesData.find((data: ComponentData) => data.id == callerID);
+        const receiverAppNodeData = stateNodesData.find((data: ComponentData) => data.id == receiverID);
+
+
+        if(callerAppNodeData == undefined || receiverAppNodeData == undefined){
+            return [];
+        }
+
+        const callerInstance = new callerResource(callerAppNode!.data.service, callerAppNodeData!);
+        const receiverInstance = new receiverResource(receiverAppNode!.data.service, receiverAppNodeData!);
 
         //call receiver and caller terraformPreview for each.
 
@@ -233,6 +251,12 @@ export class PropertiesWidgetController implements InputsController {
 
             const fullPath = [...propertyRecordPath, inputName];
 
+            console.log(newComponent);
+
+            console.log(fullPath)
+
+            return newComponent;
+
             switch (propertyCategory){
 
                 case "component": {
@@ -284,7 +308,6 @@ export class PropertiesWidgetController implements InputsController {
     }
 
 
-    //make generic and pass in setter
     public keyboardInputOnChange(
         event: React.ChangeEvent<HTMLInputElement, HTMLInputElement>, 
         nodeProperty: Property<any>, 

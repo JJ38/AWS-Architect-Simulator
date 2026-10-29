@@ -24,9 +24,7 @@ export default function Layout() {
     const [stateShowSaveWidget, setShowSaveWidget] = useState<boolean>(false);
     const [stateShowTerraformWidget, setShowTerraformWidget] = useState<boolean>(false);
     const [stateLoadedSaveName, setLoadedSaveName] = useState<string | null>(null);
-
-    console.log(stateSelectedService);
-
+    
     return (
         <ThemeProvider>
         <NotificationProvider>

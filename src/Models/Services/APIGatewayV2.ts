@@ -9,7 +9,7 @@ export default class APIGatewayV2 extends Resource{
     public static permissionType: PermissionType = "Service";
     
 
-    public static createData(id: string, service: Service): ComponentData{
+    public static createData(id: string): ComponentData{
 
         return {
 

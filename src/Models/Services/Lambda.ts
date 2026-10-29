@@ -1,5 +1,5 @@
 import Resource from "../Resource";
-import type { ComponentData, EdgeType, PermissionType, Property, PropertyRecord, ResourceData, Service, ValidationResult } from "../../types.ts";
+import type { ComponentData, EdgeType, PermissionType, PropertyRecord, ValidationResult } from "../../types.ts";
 import { IamFactory } from "../IamFactory.ts";
 
 

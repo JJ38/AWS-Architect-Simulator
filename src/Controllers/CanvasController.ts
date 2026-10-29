@@ -132,12 +132,8 @@ export class CanvasController{
         return position;
     }
 
-    public handleEdgeClick(edge: Edge, stateSelectedEdgeID: string | null){
+    public handleEdgeClick(edge: Edge, stateSelectedEdgeID: string | null){;
 
-        console.log(edge);
-        console.log(stateSelectedEdgeID);
-
-     
         if(edge.id !== stateSelectedEdgeID){
             console.log("edge.id !== stateSelectedEdgeID");
             this.setSelectedEdgeID(edge.id);
@@ -216,7 +212,7 @@ export class CanvasController{
         }
 
         const edgeData: ComponentData = {
-            id: "stubbed",
+            id: "xy-edge__" + sourceNodeData.id + "-" + targetNodeData.id,
             metaData:{
                 "callerName": callerName,
                 "receiverName": receiverName,

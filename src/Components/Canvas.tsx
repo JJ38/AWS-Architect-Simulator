@@ -60,10 +60,13 @@ export default function Canvas(
     setSelectedService
   ))
 
-  const selectedNodeData = stateNodesData.find((data: ComponentData) => data.id == stateSelectedNodeID);
-  const selectedEdge = stateEdgesData.find((edge: ComponentData) => edge.id == stateSelectedEdgeID);
+  const selectedNode = stateNodes.find((node: AppNode) => node.id == stateSelectedNodeID);
+  const selectedEdge = stateEdges.find((edge: AppEdge) => edge.id == stateSelectedEdgeID);
 
-  // const title: string = stateCanvasController.getPropertiesWidgetTitle(selectedNodeData, stateNodes, selectedEdge);
+  const selectedNodeData = stateNodesData.find((data: ComponentData) => data.id == stateSelectedNodeID);
+  const selectedEdgeData = stateEdgesData.find((edge: ComponentData) => edge.id == stateSelectedEdgeID);
+
+  const title: string = stateCanvasController.getPropertiesWidgetTitle(selectedNode?.data, stateNodes, selectedEdge);
 
   const onNodesChange = useCallback((changes: any) => setNodes((nodesSnapshot) => applyNodeChanges(changes, nodesSnapshot)), []);
   const onEdgesChange = useCallback((changes: any) => setEdges((edgesSnapshot) => applyEdgeChanges(changes, edgesSnapshot)), []);
@@ -99,7 +102,6 @@ export default function Canvas(
 
   }, [stateSelectedNodeID, setNodes, stateSelectedEdgeID, setEdges]);
 
-  const selectedNode = stateNodes.find((node) => stateSelectedNodeID === node.id);
 
   return (
     <div className="reactFlowWrapper">
@@ -131,9 +133,11 @@ export default function Canvas(
         stateSelectedService={selectedNode?.data.service}
         selectedNodeData={selectedNodeData}
         setNodes={setNodes}
-        selectedEdgeData={selectedEdge}
+        setNodesData={setNodesData}
+        selectedEdgeData={selectedEdgeData}
         stateSelectedEdgeID={stateSelectedEdgeID}
         setEdges={setEdges}
+        setEdgesData={setEdgesData}
         title={"title"}
       >
       </PropertiesWidget>
