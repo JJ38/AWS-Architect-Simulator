@@ -1,6 +1,9 @@
+import { Component } from "lucide-react";
 import { resourceContainer } from "../constants";
 import type { ResourceStatics } from "../Models/Resource";
 import type Resource from "../Models/Resource";
+import Lambda from "../Models/Services/Lambda";
+import { TerraformConverter } from "../Models/TerraformConverter";
 import type { AppEdge, AppNode, Property, AppComponent, PropertyCategory, ComponentData, PropertyRecord, CodeChunk, InputsController, Service } from "../types";
 
 export class PropertiesWidgetController implements InputsController {
@@ -21,10 +24,37 @@ export class PropertiesWidgetController implements InputsController {
 
 
     public getEdgeTerraform(componentData: ComponentData | undefined): CodeChunk[]{
-
+        
+        console.log(componentData);
         if(componentData == undefined){
             return [];
         }
+
+        const dummyService: Service = {
+            name: "edgeService",
+            description: "dummy service",
+            terraformType: null,
+            providerTypes: null,
+            icon: "wadwa",
+            image: "string",
+        }
+
+        const edgeResource = new Lambda(dummyService, componentData);
+
+        const propertyRecords: Record<string, PropertyRecord>[] = [];
+
+        if(componentData.iamProperties !== undefined){
+            propertyRecords.push(componentData.iamProperties);
+        }
+
+        if(componentData.componentProperties !== undefined){
+            propertyRecords.push(componentData.componentProperties);
+        }
+
+        return edgeResource.toTerraformPreview(propertyRecords);
+
+        
+        return edgeResource.toTerraformPreview(componentData?.iamProperties);
 
         //get both resources.
         const callerName = componentData.metaData.callerName;
@@ -81,8 +111,15 @@ export class PropertiesWidgetController implements InputsController {
 
         const edgeType = componentData.metaData.edgeType;
         
+        //change to using edgedata rather than remaking policy
         const callerTerraform: Record<string, PropertyRecord> = callerInstance.toTerraformEdgePropertiesCaller(edgeType, receiverInstance, callerInstance) ?? {};
         const receiverTerraform: Record<string, PropertyRecord> = receiverInstance.toTerraformEdgePropertiesReceiver(edgeType, callerInstance, receiverInstance) ?? {};
+
+        return[callerInstance.toTerraformPreview([componentData as Record<string, PropertyRecord>])]
+
+        const record: Record<string, PropertyRecord> = {};
+
+        record['aws_iam_policy'] = componentData!;
 
         return [...callerInstance.toTerraformPreview([callerTerraform]), ...receiverInstance.toTerraformPreview([receiverTerraform])];
     }   
@@ -237,45 +274,41 @@ export class PropertiesWidgetController implements InputsController {
     {
         
         //need a way to deal with nested inputs 
-        componentSetter((components: AppComponent[]) => components.map((component: AppComponent) => {
+        componentSetter((components: ComponentData[]) => components.map((component: ComponentData) => {
 
             if(component.id !== componentID){
                 return component;
             }
 
-            const newComponent: AppComponent = structuredClone(component);
+            const newComponent: ComponentData = structuredClone(component);
 
-            if(newComponent.data == null){
+            if(newComponent == null){
                 return newComponent;
             }
 
-            const fullPath = [...propertyRecordPath, inputName];
-
             console.log(newComponent);
 
-            console.log(fullPath)
-
-            return newComponent;
+            const fullPath = [...propertyRecordPath, inputName];
 
             switch (propertyCategory){
 
                 case "component": {
-                    this.updatePropertyByPath(0, newComponent.data.componentProperties, fullPath, newNodeProperty);
+                    this.updatePropertyByPath(0, newComponent.componentProperties, fullPath, newNodeProperty);
                     break;
                 }
 
                 case "terraform": {
-                    this.updatePropertyByPath(0, newComponent.data.terraformProperties, fullPath, newNodeProperty);
+                    this.updatePropertyByPath(0, newComponent.terraformProperties, fullPath, newNodeProperty);
                     break;
                 }
 
                 case "iam": {
 
-                    if(newComponent.data.iamProperties == undefined){
+                    if(newComponent.iamProperties == undefined){
                         return;
                     }
 
-                    this.updatePropertyByPath(0, newComponent.data.iamProperties, fullPath, newNodeProperty);
+                    this.updatePropertyByPath(0, newComponent.iamProperties, fullPath, newNodeProperty);
                     break;
                 }
 

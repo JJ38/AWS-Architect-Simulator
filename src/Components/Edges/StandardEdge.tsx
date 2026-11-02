@@ -32,7 +32,6 @@ export function StandardEdge({
     targetPosition,
   });
 
-  console.log(data);
   return (
     <>
       <BaseEdge id={id} path={edgePath} className={`standardEdge`}/>

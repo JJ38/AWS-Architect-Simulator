@@ -4,6 +4,7 @@ import { CanvasModel } from "../Models/CanvasModel.ts";
 import { resourceContainer, serviceImageSize } from "../constants.ts";
 import type Resource from "../Models/Resource.ts";
 import type { ResourceStatics } from "../Models/Resource.ts";
+import { IamFactory } from "../Models/IamFactory.ts";
 
 
 export class CanvasController{
@@ -221,6 +222,9 @@ export class CanvasController{
                 "behaviour": {
                     "edgeType": { value: defaultEdge, type: "edgeType", options: validEdgeTypes },
                 }
+            },
+            iamProperties:{
+                "aws_iam_policy": IamFactory.makeIamPolicy("aws_iam_policy", sourceServiceName)
             },
             terraformProperties:{},
             resources:{

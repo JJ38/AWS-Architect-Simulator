@@ -32,14 +32,15 @@ function PropertiesWidget(
         title: string
     }
 ){
- 
+    console.log(selectedEdgeData);
+    console.log(selectedNodeData);
     const [statePropertiesWidgetController] = useState(() => new PropertiesWidgetController(setNodes, setEdges, setNodesData));
 
     const selectedComponentType: string | null = stateSelectedNodeID != undefined ? "Node" : stateSelectedEdgeID != null ? "Edge" : null
 
     const componentID: string | null = selectedComponentType == "Node" ? stateSelectedNodeID : selectedComponentType == "Edge" ? stateSelectedEdgeID : null;
     const componentData = selectedComponentType == "Node"? selectedNodeData : selectedComponentType == "Edge" ? selectedEdgeData : undefined;
-    const componentSetter: React.Dispatch<React.SetStateAction<any>> | null = selectedComponentType == "Node" ? setNodesData : selectedComponentType == "Edge" ? setEdgesData : null;
+    const componentSetter: React.Dispatch<React.SetStateAction<any>> = selectedComponentType == "Node" ? setNodesData : selectedComponentType == "Edge" ? setEdgesData : () =>{};
     
     const componentProperties: Record<string, PropertyRecord> | undefined = componentData != null ? componentData?.componentProperties : undefined;
     const componentTerraformProperties: Record<string, PropertyRecord> | undefined = componentData != null ? componentData?.terraformProperties : undefined;
