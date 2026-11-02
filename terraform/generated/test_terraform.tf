@@ -21,25 +21,30 @@ provider "aws" {
   # profile = "default"      # only needed if using a named profile ≠ default
 }
 
-resource "aws_s3_bucket" "bucket" {
-  bucket_prefix = "testing-bucket-"
-  force_destroy = false
-  tags =  {
-    FakeTag = "test"
-  }
+resource "aws_lambda_function" "lambdaPlaceholder" {
+  function_name = "my-lambda"
+  role          = aws_iam_role.lambdaPlaceholder.arn
+  filename      = "lambda.zip"
+  handler       = "app.lambda_handler"
+  runtime       = "python3.14"
 }
 
-resource "aws_s3_bucket_versioning" "versioning" {
-  bucket = aws_s3_bucket.bucket.id
-  versioning_configuration {
-    status = "Enabled"
-  }
-}
-
-resource "aws_s3_bucket_public_access_block" "public_access" {
-  bucket = aws_s3_bucket.bucket.id
-  block_public_acls = true
-  block_public_policy = true
-  ignore_public_acls = true
-  restrict_public_buckets = true
+resource "aws_iam_role" "lambdaPlaceholder" {
+  name = "lambda_role"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+       {
+        Sid = null
+        Effect = "Allow"
+        Principal = {           
+            Service = [
+              "lambda.amazonaws.com"
+            ]
+          
+        }
+        Actions = "sts:AssumeRole"
+      }
+    ]
+  })
 }

@@ -12,23 +12,23 @@ export class IamFactory{
             "name": {value: roleName, type: "string"},
             "assume_role_policy": { //states what service is allowed to assume this role
                 value: {
-                    "Version": {value: "2012-10-17", type: "text"},
+                    "Version": {value: "2012-10-17", type: "string"},
                     "Statement": {
                         value: [
                             {
                                 value:{
                                     "Sid": {value: null, type: "string"},
-                                    "Effect": {value: "allow", type: "select", options: effect},
+                                    "Effect": {value: "Allow", type: "select", options: effect},
                                     "Principal": {
-                                        value: {
-                                            "Service": {value: principalService, type: "text"},
+                                        value: [{
+                                            "Service": {value: [principalService], type: "stringArray"},
                                             // "AWS": {value: null, type: "string"}, //account id or arn, maybe select in future.
                                             // "Federated": {value: null, type: "select", options: ['add list of providers']}, //drop down of providers
                                             // "*": {value: "*", type: "text"}
-                                        }, 
-                                        type: "block"
+                                        }], 
+                                        type: "jsonObject"
                                     },
-                                    "Action": {value: "todo", type: "text"}
+                                    "Actions": {value: "sts:AssumeRole", type: "string"}
                                 }, 
                                 type: "block"
                             }
@@ -36,7 +36,7 @@ export class IamFactory{
                         type: "propertyArray"
                     }
                 },
-                type: "block"
+                type: "json"
             }
 
         }

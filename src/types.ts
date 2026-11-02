@@ -22,6 +22,7 @@ export type PropertyRecord = Record<string, Property<any>>;
 
 type BaseComponentData = {
     metaData: Record<string, any>,
+    mandatoryFields: Array<String>,
     componentProperties: Record<string, PropertyRecord>,
     terraformProperties: Record<string, PropertyRecord>,
     iamProperties?: Record<string, PropertyRecord>,
@@ -100,6 +101,7 @@ export type PropertyType =
 | "edgeType"
 | "link"
 | "json"
+| "jsonObject"
 | "propertyArray"
 | "stringArray"
 | "text"

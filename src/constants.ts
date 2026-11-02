@@ -47,7 +47,7 @@ export const regions: string[] = [
     "sa-east-1"
 ]
 
-export const effect = ["allow", "deny"]
+export const effect = ["Allow", "Deny"]
 
 export const yAxisIncrements: number[] = [1, 2, 5, 10, 15, 20, 30, 50, 75, 100, 150, 200, 300, 500, 750, 1000, 1500, 2000, 3000, 5000, 7500, 10000, 15000, 20000, 30000, 50000, 75000, 100000];
 export const yAxisMaxValues = yAxisIncrements.slice(3, yAxisIncrements.length);

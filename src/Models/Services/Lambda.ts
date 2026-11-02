@@ -10,51 +10,74 @@ export default class Lambda extends Resource{
     public static permissionType: PermissionType = "IAM";
     public static iamRoleName: string = "lambda_role";
 
+
+    //function_name
+    // role
+    // runtime
+    // handler
+    // filename
+    // source_code_hash
+    //MANDATORY
     public static create(id: string, service: Service): ResourceData{
+        let resourceName = "lambdaPlaceholder";
+
 
         const resourceData: ResourceData = {
             id: id,
             service: service,
-            resourceName: id,
+            resourceName: resourceName,
             metaData:{
 
             },
+            mandatoryFields:["function_name","role","filename","runtime","handler"],
             terraformProperties: {
                 "aws_lambda_function": {
-                    "function_name": {value: null, type: "string"},
-                    "role": {value: null, type: "string"},
-                    "filename": {value: null, type: "string"},
+                    "function_name": {value: "myLambda", type: "string"},
+                    "role": {value: "aws_iam_role.lambdaPlaceholder.arn", type: "link"},
+                    "filename": {value: "placeholder.zip", type: "string"},
                     "source_code_hash": {value: null, type: "string"},
                     "handler": {value: null, type: "string"},
-                    "runtime": {value: null, type: "string"},
+                    "runtime": {value: "python3.14", type: "string"},
                     "timeout": {value: null, type: "number"},
                     "memory_size": {value: null, type: "number"},
                     "package_type": {value: null, type: "string"},
                     "architectures": {
-                        value: {},
-                        type: "block"
+                        value: [],
+                        type: "stringArray"
                     },
                     "reserved_concurrent_executions": {value: null, type: "number"},
                     "publish": {value: null, type: "boolean"},
                     "environment": {
-                        value: {},
+                        value: {
+                            
+                        },
                         type: "block"
                     },
                     "vpc_config": {
-                        value: {},
+                        value: {
+                            terraformDisabled: true,
+                            subnet_ids: [],
+                            security_group_ids: []
+                        },
                         type: "block"
                     },
                     "dead_letter_config": {
-                        value: {},
+                        value: {
+                            terraformDisabled: true,
+                            target_arn : "placeholderARN"
+                        },
                         type: "block"
                     },
                     "ephemeral_storage": {
-                        value: {},
+                        value: {
+                            terraformDisabled: true,
+                            size: 1024
+                        },
                         type: "block"
                     },
                     "layers": {
-                        value: {},
-                        type: "block"
+                        value: [],
+                        type: "stringArray"
                     },
                     "tags": {
                         value: {},

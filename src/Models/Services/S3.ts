@@ -10,30 +10,27 @@ export default class S3 extends Resource{
 
 
     public static create(id: string, service: Service): ResourceData{
+        let resourceName = "bucketPlaceholder";
 
         return {
             id: id,
             service: service,
-            resourceName: id,
+            resourceName: resourceName,
             metaData:{
 
             },
+            mandatoryFields:["bucket"],
             terraformProperties: {
                 "aws_s3_bucket": {
-                    "bucket": { value: id, type: "string"},
-                    "bucket_prefix": { value: null, type: "string"},
+                    "bucket": { value: resourceName, type: "string"},
                     "force_destroy": { value: false, type: "boolean"},
                     "tags": { 
                         value: {
-                        "FakeTag": { value: "test", type: "string" }
+                        "FakeTag": { value: "TestingChange", type: "string" }
                     }, type: "tags"}
                 },
                 "aws_s3_bucket_versioning": {
-                    "bucket": { 
-                        value: id, 
-                        type: "link", 
-                        link: ['aws_s3_bucket', 'bucket']
-                    },
+                    "bucket": { value: `aws_s3_bucket.${resourceName}.id`, type: "link"},                        
                     "versioning_configuration": 
                     { 
                         value: { 
@@ -43,11 +40,7 @@ export default class S3 extends Resource{
                     }
                 },
                 "aws_s3_bucket_public_access_block": {
-                    "bucket": { 
-                        value: id, 
-                        type: "link", 
-                        link: ['aws_s3_bucket', 'bucket']                     
-                    },
+                    "bucket": { value: `aws_s3_bucket.${resourceName}.id`, type: "link"},
                     "block_public_acls": { value: true, type: "boolean"},
                     "block_public_policy": { value: true, type: "boolean"},
                     "ignore_public_acls": { value: true, type: "boolean"},

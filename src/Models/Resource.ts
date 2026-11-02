@@ -16,6 +16,7 @@ export default abstract class Resource{
     public id: string;
     public service: Service;
     public resourceName: string;
+    public mandatoryFields?: Array<String>;
     public terraformProperties: Record<string, PropertyRecord>;
     public iamProperties?: Record<string, PropertyRecord>;
 
@@ -24,6 +25,7 @@ export default abstract class Resource{
         this.id = data.id;
         this.service = data.service;
         this.resourceName = data.resourceName;
+        this.mandatoryFields = data.mandatoryFields;
         this.terraformProperties = data.terraformProperties;
         this.iamProperties = data.iamProperties;
     }
@@ -53,8 +55,8 @@ export default abstract class Resource{
         for(const recordName of Object.keys(properties as Record<string, PropertyRecord>)){
 
             codeChunks.push({value: "resource ", className:"terraformKeyword"})
-            codeChunks.push({value: recordName + " ", className:"terraformParameter"})
-            codeChunks.push({value: this.resourceName, className:"terraformParameter"})
+            codeChunks.push({value: '"'+recordName + '" ', className:"terraformParameter"})
+            codeChunks.push({value: '"'+this.resourceName+'" ', className:"terraformParameter"})
 
             codeChunks.push({value: "{", className:"terraformBracket"})
             // console.log(recordName+ " props: ", JSON.stringify(properties))
@@ -119,6 +121,17 @@ export default abstract class Resource{
                     codeChunks.push(...tagChunks);
                     
                 }
+
+                codeChunks.push({value: `\n${indent}}`, className:""});
+
+                break;
+            }
+
+            case "json": { 
+
+                codeChunks.push({value: `{\n${indent} JSON HERE`, className:""});
+
+              
 
                 codeChunks.push({value: `\n${indent}}`, className:""});
 
