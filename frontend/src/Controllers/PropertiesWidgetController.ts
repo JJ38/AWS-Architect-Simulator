@@ -1,0 +1,415 @@
+import { Component } from "lucide-react";
+import { resourceContainer } from "../constants";
+import type { ResourceStatics } from "../Models/Resource";
+import type Resource from "../Models/Resource";
+import Lambda from "../Models/Services/Lambda";
+import { TerraformConverter } from "../Models/TerraformConverter";
+import type { AppEdge, AppNode, Property, AppComponent, PropertyCategory, ComponentData, PropertyRecord, CodeChunk, InputsController, Service } from "../types";
+
+export class PropertiesWidgetController implements InputsController {
+
+    private setEdges: React.Dispatch<React.SetStateAction<AppEdge[]>>;
+    private setEdgesData: React.Dispatch<React.SetStateAction<ComponentData[]>>;
+    private setNodes: React.Dispatch<React.SetStateAction<AppNode[]>>;
+    private setNodesData: React.Dispatch<React.SetStateAction<ComponentData[]>>;
+
+    public constructor(
+        setEdges: React.Dispatch<React.SetStateAction<AppEdge[]>>,
+        setEdgesData: React.Dispatch<React.SetStateAction<ComponentData[]>>,
+        setNodes: React.Dispatch<React.SetStateAction<AppNode[]>>, 
+        setNodesData: React.Dispatch<React.SetStateAction<ComponentData[]>>
+    ){
+        this.setEdges = setEdges;
+        this.setEdgesData = setEdgesData;
+        this.setNodes = setNodes;
+        this.setNodesData = setNodesData;
+    }
+
+
+    public getEdgeTerraform(componentData: ComponentData | undefined): CodeChunk[]{
+        
+        //stubbed out currently to just use resource terraform preview gen. Probably needs refactoring
+        console.log(componentData);
+        if(componentData == undefined){
+            return [];
+        }
+
+        const dummyService: Service = {
+            name: "edgeService",
+            description: "dummy service",
+            terraformType: null,
+            providerTypes: null,
+            icon: "wadwa",
+            image: "string",
+        }
+
+        const edgeResource = new Lambda(dummyService, componentData);
+
+        const propertyRecords: Record<string, PropertyRecord>[] = [];
+
+        if(componentData.iamProperties !== undefined){
+            propertyRecords.push(componentData.iamProperties);
+        }
+
+        if(componentData.componentProperties !== undefined){
+            propertyRecords.push(componentData.componentProperties);
+        }
+
+        return edgeResource.toTerraformPreview(propertyRecords);
+
+
+        return edgeResource.toTerraformPreview(componentData?.iamProperties);
+
+        //get both resources.
+        const callerName = componentData.metaData.callerName;
+        const receiverName = componentData.metaData.receiverName;
+    
+        if(callerName == null || receiverName == null){
+            return [];
+        }
+
+        const callerResource = resourceContainer[callerName!];
+        const receiverResource = resourceContainer[receiverName!];
+        
+        if(componentData.resources == null || componentData.resources == null){
+            return [];
+        }
+       
+        const callerID: string = componentData?.resources?.callerID;
+        const receiverID: string = componentData?.resources?.receiverID;
+
+        let stateNodes: AppNode[] = [];
+
+        this.setNodes((appNodes: AppNode[]) => {
+            stateNodes = appNodes;
+            return appNodes;
+        });
+
+        let stateNodesData: ComponentData[] = [];
+
+        this.setNodesData((appNodesData: ComponentData[]) => {
+            stateNodesData = appNodesData;
+            return appNodesData;
+        });
+
+        //get nodes by id then create them to get latest node values
+        const callerAppNode = stateNodes.find((node: AppNode) => node.id == callerID);
+        const receiverAppNode = stateNodes.find((node: AppNode) => node.id == receiverID);
+
+        if(callerAppNode == undefined || receiverAppNode == undefined){
+            return [];
+        }
+
+        const callerAppNodeData = stateNodesData.find((data: ComponentData) => data.id == callerID);
+        const receiverAppNodeData = stateNodesData.find((data: ComponentData) => data.id == receiverID);
+
+
+        if(callerAppNodeData == undefined || receiverAppNodeData == undefined){
+            return [];
+        }
+
+        const callerInstance = new callerResource(callerAppNode!.data.service, callerAppNodeData!);
+        const receiverInstance = new receiverResource(receiverAppNode!.data.service, receiverAppNodeData!);
+
+        //call receiver and caller terraformPreview for each.
+
+        const edgeType = componentData.metaData.edgeType;
+        
+        //change to using edgedata rather than remaking policy
+        const callerTerraform: Record<string, PropertyRecord> = callerInstance.toTerraformEdgePropertiesCaller(edgeType, receiverInstance, callerInstance) ?? {};
+        const receiverTerraform: Record<string, PropertyRecord> = receiverInstance.toTerraformEdgePropertiesReceiver(edgeType, callerInstance, receiverInstance) ?? {};
+
+        return[callerInstance.toTerraformPreview([componentData as Record<string, PropertyRecord>])]
+
+        const record: Record<string, PropertyRecord> = {};
+
+        record['aws_iam_policy'] = componentData!;
+
+        return [...callerInstance.toTerraformPreview([callerTerraform]), ...receiverInstance.toTerraformPreview([receiverTerraform])];
+    }   
+
+    
+    public getSelectedResource(selectedNodeData: ComponentData | undefined, stateSelectedService: Service | null | undefined): Resource | undefined{
+
+        if(selectedNodeData == null || stateSelectedService == null || stateSelectedService == undefined){
+            return;
+        }
+        
+        const resource: ResourceStatics = resourceContainer[stateSelectedService.name];
+        const resourceInstance = new resource(stateSelectedService, selectedNodeData);
+        
+        return resourceInstance;
+    }
+
+    public shouldShowProperty(property: Property<any>, componentData: ComponentData | undefined): boolean {
+
+        if(property.dependant != undefined){
+
+            let dependant = componentData?.terraformProperties;
+            let dependantProperty: Property<any> | undefined;
+            const propertyPath = property.dependant.propertyPath;
+
+            if(componentData == undefined || dependant == undefined){
+                console.log("componentData == undefined || dependant == undefined");
+                return false;
+            }
+
+            if(propertyPath.length == 0){
+                return false;
+            }
+
+            const dependantPropertyRecord = dependant![propertyPath[0]]; // need because type is different at top level
+
+            for(let i = 1 ; i < propertyPath.length; i++){
+            
+                const fieldName = propertyPath[i]
+                
+                dependantProperty = dependantPropertyRecord[fieldName];
+
+                if(dependantProperty == undefined){
+                    return false;
+                }
+            
+            }
+
+            if(dependantProperty == undefined){
+                return false;
+            }
+
+            if(dependantProperty.value != property.dependant.value){
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public getDependantProperty(property: Property<any>, componentData: ComponentData | undefined): any{
+
+        const propertyPath = property.link
+
+        if(propertyPath != undefined){
+                //check if dependant value is set. if not return
+
+            let dependant = componentData?.terraformProperties;
+            let dependantProperty: Property<any> | undefined;
+
+            if(propertyPath == undefined){
+                return;
+            }
+
+            if(componentData == undefined || dependant == undefined){
+                console.log("componentData == undefined || dependant == undefined");
+                return "";
+            }
+
+            if(propertyPath.length == 0){
+                return "";
+            }
+
+            const dependantPropertyRecord = dependant![propertyPath[0]]; // need because type is different at top level
+
+            for(let i = 1 ; i < propertyPath.length; i++){
+            
+                const fieldName = propertyPath[i]
+                
+                dependantProperty = dependantPropertyRecord[fieldName];
+
+                if(dependantProperty == undefined){
+                    return "";
+                }
+            
+            }
+
+            if(dependantProperty == undefined){
+                return "";
+            }
+
+            return dependantProperty.value;
+           
+        }
+
+        return "";
+        
+    }
+    
+    private validProperty(nodeProperty: Property<any>, componentID: string | null): boolean{
+
+        if(nodeProperty == undefined){
+            console.log("node properties undefined");
+            return false;
+        }
+
+        if(componentID == null){
+            console.log("componentID is null");
+            return false;
+        }
+
+        return true;
+
+    }
+
+    private updatePropertyByPath(index: number, record: Record<string, PropertyRecord> | PropertyRecord, propertyRecordPath: string[], newNodeProperty: Property<any>): void{
+
+        const key = propertyRecordPath[index];
+        const isLeaf = index === propertyRecordPath.length - 1;
+
+        if(isLeaf){
+            (record as PropertyRecord)[key] = newNodeProperty;
+            return;
+        }
+
+        // index 0 is Record<string, PropertyRecord> - the value at a block name is already a PropertyRecord.
+        // every level after that is a PropertyRecord itself, so each entry is a Property and needs .value unwrapped.
+        const nextRecord: PropertyRecord = index === 0
+            ? (record as Record<string, PropertyRecord>)[key]
+            : (record as PropertyRecord)[key].value as PropertyRecord;
+
+        this.updatePropertyByPath(index + 1, nextRecord, propertyRecordPath, newNodeProperty);
+
+    }
+
+    private updateComponentProperty(newNodeProperty: Property<any>, 
+        propertyCategory: PropertyCategory, 
+        propertyRecordPath: string[], 
+        componentID: string, 
+        inputName: string, 
+        componentSetter: React.Dispatch<React.SetStateAction<any>>)
+    {
+        
+        //need a way to deal with nested inputs 
+        componentSetter((components: ComponentData[] | AppComponent[]) => components.map((component: ComponentData | AppComponent) => {
+
+            if(component.id !== componentID){
+                return component;
+            }
+
+            const newComponent: ComponentData | AppComponent = structuredClone(component);
+
+            if(newComponent == null){
+                return newComponent;
+            }
+
+            const fullPath = [...propertyRecordPath, inputName];
+
+            switch (propertyCategory){
+
+                case "component": {
+
+                    const component = newComponent as AppComponent;
+                    const componentData = component.data as Record<string, PropertyRecord>;
+                    this.updatePropertyByPath(0, componentData, fullPath, newNodeProperty);
+
+                    break;
+                }
+
+                case "terraform": {
+                    const component = newComponent as ComponentData;
+                    this.updatePropertyByPath(0, component.terraformProperties, fullPath, newNodeProperty);
+                    break;
+                }
+
+                case "iam": {
+                    const component = newComponent as ComponentData;
+
+                    if(component.iamProperties == undefined){
+                        return;
+                    }
+
+                    this.updatePropertyByPath(0, component.iamProperties, fullPath, newNodeProperty);
+                    break;
+                }
+
+            }
+
+            return newComponent;
+            
+        }));
+
+    }
+
+
+    public onSelectChange(
+        event: React.ChangeEvent<HTMLSelectElement, HTMLSelectElement>, 
+        nodeProperty: Property<any>, 
+        propertyCategory: PropertyCategory,
+        propertyRecordName: string[],
+        inputName: string, 
+        componentID: string | null,
+        componentSetter: React.Dispatch<React.SetStateAction<any>>
+    ){
+
+        if(!this.validProperty(nodeProperty, componentID)) return;
+
+        const newNodeProperty = structuredClone(nodeProperty);
+        newNodeProperty.value = event.target.value;
+
+        this.updateComponentProperty(newNodeProperty, propertyCategory, propertyRecordName, componentID!, inputName, componentSetter);
+
+    }
+
+
+    public keyboardInputOnChange(
+        event: React.ChangeEvent<HTMLInputElement, HTMLInputElement>, 
+        nodeProperty: Property<any>, 
+        propertyCategory: PropertyCategory,
+        propertyRecordName: string[],
+        inputName: string, 
+        componentID: string | null,
+        componentSetter: React.Dispatch<React.SetStateAction<any>>
+    ){  
+
+        if(!this.validProperty(nodeProperty, componentID)) return;
+
+        const newNodeProperty = structuredClone(nodeProperty);
+        newNodeProperty.value = event.target.value;
+
+        this.updateComponentProperty(newNodeProperty, propertyCategory, propertyRecordName, componentID!, inputName, componentSetter);
+
+    }
+
+
+    public checkBoxOnChange(
+        event: React.ChangeEvent<HTMLInputElement, HTMLInputElement>, 
+        nodeProperty: Property<any>, 
+        propertyCategory: PropertyCategory,
+        propertyRecordName: string[],
+        inputName: string, 
+        componentID: string | null,
+        componentSetter: React.Dispatch<React.SetStateAction<any>>
+    ){
+        
+        if(!this.validProperty(nodeProperty, componentID)) return;
+
+        const newNodeProperty = structuredClone(nodeProperty);
+        newNodeProperty.value = event.target.checked;
+
+        this.updateComponentProperty(newNodeProperty, propertyCategory, propertyRecordName, componentID!, inputName, componentSetter);
+
+    }
+
+    public getComponentSetter(componentType: string | null, propertyCategory: PropertyCategory){
+
+        if(componentType === null){
+            return () => {};
+        }
+
+        if(componentType == "Node"){
+            return this.setNodesData;
+        }
+
+        if(componentType == "Edge"){
+            
+            if(propertyCategory == "component"){
+                return this.setEdges;
+            }
+
+            return this.setEdgesData;
+
+        }
+
+        return () => {}
+    }
+
+
+}
