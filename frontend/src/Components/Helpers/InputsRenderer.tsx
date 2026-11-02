@@ -10,13 +10,9 @@ function getPropertyInput(
     propertyRecordPath: string[],
     inputName: string, 
     componentID: string | null,  
-    componentSetter: React.Dispatch<React.SetStateAction<any>> | null,
+    componentSetter: React.Dispatch<React.SetStateAction<any>>,
     key?: number
 ){
-    // if(componentSetter == null){
-    //     console.log("componentSetter == null")
-    //     return;
-    // }
 
     const inputType = property.type;
 
@@ -34,7 +30,6 @@ function getPropertyInput(
         }
 
         case "string":{
-            console.log()
             const input = <input key={key} className="propertyInput" id={`${inputName}`} type="text" name={`${inputName}`} value={property.value ?? ""} onChange={(event) => {inputsController.keyboardInputOnChange(event, property, propertyCategory, propertyRecordPath, inputName, componentID, componentSetter)}}/>
             return input;
         }
@@ -189,7 +184,7 @@ function renderPropertyRow(
     propertyCategory: PropertyCategory,
     propertyRecordPath: string[],
     componentID: string | null,
-    componentSetter: React.Dispatch<React.SetStateAction<any>> | null,
+    componentSetter: React.Dispatch<React.SetStateAction<any>>,
     key?: number
 ){
 
@@ -234,7 +229,7 @@ export function InputsRenderer(
     propertyCategory: PropertyCategory,
     componentData: ComponentData | undefined, 
     componentID: string | null,  
-    componentSetter: React.Dispatch<React.SetStateAction<any>> | null,
+    componentSetter: React.Dispatch<React.SetStateAction<any>>,
 ){
 
     return Object.keys(properties).map((propertyRecordPath) => {

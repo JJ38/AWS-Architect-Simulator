@@ -139,8 +139,6 @@ export class TerraformWidgetController implements InputsController{
 
         codeChunks.push({value: " = ", className:""})
 
-
-
         return codeChunks;
     }
 

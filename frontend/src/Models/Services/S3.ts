@@ -1,5 +1,5 @@
 import Resource from "../Resource";
-import type { Service, ValidationResult, EdgeType, ResourceData, PermissionType, PropertyRecord } from "../../types.ts";
+import type { Service, ValidationResult, EdgeType, ResourceData, PermissionType, PropertyRecord, ComponentData } from "../../types.ts";
 
 
 export default class S3 extends Resource{
@@ -8,16 +8,11 @@ export default class S3 extends Resource{
     public static targetTypes: EdgeType[] = ["sync"];
     public static permissionType: PermissionType = "Service";
 
-
-    public static create(id: string, service: Service): ResourceData{
+    public static createData(id: string): ComponentData{
 
         return {
             id: id,
-            service: service,
-            resourceName: id,
-            metaData:{
-
-            },
+            metaData: {},
             terraformProperties: {
                 "aws_s3_bucket": {
                     "bucket": { value: id, type: "string"},
@@ -58,7 +53,6 @@ export default class S3 extends Resource{
         }
 
     }
-
 
     toTerraformEdgePropertiesCaller(edgeType: EdgeType, counterPart: Resource){
         return null;

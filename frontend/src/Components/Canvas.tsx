@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
 import { ReactFlow, applyNodeChanges, applyEdgeChanges, useReactFlow, addEdge, Background, BackgroundVariant } from '@xyflow/react';
-import type { AppEdge, AppNode, CodeChunk, EdgeType, Service } from '../types.ts';
+import type { AppEdge, AppNode, ComponentData, CodeChunk, EdgeType, Service } from '../types.ts';
 import { CanvasController } from '../Controllers/CanvasController.ts';
 import '@xyflow/react/dist/style.css';
 import '../styles/Canvas.css'; 
@@ -17,8 +17,12 @@ export default function Canvas(
     setSelectedService,
     stateNodes,
     setNodes,
+    stateNodesData,
+    setNodesData,
     stateEdges,
-    setEdges
+    setEdges,
+    stateEdgesData,
+    setEdgesData
   }
     :
   {
@@ -26,8 +30,12 @@ export default function Canvas(
     setSelectedService: React.Dispatch<React.SetStateAction<Service | null>>;
     stateNodes: AppNode[];
     setNodes: React.Dispatch<React.SetStateAction<AppNode[]>>;
+    stateNodesData: ComponentData[];
+    setNodesData: React.Dispatch<React.SetStateAction<ComponentData[]>>;
     stateEdges: AppEdge[];
     setEdges: React.Dispatch<React.SetStateAction<AppEdge[]>>;
+    stateEdgesData: ComponentData[];
+    setEdgesData: React.Dispatch<React.SetStateAction<ComponentData[]>>;
   }
 ){
 
@@ -39,13 +47,14 @@ export default function Canvas(
   const showNotification = useNotification();
   const { theme } = useTheme();
 
-
   const [stateCanvasController] = useState(() => new CanvasController(
     showNotification,
     screenToFlowPosition, 
     setGhostNodes, 
     setNodes, 
+    setNodesData,
     setEdges, 
+    setEdgesData,
     setSelectedNodeID, 
     setSelectedEdgeID, 
     setSelectedService
@@ -54,11 +63,14 @@ export default function Canvas(
   const selectedNode = stateNodes.find((node: AppNode) => node.id == stateSelectedNodeID);
   const selectedEdge = stateEdges.find((edge: AppEdge) => edge.id == stateSelectedEdgeID);
 
+  const selectedNodeData = stateNodesData.find((data: ComponentData) => data.id == stateSelectedNodeID);
+  const selectedEdgeData = stateEdgesData.find((edge: ComponentData) => edge.id == stateSelectedEdgeID);
+
   const title: string = stateCanvasController.getPropertiesWidgetTitle(selectedNode?.data, stateNodes, selectedEdge);
 
   const onNodesChange = useCallback((changes: any) => setNodes((nodesSnapshot) => applyNodeChanges(changes, nodesSnapshot)), []);
   const onEdgesChange = useCallback((changes: any) => setEdges((edgesSnapshot) => applyEdgeChanges(changes, edgesSnapshot)), []);
-  const onConnect = useCallback((params: any) => {stateCanvasController.onConnect(params, stateNodes)}, [stateNodes]);
+  const onConnect = useCallback((params: any) => {stateCanvasController.onConnect(params, stateNodes, stateNodesData)}, [stateNodes, stateNodesData]);
 
   const nodesWithSelection = stateNodes.map((node) => ({
     ...node,
@@ -90,8 +102,6 @@ export default function Canvas(
 
   }, [stateSelectedNodeID, setNodes, stateSelectedEdgeID, setEdges]);
 
-  // console.log(stateNodes.)
-
   return (
     <div className="reactFlowWrapper">
       <ReactFlow
@@ -119,13 +129,17 @@ export default function Canvas(
       </div>
       <PropertiesWidget 
         stateSelectedNodeID={stateSelectedNodeID} 
-        selectedNodeData={selectedNode?.data}
-        stateNodes={stateNodes}
+        stateSelectedService={selectedNode?.data.service}
+        selectedNode={selectedNode}
+        selectedNodeData={selectedNodeData}
         setNodes={setNodes}
-        selectedEdgeData={selectedEdge?.data}
+        setNodesData={setNodesData}
+        selectedEdge={selectedEdge}
+        selectedEdgeData={selectedEdgeData}
         stateSelectedEdgeID={stateSelectedEdgeID}
         setEdges={setEdges}
-        title={title}
+        setEdgesData={setEdgesData}
+        title={"title"}
       >
       </PropertiesWidget>
       <TrafficWidget>

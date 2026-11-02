@@ -1,5 +1,5 @@
 import { LoadSaveWidgetModel } from "../Models/LoadSaveWidgetModel";
-import type { AppEdge, AppNode } from "../types";
+import type { AppEdge, AppNode, ComponentData } from "../types";
 
 export class LoadSaveWidgetController{
 
@@ -8,7 +8,9 @@ export class LoadSaveWidgetController{
     private showNotification: (success: boolean, message: string) => void;
     private showConfirmation: () => void;
     private setEdges: React.Dispatch<React.SetStateAction<AppEdge[]>>;
+    private setEdgesData: React.Dispatch<React.SetStateAction<ComponentData[]>>;
     private setNodes: React.Dispatch<React.SetStateAction<AppNode[]>>;
+    private setNodesData: React.Dispatch<React.SetStateAction<ComponentData[]>>;
     private setLoadedSaveName: React.Dispatch<React.SetStateAction<string | null>>;
 
 
@@ -17,14 +19,18 @@ export class LoadSaveWidgetController{
         showNotification: (success: boolean, message: string) => void,
         showConfirmation: () => void, 
         setEdges: React.Dispatch<React.SetStateAction<AppEdge[]>>,
+        setEdgesData: React.Dispatch<React.SetStateAction<ComponentData[]>>,
         setNodes: React.Dispatch<React.SetStateAction<AppNode[]>>, 
+        setNodesData: React.Dispatch<React.SetStateAction<ComponentData[]>>,
         setLoadedSaveName: React.Dispatch<React.SetStateAction<string | null>>
     ){
         this.setShowLoadWidget = setShowLoadWidget;
         this.showNotification = showNotification;
         this.showConfirmation = showConfirmation;
         this.setEdges = setEdges;
+        this.setEdgesData = setEdgesData;
         this.setNodes = setNodes;
+        this.setNodesData = setNodesData;
         this.setLoadedSaveName = setLoadedSaveName;
         console.log("LoadSavePopUpController");
     }
@@ -68,14 +74,18 @@ export class LoadSaveWidgetController{
 
         let edges;
         let nodes;
+        let edgesData;
+        let nodesData;
 
         try{
 
             const saveJSON = JSON.parse(saveString);
             edges = saveJSON['edges'];
             nodes = saveJSON['nodes'];
+            edgesData = saveJSON['edgesData'];
+            nodesData = saveJSON['nodesData'];
 
-            if(edges == undefined || nodes == undefined){
+            if(edges == undefined || nodes == undefined || edgesData == undefined || nodesData == undefined){
                 this.showNotification(false, "Error - save corrupted");
                 return;
             }
@@ -101,6 +111,8 @@ export class LoadSaveWidgetController{
 
         this.setEdges(edges);
         this.setNodes(nodes);
+        this.setEdgesData(edgesData);
+        this.setNodesData(nodesData);
 
         this.setLoadedSaveName(stateSelectedSave);
     

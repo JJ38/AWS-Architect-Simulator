@@ -196,7 +196,6 @@ export class TrafficWidgetController{
             });
 
             intervalsY.sort((a, b) => a - b);
-            console.log(intervalsY);
             const highestIntervalY: number = intervalsY[intervalsY.length - 1];
 
             //if all values are in the bottom 50%   

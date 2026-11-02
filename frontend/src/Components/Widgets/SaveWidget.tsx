@@ -4,14 +4,16 @@ import { useNotification } from '../../Providers/NotificationProvider';
 import { SaveWidgetController } from '../../Controllers/SaveWidgetController';
 import '../../styles/SaveWidget.css'
 import RoundedButton from '../Buttons/RoundedButton'
-import type { AppEdge, AppNode } from '../../types';
+import type { AppEdge, AppNode, ComponentData } from '../../types';
 
 export default function SaveWidget({ 
     setShowSaveWidget, 
     stateLoadedSaveName, 
     setLoadedSaveName, 
-    stateNodes, 
+    stateNodes,
+    stateNodesData, 
     stateEdges,
+    stateEdgesData,
     stateDeploymentSettings 
 }
     : 
@@ -20,7 +22,9 @@ export default function SaveWidget({
     stateLoadedSaveName: string | null; 
     setLoadedSaveName: React.Dispatch<React.SetStateAction<string | null>>; 
     stateNodes: AppNode[], 
+    stateNodesData: ComponentData[],
     stateEdges: AppEdge[],
+    stateEdgesData: ComponentData[],
     stateDeploymentSettings: Record<string, any>
 }){
 
@@ -36,7 +40,8 @@ export default function SaveWidget({
 
                 <RoundedButton
                     onClickHandler={() => stateSaveWidgetController.handleCancelClick()}
-                    buttonText='Cancel'
+                    buttonText='Cancel' 
+                    className=''               
                 />
                 
                 {
@@ -44,15 +49,17 @@ export default function SaveWidget({
                     stateLoadedSaveName &&
 
                     <RoundedButton
-                        onClickHandler={() => stateSaveWidgetController.handleSaveClick(stateLoadedSaveName, stateNodes, stateEdges, stateDeploymentSettings)}
+                        onClickHandler={() => stateSaveWidgetController.handleSaveClick(stateLoadedSaveName, stateNodes, stateNodesData, stateEdges, stateEdgesData, stateDeploymentSettings)}
                         buttonText='Save'
+                        className=''
                     />
 
                 }
 
                 <RoundedButton
-                    onClickHandler={() => stateSaveWidgetController.handleSaveAsClick(stateNodes, stateEdges, stateDeploymentSettings, setLoadedSaveName)}
+                    onClickHandler={() => stateSaveWidgetController.handleSaveAsClick(stateNodes, stateNodesData, stateEdges,stateEdgesData, stateDeploymentSettings, setLoadedSaveName)}
                     buttonText='Save As'
+                    className=''
                 />
 
             </div>

@@ -5,13 +5,15 @@ import '../../styles/LoadSaveWidget.css'
 import RoundedButton from '../Buttons/RoundedButton'
 import SavePill from '../SavePill';
 import { useConfirmation } from '../../Providers/ConfirmationProvider';
-import type { AppEdge, AppNode } from '../../types';
+import type { AppEdge, AppNode, ComponentData } from '../../types';
 
 export default function LoadWidget(
     { 
         setShowLoadWidget, 
         setEdges, 
+        setEdgesData,
         setNodes,
+        setNodesData,
         setDeploymentSettings, 
         setLoadedSaveName 
     }
@@ -19,7 +21,9 @@ export default function LoadWidget(
     {
         setShowLoadWidget: React.Dispatch<React.SetStateAction<boolean>>; 
         setEdges: React.Dispatch<React.SetStateAction<AppEdge[]>>; 
+        setEdgesData: React.Dispatch<React.SetStateAction<ComponentData[]>>; 
         setNodes: React.Dispatch<React.SetStateAction<AppNode[]>>;
+        setNodesData: React.Dispatch<React.SetStateAction<ComponentData[]>>; 
         setDeploymentSettings: React.Dispatch<React.SetStateAction<Record<string,any>>>; 
         setLoadedSaveName: React.Dispatch<React.SetStateAction<string | null>>
     }){
@@ -28,7 +32,7 @@ export default function LoadWidget(
     const showConfirmation = useConfirmation();
 
     const [stateSelectedSave, setSelectedSave] = useState<string | null>(null);
-    const [stateLoadSaveWidgetController] = useState(() => new LoadSaveWidgetController(setShowLoadWidget, showNotification, showConfirmation, setEdges, setNodes, setLoadedSaveName));
+    const [stateLoadSaveWidgetController] = useState(() => new LoadSaveWidgetController(setShowLoadWidget, showNotification, showConfirmation, setEdges, setEdgesData, setNodes, setNodesData, setLoadedSaveName));
 
     return(
 
@@ -55,16 +59,19 @@ export default function LoadWidget(
                 <RoundedButton
                     onClickHandler={() => stateLoadSaveWidgetController.handleCancelClick()}
                     buttonText='Cancel'
+                    className=''
                 />
 
                 <RoundedButton
                     onClickHandler={() => stateLoadSaveWidgetController.handleDeleteClick(stateSelectedSave)}
                     buttonText='Delete'
+                    className=''
                 />
 
                 <RoundedButton
                     onClickHandler={() => stateLoadSaveWidgetController.handleLoadClick(stateSelectedSave)}
                     buttonText='Load'
+                    className=''
                 />
 
             </div>

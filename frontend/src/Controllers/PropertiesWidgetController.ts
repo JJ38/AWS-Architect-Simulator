@@ -1,30 +1,64 @@
+import { Component } from "lucide-react";
 import { resourceContainer } from "../constants";
 import type { ResourceStatics } from "../Models/Resource";
 import type Resource from "../Models/Resource";
-import type { AppEdge, AppNode, Property, AppComponent, PropertyCategory, ResourceData, ComponentData, PropertyRecord, CodeChunk, InputsController } from "../types";
+import Lambda from "../Models/Services/Lambda";
+import { TerraformConverter } from "../Models/TerraformConverter";
+import type { AppEdge, AppNode, Property, AppComponent, PropertyCategory, ComponentData, PropertyRecord, CodeChunk, InputsController, Service } from "../types";
 
 export class PropertiesWidgetController implements InputsController {
 
-    private setNodes: React.Dispatch<React.SetStateAction<AppNode[]>>;
     private setEdges: React.Dispatch<React.SetStateAction<AppEdge[]>>;
+    private setEdgesData: React.Dispatch<React.SetStateAction<ComponentData[]>>;
+    private setNodes: React.Dispatch<React.SetStateAction<AppNode[]>>;
+    private setNodesData: React.Dispatch<React.SetStateAction<ComponentData[]>>;
 
     public constructor(
+        setEdges: React.Dispatch<React.SetStateAction<AppEdge[]>>,
+        setEdgesData: React.Dispatch<React.SetStateAction<ComponentData[]>>,
         setNodes: React.Dispatch<React.SetStateAction<AppNode[]>>, 
-        setEdges: React.Dispatch<React.SetStateAction<AppEdge[]>>
+        setNodesData: React.Dispatch<React.SetStateAction<ComponentData[]>>
     ){
         this.setEdges = setEdges;
+        this.setEdgesData = setEdgesData;
         this.setNodes = setNodes;
-        console.log("properties widget controller.");
+        this.setNodesData = setNodesData;
     }
 
 
-    public getEdgeTerraform(componentData: ComponentData | undefined, stateNodes: AppNode[]): CodeChunk[]{
+    public getEdgeTerraform(componentData: ComponentData | undefined): CodeChunk[]{
         
+        //stubbed out currently to just use resource terraform preview gen. Probably needs refactoring
         console.log(componentData);
-
         if(componentData == undefined){
             return [];
         }
+
+        const dummyService: Service = {
+            name: "edgeService",
+            description: "dummy service",
+            terraformType: null,
+            providerTypes: null,
+            icon: "wadwa",
+            image: "string",
+        }
+
+        const edgeResource = new Lambda(dummyService, componentData);
+
+        const propertyRecords: Record<string, PropertyRecord>[] = [];
+
+        if(componentData.iamProperties !== undefined){
+            propertyRecords.push(componentData.iamProperties);
+        }
+
+        if(componentData.componentProperties !== undefined){
+            propertyRecords.push(componentData.componentProperties);
+        }
+
+        return edgeResource.toTerraformPreview(propertyRecords);
+
+
+        return edgeResource.toTerraformPreview(componentData?.iamProperties);
 
         //get both resources.
         const callerName = componentData.metaData.callerName;
@@ -44,6 +78,20 @@ export class PropertiesWidgetController implements InputsController {
         const callerID: string = componentData?.resources?.callerID;
         const receiverID: string = componentData?.resources?.receiverID;
 
+        let stateNodes: AppNode[] = [];
+
+        this.setNodes((appNodes: AppNode[]) => {
+            stateNodes = appNodes;
+            return appNodes;
+        });
+
+        let stateNodesData: ComponentData[] = [];
+
+        this.setNodesData((appNodesData: ComponentData[]) => {
+            stateNodesData = appNodesData;
+            return appNodesData;
+        });
+
         //get nodes by id then create them to get latest node values
         const callerAppNode = stateNodes.find((node: AppNode) => node.id == callerID);
         const receiverAppNode = stateNodes.find((node: AppNode) => node.id == receiverID);
@@ -52,29 +100,43 @@ export class PropertiesWidgetController implements InputsController {
             return [];
         }
 
-        const callerInstance = new callerResource(callerAppNode.data);
-        const receiverInstance = new receiverResource(receiverAppNode.data);
+        const callerAppNodeData = stateNodesData.find((data: ComponentData) => data.id == callerID);
+        const receiverAppNodeData = stateNodesData.find((data: ComponentData) => data.id == receiverID);
+
+
+        if(callerAppNodeData == undefined || receiverAppNodeData == undefined){
+            return [];
+        }
+
+        const callerInstance = new callerResource(callerAppNode!.data.service, callerAppNodeData!);
+        const receiverInstance = new receiverResource(receiverAppNode!.data.service, receiverAppNodeData!);
 
         //call receiver and caller terraformPreview for each.
 
         const edgeType = componentData.metaData.edgeType;
         
+        //change to using edgedata rather than remaking policy
         const callerTerraform: Record<string, PropertyRecord> = callerInstance.toTerraformEdgePropertiesCaller(edgeType, receiverInstance, callerInstance) ?? {};
         const receiverTerraform: Record<string, PropertyRecord> = receiverInstance.toTerraformEdgePropertiesReceiver(edgeType, callerInstance, receiverInstance) ?? {};
+
+        return[callerInstance.toTerraformPreview([componentData as Record<string, PropertyRecord>])]
+
+        const record: Record<string, PropertyRecord> = {};
+
+        record['aws_iam_policy'] = componentData!;
 
         return [...callerInstance.toTerraformPreview([callerTerraform]), ...receiverInstance.toTerraformPreview([receiverTerraform])];
     }   
 
     
-    public getSelectedResource(selectedNodeData: ResourceData | undefined): Resource | undefined{
-        
-        if(selectedNodeData == undefined || selectedNodeData.service == undefined){
+    public getSelectedResource(selectedNodeData: ComponentData | undefined, stateSelectedService: Service | null | undefined): Resource | undefined{
+
+        if(selectedNodeData == null || stateSelectedService == null || stateSelectedService == undefined){
             return;
         }
-
-        const resource: ResourceStatics = resourceContainer[selectedNodeData?.service?.name!];
-   
-        const resourceInstance = new resource(selectedNodeData);
+        
+        const resource: ResourceStatics = resourceContainer[stateSelectedService.name];
+        const resourceInstance = new resource(stateSelectedService, selectedNodeData);
         
         return resourceInstance;
     }
@@ -216,15 +278,15 @@ export class PropertiesWidgetController implements InputsController {
     {
         
         //need a way to deal with nested inputs 
-        componentSetter((components: AppComponent[]) => components.map((component: AppComponent) => {
+        componentSetter((components: ComponentData[] | AppComponent[]) => components.map((component: ComponentData | AppComponent) => {
 
             if(component.id !== componentID){
                 return component;
             }
 
-            const newComponent: AppComponent = structuredClone(component);
+            const newComponent: ComponentData | AppComponent = structuredClone(component);
 
-            if(newComponent.data == null){
+            if(newComponent == null){
                 return newComponent;
             }
 
@@ -233,22 +295,28 @@ export class PropertiesWidgetController implements InputsController {
             switch (propertyCategory){
 
                 case "component": {
-                    this.updatePropertyByPath(0, newComponent.data.componentProperties, fullPath, newNodeProperty);
+
+                    const component = newComponent as AppComponent;
+                    const componentData = component.data as Record<string, PropertyRecord>;
+                    this.updatePropertyByPath(0, componentData, fullPath, newNodeProperty);
+
                     break;
                 }
 
                 case "terraform": {
-                    this.updatePropertyByPath(0, newComponent.data.terraformProperties, fullPath, newNodeProperty);
+                    const component = newComponent as ComponentData;
+                    this.updatePropertyByPath(0, component.terraformProperties, fullPath, newNodeProperty);
                     break;
                 }
 
                 case "iam": {
+                    const component = newComponent as ComponentData;
 
-                    if(newComponent.data.iamProperties == undefined){
+                    if(component.iamProperties == undefined){
                         return;
                     }
 
-                    this.updatePropertyByPath(0, newComponent.data.iamProperties, fullPath, newNodeProperty);
+                    this.updatePropertyByPath(0, component.iamProperties, fullPath, newNodeProperty);
                     break;
                 }
 
@@ -281,7 +349,6 @@ export class PropertiesWidgetController implements InputsController {
     }
 
 
-    //make generic and pass in setter
     public keyboardInputOnChange(
         event: React.ChangeEvent<HTMLInputElement, HTMLInputElement>, 
         nodeProperty: Property<any>, 
@@ -320,5 +387,29 @@ export class PropertiesWidgetController implements InputsController {
         this.updateComponentProperty(newNodeProperty, propertyCategory, propertyRecordName, componentID!, inputName, componentSetter);
 
     }
+
+    public getComponentSetter(componentType: string | null, propertyCategory: PropertyCategory){
+
+        if(componentType === null){
+            return () => {};
+        }
+
+        if(componentType == "Node"){
+            return this.setNodesData;
+        }
+
+        if(componentType == "Edge"){
+            
+            if(propertyCategory == "component"){
+                return this.setEdges;
+            }
+
+            return this.setEdgesData;
+
+        }
+
+        return () => {}
+    }
+
 
 }

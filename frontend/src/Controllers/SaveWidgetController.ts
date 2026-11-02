@@ -1,5 +1,6 @@
 import type { Edge, Node } from "@xyflow/react";
-import type { AppEdge, AppNode } from "../types";
+import type { AppEdge, AppNode, ComponentData } from "../types";
+import type { Component } from "react";
 
 export class SaveWidgetController{
 
@@ -16,18 +17,18 @@ export class SaveWidgetController{
         this.setShowSaveWidget(false);
     }
 
-    public handleSaveClick(stateLoadedSaveName: string | null, stateNodes: AppNode[], stateEdges: AppEdge[], stateDeploymentSettings: Record<string,any>){
+    public handleSaveClick(stateLoadedSaveName: string | null, stateNodes: AppNode[], stateNodesData: ComponentData[], stateEdges: AppEdge[], stateEdgesData: ComponentData[], stateDeploymentSettings: Record<string,any>){
 
         console.log(stateLoadedSaveName);
-        this.save(stateLoadedSaveName, stateNodes, stateEdges, stateDeploymentSettings);
+        this.save(stateLoadedSaveName, stateNodes, stateNodesData, stateEdges, stateEdgesData, stateDeploymentSettings);
         this.setShowSaveWidget(false);
 
     }
 
-    public handleSaveAsClick(stateNodes: AppNode[], stateEdges: AppEdge[], stateDeploymentSettings: Record<string,any>, setLoadedSaveName: React.Dispatch<React.SetStateAction<string | null>>){
+    public handleSaveAsClick(stateNodes: AppNode[], stateNodesData: ComponentData[], stateEdges: AppEdge[], stateEdgesData: ComponentData[], stateDeploymentSettings: Record<string,any>, setLoadedSaveName: React.Dispatch<React.SetStateAction<string | null>>){
 
         const saveName = window.prompt("Enter a name for this save:");
-        const saveSuccessful = this.save(saveName, stateNodes, stateEdges, stateDeploymentSettings);
+        const saveSuccessful = this.save(saveName, stateNodes, stateNodesData, stateEdges, stateEdgesData, stateDeploymentSettings);
 
         if(saveSuccessful){
             setLoadedSaveName(saveName!);
@@ -38,7 +39,7 @@ export class SaveWidgetController{
     }
 
 
-    private save(saveName: string | null, stateNodes: AppNode[], stateEdges: AppEdge[], stateDeploymentSettings: Record<string, any>): boolean{
+    private save(saveName: string | null, stateNodes: AppNode[], stateNodesData: ComponentData[], stateEdges: AppEdge[], stateEdgesData: ComponentData[], stateDeploymentSettings: Record<string, any>): boolean{
 
         if(saveName === "" || saveName === null || saveName === undefined){
             this.showNotification(false, "Error - invalid save name");
@@ -47,7 +48,9 @@ export class SaveWidgetController{
 
         const save = {
             nodes: stateNodes,
+            nodesData: stateNodesData,
             edges: stateEdges,
+            edgesData: stateEdgesData,
             deployment: stateDeploymentSettings,
         }
 

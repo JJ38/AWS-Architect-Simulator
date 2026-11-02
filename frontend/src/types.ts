@@ -16,19 +16,20 @@ export type ValidationResult = {
     errors: string[];
 }
 
-export type ComponentData = ResourceData | EdgeData;
 
 export type PropertyRecord = Record<string, Property<any>>;
 
-type BaseComponentData = {
+export type ComponentData = {
+    id: string,
     metaData: Record<string, any>,
+    simulationProperties?: Record<string, PropertyRecord>,
     componentProperties: Record<string, PropertyRecord>,
     terraformProperties: Record<string, PropertyRecord>,
     iamProperties?: Record<string, PropertyRecord>,
     resources?: Record<string, string>, 
 }
 
-export type ResourceData = BaseComponentData & {
+export type ResourceData = {
     id: string,
     service: Service,
     resourceName: string
@@ -36,8 +37,10 @@ export type ResourceData = BaseComponentData & {
 
 export type AppNode = Node<ResourceData>;
 
-export type EdgeData = BaseComponentData & {
-    edgeType: EdgeType
+export type EdgeData = {
+    behaviour: {
+        edgeType: Property<EdgeType>
+    }
 }
 
 export type AppEdge = Edge<EdgeData>;
@@ -91,6 +94,7 @@ export interface InputsController{
 }
 
 export type PropertyCategory =
+"simulation"
 | "component"
 | "terraform" 
 | "iam"
