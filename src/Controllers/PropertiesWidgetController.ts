@@ -8,16 +8,19 @@ import type { AppEdge, AppNode, Property, AppComponent, PropertyCategory, Compon
 
 export class PropertiesWidgetController implements InputsController {
 
-    private setNodes: React.Dispatch<React.SetStateAction<AppNode[]>>;
     private setEdges: React.Dispatch<React.SetStateAction<AppEdge[]>>;
+    private setEdgesData: React.Dispatch<React.SetStateAction<ComponentData[]>>;
+    private setNodes: React.Dispatch<React.SetStateAction<AppNode[]>>;
     private setNodesData: React.Dispatch<React.SetStateAction<ComponentData[]>>;
 
     public constructor(
-        setNodes: React.Dispatch<React.SetStateAction<AppNode[]>>, 
         setEdges: React.Dispatch<React.SetStateAction<AppEdge[]>>,
+        setEdgesData: React.Dispatch<React.SetStateAction<ComponentData[]>>,
+        setNodes: React.Dispatch<React.SetStateAction<AppNode[]>>, 
         setNodesData: React.Dispatch<React.SetStateAction<ComponentData[]>>
     ){
         this.setEdges = setEdges;
+        this.setEdgesData = setEdgesData;
         this.setNodes = setNodes;
         this.setNodesData = setNodesData;
     }
@@ -25,6 +28,7 @@ export class PropertiesWidgetController implements InputsController {
 
     public getEdgeTerraform(componentData: ComponentData | undefined): CodeChunk[]{
         
+        //stubbed out currently to just use resource terraform preview gen. Probably needs refactoring
         console.log(componentData);
         if(componentData == undefined){
             return [];
@@ -53,7 +57,7 @@ export class PropertiesWidgetController implements InputsController {
 
         return edgeResource.toTerraformPreview(propertyRecords);
 
-        
+
         return edgeResource.toTerraformPreview(componentData?.iamProperties);
 
         //get both resources.
@@ -274,41 +278,45 @@ export class PropertiesWidgetController implements InputsController {
     {
         
         //need a way to deal with nested inputs 
-        componentSetter((components: ComponentData[]) => components.map((component: ComponentData) => {
+        componentSetter((components: ComponentData[] | AppComponent[]) => components.map((component: ComponentData | AppComponent) => {
 
             if(component.id !== componentID){
                 return component;
             }
 
-            const newComponent: ComponentData = structuredClone(component);
+            const newComponent: ComponentData | AppComponent = structuredClone(component);
 
             if(newComponent == null){
                 return newComponent;
             }
-
-            console.log(newComponent);
 
             const fullPath = [...propertyRecordPath, inputName];
 
             switch (propertyCategory){
 
                 case "component": {
-                    this.updatePropertyByPath(0, newComponent.componentProperties, fullPath, newNodeProperty);
+
+                    const component = newComponent as AppComponent;
+                    const componentData = component.data as Record<string, PropertyRecord>;
+                    this.updatePropertyByPath(0, componentData, fullPath, newNodeProperty);
+
                     break;
                 }
 
                 case "terraform": {
-                    this.updatePropertyByPath(0, newComponent.terraformProperties, fullPath, newNodeProperty);
+                    const component = newComponent as ComponentData;
+                    this.updatePropertyByPath(0, component.terraformProperties, fullPath, newNodeProperty);
                     break;
                 }
 
                 case "iam": {
+                    const component = newComponent as ComponentData;
 
-                    if(newComponent.iamProperties == undefined){
+                    if(component.iamProperties == undefined){
                         return;
                     }
 
-                    this.updatePropertyByPath(0, newComponent.iamProperties, fullPath, newNodeProperty);
+                    this.updatePropertyByPath(0, component.iamProperties, fullPath, newNodeProperty);
                     break;
                 }
 
@@ -379,5 +387,29 @@ export class PropertiesWidgetController implements InputsController {
         this.updateComponentProperty(newNodeProperty, propertyCategory, propertyRecordName, componentID!, inputName, componentSetter);
 
     }
+
+    public getComponentSetter(componentType: string | null, propertyCategory: PropertyCategory){
+
+        if(componentType === null){
+            return () => {};
+        }
+
+        if(componentType == "Node"){
+            return this.setNodesData;
+        }
+
+        if(componentType == "Edge"){
+            
+            if(propertyCategory == "component"){
+                return this.setEdges;
+            }
+
+            return this.setEdgesData;
+
+        }
+
+        return () => {}
+    }
+
 
 }
