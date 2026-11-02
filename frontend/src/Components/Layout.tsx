@@ -62,6 +62,8 @@ export default function Layout() {
                                 setNodes={setNodes}
                                 stateEdges={stateEdges}
                                 setEdges={setEdges}
+                                stateNodesData={stateNodesData}
+                                setNodesData={setNodesData}
                                 setDeploymentSettings={setDeploymentSettings}
                             />
                     }

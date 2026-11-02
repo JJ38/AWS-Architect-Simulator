@@ -16,7 +16,7 @@ export default class S3 extends Resource{
             mandatoryFields:["bucket"],
             terraformProperties: {
                 "aws_s3_bucket": {
-                    "bucket": { value: resourceName, type: "string"},
+                    "bucket": { value: id, type: "string"},
                     "force_destroy": { value: false, type: "boolean"},
                     "tags": { 
                         value: {
@@ -24,7 +24,7 @@ export default class S3 extends Resource{
                     }, type: "tags"}
                 },
                 "aws_s3_bucket_versioning": {
-                    "bucket": { value: `aws_s3_bucket.${resourceName}.id`, type: "link"},                        
+                    "bucket": { value: `aws_s3_bucket.${id}.id`, type: "link"},                        
                     "versioning_configuration": 
                     { 
                         value: { 
@@ -34,7 +34,7 @@ export default class S3 extends Resource{
                     }
                 },
                 "aws_s3_bucket_public_access_block": {
-                    "bucket": { value: `aws_s3_bucket.${resourceName}.id`, type: "link"},
+                    "bucket": { value: `aws_s3_bucket.${id}.id`, type: "link"},
                     "block_public_acls": { value: true, type: "boolean"},
                     "block_public_policy": { value: true, type: "boolean"},
                     "ignore_public_acls": { value: true, type: "boolean"},

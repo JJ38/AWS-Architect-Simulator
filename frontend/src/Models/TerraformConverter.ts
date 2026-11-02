@@ -1,4 +1,4 @@
-import type { AppEdge, AppNode, Property } from "../types";
+import type { AppEdge, AppNode, ComponentData, Property } from "../types";
 import type { ResourceStatics } from "./Resource";
 import { resourceContainer } from "../constants";
 import type Resource from "./Resource";
@@ -8,13 +8,17 @@ export class TerraformConverter{
 
     private stateNodes: AppNode[];
     private stateEdges: AppEdge[];
+
+    private stateNodesData: ComponentData[];
+
     public providerTerraform: string = "";
     public resourceTerraform: string = "";
 
 
-    public constructor({ stateNodes, stateEdges }: { stateNodes: AppNode[], stateEdges: AppEdge[]}){
+    public constructor({ stateNodes, stateEdges, stateNodesData }: { stateNodes: AppNode[], stateEdges: AppEdge[], stateNodesData: ComponentData[]}){
         this.stateNodes = stateNodes;
         this.stateEdges = stateEdges;
+        this.stateNodesData = stateNodesData;
     }    
 
     public validateDiagram(): boolean{
@@ -29,18 +33,29 @@ export class TerraformConverter{
 
     }
 
-    public diagramToTerraform(): boolean{
+    public diagramToTerraform(myNodes: ComponentData[]): boolean{
 
         this.resourceTerraform = "";
         this.providerTerraform = "";
 
-        for(let i = 0; i < this.stateNodes.length; i++){
+        console.log("nodes:", myNodes)
+            myNodes.map(
+                (stateNodeData: ComponentData) => {
+                    console.log("statenodes:",this.stateNodes)
+                    console.log("nodedata:",myNodes)
 
-            const resource: ResourceStatics = resourceContainer[this.stateNodes[i].data.service.name!];
-            const resourceInstance = new resource(this.stateNodes[i].data);
-            this.resourceTerraform += this.toTerraform(resourceInstance);
+                    let myNode = this.stateNodes.find((node)=>node.id == stateNodeData.id)
+                    console.log("mynode:",myNode)
+                    const resource: ResourceStatics = resourceContainer[myNode.data.service.name];
+                    const resourceInstance = new resource(myNode.data.service,stateNodeData);
 
-        }
+                    const terraformProperties = resourceInstance.terraformProperties;
+                    this.resourceTerraform += this.toTerraform(stateNodeData)
+
+                }
+            )
+
+        
 
         return true;
 
@@ -225,12 +240,12 @@ export class TerraformConverter{
 
     }
 
-    toTerraform(resource: Resource): string {
+    toTerraform(resource: ComponentData): string {
         let terraform = "";
 
         for (const recordName of Object.keys(resource.terraformProperties)) {
 
-            terraform += `resource "${recordName}" "${resource.resourceName}" {\n`;
+            terraform += `resource "${recordName}" "${resource.id}" {\n`;
             for (const [key, property] of Object.entries(resource.terraformProperties[recordName])) { 
                 //if mandatory fields are given, only write the other fields if they have a none empty value
                 // console.log(resource)
