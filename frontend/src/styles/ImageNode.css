@@ -1,15 +1,18 @@
 
+.imageNodeWrapper{
+  display: block;
+}
+
 .imageNode{
   overflow: hidden;
   padding: 0px;
   margin: 0px;
   border-radius: 7px;
   border: 2px solid #303238;
-  display: block;
 }
 
 .imageNode:hover{
-  border: 2px solid var(--accent);
+  border: 2px solid var(--accent-hover);
   cursor: pointer;
 }
 

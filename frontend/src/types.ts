@@ -117,6 +117,8 @@ export type PropertyType =
 
 export type EdgeType = "sync" | "async" | "pull";
 
+export type NodeType = "imageNode" | "costNode" | "trafficNode" | "capacityNode";
+
 export interface CodeChunk{
     value: any,
     className: string

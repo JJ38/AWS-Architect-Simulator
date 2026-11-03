@@ -561,3 +561,40 @@ const [stateCount, setCount] = useState<number>(10); // the default lives here
 Reach for `defaultValue` instead only when you genuinely don't need to react
 to every keystroke (no state tracking it at all) — otherwise it's a step back
 from a controlled input you were already building correctly.
+
+## 27. `useEffect` — "run when this value changes," not "run on render"
+
+Calling a function directly in a component body runs it on *every* render,
+for any reason at all — a sibling's drag frame, an unrelated state update,
+anything. That's broader than "when a node is selected," even though
+selecting a node does cause a render among everything else that does.
+`useEffect` narrows that down to exactly the condition you mean:
+
+```ts
+useEffect(() => {
+  stateCanvasController.updateNodeTypes(...);
+}, [stateSelectedNodeID]);
+```
+
+React compares each entry in the deps array to its value from the *previous*
+render and only re-runs the callback when one actually changed — so this
+fires when selection changes, and stays silent on every other render.
+
+**Not a reflexive default, though.** Reach for it specifically when: the
+thing you want to happen is a genuine side effect (talking to something
+outside this render, or deliberately setting a *different* piece of state in
+reaction to a change) — *and* that reaction needs to happen the same way no
+matter which of several different code paths caused the value to change.
+Node selection here is a good example of the second half: it changes via a
+node click, a pane click (deselecting), *and* the delete-key handler — three
+separate places that would each need the same "is this an input node?" check
+duplicated into them without an effect watching the resulting state instead.
+
+**Still not the tool for everything "when X changes," though.** If a value is
+just *computed from* current props/state — no outside system, no separate
+state to set — it doesn't belong in an effect at all; derive it directly in
+the render body, the way `nodesWithSelection` already does for `isSelected`.
+An effect would mean "render once with the old value, commit, run the effect,
+setState, render again with the correct value" — paying for an extra
+render pass to get something render could have produced immediately by just
+computing it.

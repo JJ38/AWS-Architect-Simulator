@@ -1,15 +1,17 @@
 import { useState, useCallback, useEffect } from 'react';
-import { ReactFlow, applyNodeChanges, applyEdgeChanges, useReactFlow, addEdge, Background, BackgroundVariant } from '@xyflow/react';
-import type { AppEdge, AppNode, ComponentData, CodeChunk, EdgeType, Service } from '../types.ts';
+import { ReactFlow, applyNodeChanges, applyEdgeChanges, useReactFlow, Background, BackgroundVariant } from '@xyflow/react';
+import { Activity } from 'lucide-react';
+import type { AppEdge, AppNode, ComponentData, Service } from '../types.ts';
 import { CanvasController } from '../Controllers/CanvasController.ts';
 import '@xyflow/react/dist/style.css';
-import '../styles/Canvas.css'; 
+import '../styles/Canvas.css';
 import PropertiesWidget from './Widgets/PropertiesWidget.tsx';
-import type Resource from '../Models/Resource.ts';
 import { useNotification } from '../Providers/NotificationProvider.tsx';
 import ThemeToggle from './ThemeToggle.tsx';
 import { useTheme } from '../Providers/ThemeProvider.tsx';
 import TrafficWidget from './Widgets/TrafficWidget.tsx';
+import { edgeTypes, nodeTypes } from '../constants.ts';
+import IconButton from './Buttons/IconButton.tsx';
 
 export default function Canvas(
   {
@@ -42,6 +44,7 @@ export default function Canvas(
   const [stateGhostNodes, setGhostNodes] = useState<AppNode[]>([]);
   const [stateSelectedNodeID, setSelectedNodeID] = useState<string | null>(null);
   const [stateSelectedEdgeID, setSelectedEdgeID] = useState<string | null>(null);
+  const [stateShowTrafficWidget, setShowTrafficWidget] = useState<boolean>(false);
   const { screenToFlowPosition } = useReactFlow();
 
   const showNotification = useNotification();
@@ -57,8 +60,12 @@ export default function Canvas(
     setEdgesData,
     setSelectedNodeID, 
     setSelectedEdgeID, 
-    setSelectedService
+    setSelectedService,
+    setShowTrafficWidget
   ))
+
+  console.log("Canvas render");
+  console.log(stateNodesData);
 
   const selectedNode = stateNodes.find((node: AppNode) => node.id == stateSelectedNodeID);
   const selectedEdge = stateEdges.find((edge: AppEdge) => edge.id == stateSelectedEdgeID);
@@ -102,6 +109,13 @@ export default function Canvas(
 
   }, [stateSelectedNodeID, setNodes, stateSelectedEdgeID, setEdges]);
 
+  //only runs when the value in the dependacy array changes
+  useEffect(() => {
+    stateCanvasController.updateNodeTypes(stateShowTrafficWidget, selectedNodeData, stateNodes, stateNodesData, stateEdges, stateEdgesData);
+    //even though im not using stateSelectedNodeID if it has changed then selectedNodeData has changed
+  }, [stateSelectedNodeID, stateShowTrafficWidget, selectedNodeData, stateNodes, stateNodesData, stateEdges, stateEdgesData]);
+ 
+
   return (
     <div className="reactFlowWrapper">
       <ReactFlow
@@ -113,8 +127,8 @@ export default function Canvas(
         onEdgeClick={(event, edge) => stateCanvasController.handleEdgeClick(edge, stateSelectedEdgeID)}
         edgesFocusable={true}
         onConnect={onConnect}
-        nodeTypes={stateCanvasController.model.nodeTypes}
-        edgeTypes={stateCanvasController.model.edgeTypes}
+        nodeTypes={nodeTypes}
+        edgeTypes={edgeTypes}
         fitView
         onPaneClick={(event) => stateCanvasController.handlePaneClick(event, stateSelectedService, stateNodes)}
         onPaneMouseMove={(event) => stateCanvasController.handlePaneMouseMove(event, stateSelectedService)}
@@ -125,6 +139,13 @@ export default function Canvas(
         <Background variant={BackgroundVariant.Lines} gap={20} color="var(--border)" />
       </ReactFlow>
       <div className="canvasTopRightControls">
+        {/* <IconButton
+          // onClickHandler={() => stateCanvasController.handleTrafficWidhgetClick()}
+          onClickHandler={() => {}}
+          icon={Activity}
+          label={stateShowTrafficWidget ? 'Hide traffic' : 'Show traffic'}
+          active={stateShowTrafficWidget}
+        /> */}
         <ThemeToggle />
       </div>
       <PropertiesWidget 
@@ -142,9 +163,7 @@ export default function Canvas(
         title={"title"}
       >
       </PropertiesWidget>
-      <TrafficWidget>
-  
-      </TrafficWidget>
+      {stateShowTrafficWidget && <TrafficWidget></TrafficWidget>}
     </div>
 
   );

@@ -1,6 +1,5 @@
 import { type XYPosition, type Node, type ViewportHelperFunctions, type Edge, addEdge } from "@xyflow/react";
-import type { AppEdge, AppNode, ComponentData, EdgeType, ResourceData, Service } from "../types";
-import { CanvasModel } from "../Models/CanvasModel.ts";
+import type { AppEdge, AppNode, ComponentData, EdgeData, EdgeType, ResourceData, Service } from "../types";
 import { resourceContainer, serviceImageSize } from "../constants.ts";
 import type Resource from "../Models/Resource.ts";
 import type { ResourceStatics } from "../Models/Resource.ts";
@@ -9,8 +8,6 @@ import { IamFactory } from "../Models/IamFactory.ts";
 
 export class CanvasController{
 
-    public model: CanvasModel = new CanvasModel;
-
     private showNotification: (success: boolean, message: string) => void
     private screenToFlowPosition: ViewportHelperFunctions['screenToFlowPosition'];
     private setGhostNodes: React.Dispatch<React.SetStateAction<AppNode[]>>;
@@ -18,9 +15,10 @@ export class CanvasController{
     private setNodesData: React.Dispatch<React.SetStateAction<ComponentData[]>>; 
     private setEdges: React.Dispatch<React.SetStateAction<AppEdge[]>>; 
     private setEdgesData: React.Dispatch<React.SetStateAction<ComponentData[]>>; 
-    private setSelectedNodeID: React.Dispatch<React.SetStateAction<string | null>>
-    private setSelectedEdgeID: React.Dispatch<React.SetStateAction<string | null>>
-    private setSelectedService: React.Dispatch<React.SetStateAction<Service | null>>
+    private setSelectedNodeID: React.Dispatch<React.SetStateAction<string | null>>;
+    private setSelectedEdgeID: React.Dispatch<React.SetStateAction<string | null>>;
+    private setSelectedService: React.Dispatch<React.SetStateAction<Service | null>>;
+    private setShowTrafficWidget: React.Dispatch<React.SetStateAction<boolean>>;
      
 
     public constructor(
@@ -33,7 +31,8 @@ export class CanvasController{
         setEdgesData: React.Dispatch<React.SetStateAction<ComponentData[]>>, 
         setSelectedNodeID: React.Dispatch<React.SetStateAction<string | null>>,
         setSelectedEdgeID: React.Dispatch<React.SetStateAction<string | null>>,
-        setSelectedService: React.Dispatch<React.SetStateAction<Service | null>>
+        setSelectedService: React.Dispatch<React.SetStateAction<Service | null>>,
+        setShowTrafficWidget: React.Dispatch<React.SetStateAction<boolean>>
     ){
         this.showNotification = showNotification;
         this.screenToFlowPosition = screenToFlowPosition;
@@ -45,6 +44,7 @@ export class CanvasController{
         this.setSelectedNodeID = setSelectedNodeID;
         this.setSelectedEdgeID = setSelectedEdgeID;
         this.setSelectedService = setSelectedService;
+        this.setShowTrafficWidget = setShowTrafficWidget;
     }
 
     private placeNode(selectedService: Service, position: XYPosition | null): void{
@@ -57,7 +57,7 @@ export class CanvasController{
                 service: selectedService
             }, //dont use
             position: position ?? {x:0, y:0}, 
-            type: 'imageNode', 
+            type: 'imageNode', //imageNode, trafficNode 
             measured: { width: 1, height: 1 },
         };
 
@@ -218,6 +218,11 @@ export class CanvasController{
                 "callerName": callerName,
                 "receiverName": receiverName,
             },
+            simulationProperties: {
+                "simulation_settings": {
+                    "request_multiplier": {value: 1, type: "number"},
+                }
+            },
             componentProperties:{
                 
             },
@@ -225,6 +230,7 @@ export class CanvasController{
                 "aws_iam_policy": IamFactory.makeIamPolicy("aws_iam_policy", sourceServiceName)
             },
             terraformProperties:{},
+            
             resources:{
                 callerID: callerID,
                 receiverID: receiverID
@@ -270,5 +276,63 @@ export class CanvasController{
         return title;
     }
 
+    public handleTrafficWidhgetClick(): void{
+        this.setShowTrafficWidget((show) => !show);
+    }
+
+    public updateNodeTypes(stateShowTrafficWidget: boolean, selectedNodeData: ComponentData | undefined, stateNodes: AppNode[], stateNodesData: ComponentData[], stateEdges: AppEdge[], stateEdgesData: ComponentData[]): void{
+
+        const isTrafficInputNode = selectedNodeData?.simulationProperties?.simulation_settings?.is_input_service?.value
+
+        if(isTrafficInputNode && stateShowTrafficWidget !== true){
+    
+            this.setShowTrafficWidget(true);
+
+            console.log(selectedNodeData);
+
+            //update so only nodes downstream of the selected node are traffic nodes, all other nodes are image nodes
+
+            const traversalRecord: Record<string, any[]> = {nodes: [selectedNodeData], edges: []};
+            const traversedNodes: Record<string, any[]> = this.traverseNodes(selectedNodeData?.id, stateNodesData, stateEdges, traversalRecord);
+
+            console.log(traversedNodes);
+
+        }else if(!isTrafficInputNode && stateShowTrafficWidget !== false){
+
+            this.setShowTrafficWidget(false);
+            this.setNodes((stateNodes: AppNode[]) => stateNodes.map((node: AppNode) => {
+                const newNode = structuredClone(node);
+                newNode.type = "imageNode";
+                return newNode;
+            }));
+
+        }
+
+    }
+
+    private traverseNodes(nextNodeID: string, stateNodesData: ComponentData[], stateEdges: AppEdge[], traversalRecord: Record<string, any[]>): Record<string, any[]>{
+        console.log("traverseNodes");
+
+        const nextEdge: AppEdge | null = stateEdges.find((edge: AppEdge) => edge.source == nextNodeID) ?? null;
+
+        if(nextEdge == null){
+            return traversalRecord;
+        }
+
+
+        const nextNode: ComponentData | null = stateNodesData.find((node: ComponentData) => nextEdge.target == node.id) ?? null;
+
+        traversalRecord = {
+            edges: [...traversalRecord.edges, nextEdge],
+            nodes: [...traversalRecord.nodes, nextNode]
+        }
+
+        //shouldnt ever happen. No nice handling of this case
+        if(nextNode == null){
+            return traversalRecord;
+        }
+
+        return this.traverseNodes(nextNode.id, stateNodesData, stateEdges, traversalRecord);
+    }
 
 }

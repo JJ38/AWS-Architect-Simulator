@@ -28,6 +28,7 @@
     --text-muted: #7c92a3;
 
     --accent: #136e89;
+    --accent-hover: #4a94ab;
     --accent-contrast: #ffffff;
 
     --border: #d7e3ea;
@@ -66,6 +67,7 @@
         --text-muted: #6e899d;
 
         --accent: #5fd4ee;
+        --accent-hover: #3aa9c2;
         --accent-contrast: #082330;
 
         --border: rgba(95, 212, 238, 0.22);
