@@ -37,14 +37,13 @@ export default function TerraformWidget({
 
            <div className="terraformSettingsWrapper">
 
-
                     {
 
                         stateShowDownloadTerraformForm &&
 
                         <div className="terraformSettingsInputsWrapper">
 
-                            {InputsRenderer(stateTerraformWidgetController, stateTerraformWidgetController.deploymentProperties, "terraform", undefined, null, null)}
+                            {InputsRenderer(stateTerraformWidgetController, stateTerraformWidgetController.deploymentProperties, "terraform", undefined, null, () => {})}
 
                         </div>
 
@@ -133,6 +132,7 @@ export default function TerraformWidget({
                             <RoundedButton
                                 onClickHandler={() => stateTerraformWidgetController.handleCancelClick()}
                                 buttonText='Cancel'
+                                className=""
                             />
                     }
                         
@@ -143,6 +143,7 @@ export default function TerraformWidget({
                             <RoundedButton
                                 onClickHandler={() => stateTerraformWidgetController.handleCancelDownloadClick()}
                                 buttonText='Cancel Download'
+                                className=""
                             />
                     }
 
@@ -152,6 +153,7 @@ export default function TerraformWidget({
                             <RoundedButton
                                 onClickHandler={() => stateTerraformWidgetController.handleUploadClick()}
                                 buttonText='Upload'
+                                className=""
                             />
 
                     }
@@ -162,6 +164,7 @@ export default function TerraformWidget({
                         <RoundedButton
                             onClickHandler={() => stateTerraformWidgetController.handleDownloadClick(stateNodes)}
                             buttonText='Download'
+                            className=""
                         />
                     }
 
@@ -171,6 +174,7 @@ export default function TerraformWidget({
                         <RoundedButton
                             onClickHandler={() => stateTerraformWidgetController.handleConvertToTerraform(stateNodes, stateEdges)}
                             buttonText='Convert to terraform'
+                            className=""
                         />
                     }
 
