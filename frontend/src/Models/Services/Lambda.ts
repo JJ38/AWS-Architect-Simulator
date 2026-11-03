@@ -18,6 +18,14 @@ export default class Lambda extends Resource{
             simulationProperties: {
                 "simulation_settings": {
                     "is_input_service": {value: false, type: "boolean"},
+                    "request_per_period": {
+                        value: 10, 
+                        type: "number", 
+                        dependant: {
+                            propertyPath: ['simulation_settings', 'is_input_service'], 
+                            value: true,
+                        }
+                    },
                 }
             },
             terraformProperties: {},

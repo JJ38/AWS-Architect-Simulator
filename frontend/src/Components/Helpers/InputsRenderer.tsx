@@ -250,7 +250,32 @@ export function InputsRenderer(
                                         return;
                                     }
 
-                                    const shouldShowProperty = inputsController.shouldShowProperty(properties[propertyRecordPath][inputName], componentData);
+                                    console.log(propertyCategory);
+                                    let propertiesComponentData: Record<string, PropertyRecord> | undefined;
+
+                                    switch(propertyCategory){
+                                        case "simulation": {
+                                            propertiesComponentData = componentData?.simulationProperties;
+                                            break;
+                                        }
+
+                                        case "component": {
+                                            propertiesComponentData = componentData?.componentProperties;
+                                            break;                                           
+                                        } 
+                                        
+                                        case "terraform": {
+                                            propertiesComponentData = componentData?.terraformProperties;
+                                            break;
+                                        } 
+                                        
+                                        case "iam": {
+                                            propertiesComponentData = componentData?.iamProperties;
+                                            break;
+                                        }
+                                    }
+
+                                    const shouldShowProperty = inputsController.shouldShowProperty(properties[propertyRecordPath][inputName], propertiesComponentData);
 
                                     if(!shouldShowProperty){
                                         return;

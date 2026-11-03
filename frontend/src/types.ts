@@ -86,7 +86,7 @@ export interface InputsController{
         componentID: string | null,
         componentSetter: React.Dispatch<React.SetStateAction<any>>
     ): void,
-    shouldShowProperty(property: Property<any>, componentData: ComponentData | undefined): boolean
+    shouldShowProperty(property: Property<any>, componentData: Record<string, PropertyRecord> | undefined): boolean
 
 }
 

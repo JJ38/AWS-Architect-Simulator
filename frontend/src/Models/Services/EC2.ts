@@ -17,6 +17,14 @@ export default class EC2 extends Resource{
             simulationProperties: {
                 "simulation_settings": {
                     "is_input_service": {value: false, type: "boolean"},
+                    "request_per_period": {
+                        value: 10, 
+                        type: "number", 
+                        dependant: {
+                            propertyPath: ['simulation_settings', 'is_input_service'], 
+                            value: true,
+                        }
+                    },
                 }
             },
             terraformProperties: {

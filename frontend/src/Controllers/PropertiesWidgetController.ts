@@ -141,16 +141,15 @@ export class PropertiesWidgetController implements InputsController {
         return resourceInstance;
     }
 
-    public shouldShowProperty(property: Property<any>, componentData: ComponentData | undefined): boolean {
+    public shouldShowProperty(property: Property<any>, propertiesComponentData: Record<string, PropertyRecord> | undefined): boolean {
 
-        if(property.dependant != undefined){
+        if(property.dependant != undefined && propertiesComponentData != undefined){
 
-            let dependant = componentData?.terraformProperties;
+            // let dependant = componentData?.terraformProperties;
             let dependantProperty: Property<any> | undefined;
             const propertyPath = property.dependant.propertyPath;
 
-            if(componentData == undefined || dependant == undefined){
-                console.log("componentData == undefined || dependant == undefined");
+            if(propertiesComponentData == undefined){
                 return false;
             }
 
@@ -158,7 +157,8 @@ export class PropertiesWidgetController implements InputsController {
                 return false;
             }
 
-            const dependantPropertyRecord = dependant![propertyPath[0]]; // need because type is different at top level
+            const dependantPropertyRecord = propertiesComponentData![propertyPath[0]]; // need because type is different at top level
+
 
             for(let i = 1 ; i < propertyPath.length; i++){
             
@@ -307,17 +307,20 @@ export class PropertiesWidgetController implements InputsController {
                     const component = newComponent as AppComponent;
                     const componentData = component.data as Record<string, PropertyRecord>;
                     this.updatePropertyByPath(0, componentData, fullPath, newNodeProperty);
-
                     break;
+
                 }
 
                 case "terraform": {
+
                     const component = newComponent as ComponentData;
                     this.updatePropertyByPath(0, component.terraformProperties, fullPath, newNodeProperty);
                     break;
+
                 }
 
                 case "iam": {
+
                     const component = newComponent as ComponentData;
 
                     if(component.iamProperties == undefined){
@@ -329,10 +332,13 @@ export class PropertiesWidgetController implements InputsController {
                 }
 
                 case "simulation": {
+
                     const component = newComponent as ComponentData;
+
                     if(component.simulationProperties == undefined){
                         return;
                     }
+
                     this.updatePropertyByPath(0, component.simulationProperties!, fullPath, newNodeProperty);
                     break;
                 }
