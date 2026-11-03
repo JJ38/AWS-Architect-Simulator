@@ -16,7 +16,6 @@ export type ValidationResult = {
     errors: string[];
 }
 
-
 export type PropertyRecord = Record<string, Property<any>>;
 
 export type ComponentData = {
@@ -45,7 +44,6 @@ export type AppEdge = Edge<EdgeData>;
 export type AppComponent = AppNode | AppEdge;
 
 export interface Property<T>{
-
     value: T,
     type: PropertyType,
     options?: readonly T[]
@@ -53,7 +51,6 @@ export interface Property<T>{
     dependant?: {propertyPath: string[], value?: any}
     anchor?: boolean
     link?: string[]
-
 }
 
 export interface InputsController{
@@ -116,20 +113,15 @@ export type PropertyType =
 
 export type EdgeType = "sync" | "async" | "pull";
 
-
 export interface CodeChunk{
-
     value: any,
     className: string
-
 }
 
 export type PermissionType = "IAM" | "Service" | "Passive"; // A passive service should only ever show up as a pull source
 export type TrafficPeriod = "Hour" | "Day" | "Month";
 
 export interface Coords{
-
     x: number,
     y: number
-
 }

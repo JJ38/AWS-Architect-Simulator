@@ -251,10 +251,6 @@ export class PropertiesWidgetController implements InputsController {
 
             const fullPath = [...propertyRecordPath, inputName];
 
-            console.log(newComponent);
-
-            console.log(fullPath)
-
             return newComponent;
 
             switch (propertyCategory){
