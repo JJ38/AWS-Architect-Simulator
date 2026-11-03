@@ -14,6 +14,11 @@ export default class EC2 extends Resource{
 
             id: id,
             metaData:{},
+            simulationProperties: {
+                "simulation_settings": {
+                    "is_input_service": {value: false, type: "boolean"},
+                }
+            },
             terraformProperties: {
                 "aws_instance": {
                     "ami": {value: "test", type: "string"},

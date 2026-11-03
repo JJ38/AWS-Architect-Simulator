@@ -13,6 +13,11 @@ export default class S3 extends Resource{
         return {
             id: id,
             metaData: {},
+            simulationProperties: {
+                "simulation_settings": {
+                    "is_input_service": {value: false, type: "boolean"},
+                }
+            },
             terraformProperties: {
                 "aws_s3_bucket": {
                     "bucket": { value: id, type: "string"},

@@ -14,6 +14,11 @@ export default class SQS extends Resource{
 
             id: id,
             metaData:{},
+            simulationProperties: {
+                "simulation_settings": {
+                    "is_input_service": {value: false, type: "boolean"},
+                }
+            },
             terraformProperties: {
                 "aws_sqs_queue": {
                     "name": {value: id, type: "string"},

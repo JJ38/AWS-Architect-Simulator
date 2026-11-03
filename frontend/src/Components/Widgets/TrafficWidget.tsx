@@ -1,6 +1,6 @@
 import { useState, useEffect, useLayoutEffect, useRef } from 'react';
 import '../../styles/TrafficWidget.css'
-import { TrafficWidgetController } from '../../Controllers/TrafficWidgetController';
+import { TrafficWidgetController, pickYAxisMaxValue } from '../../Controllers/TrafficWidgetController';
 import type { Coords, TrafficPeriod } from '../../types';
 import RoundedButton from '../Buttons/RoundedButton';
 import { yAxisIncrements } from '../../constants';
@@ -15,9 +15,12 @@ export default function TrafficWidget(){
     // fixed 200x120, so growing the widget adds more drawing room instead of scaling the grid up.
     const [svgWidth, setSvgWidth] = useState<number>(200);
     const [svgHeight, setSvgHeight] = useState<number>(120);
-    const [stateYAxisMaxValue, setYAxisMaxValue] = useState<number>(100);
 
-   
+    // Single source of truth for the chart's starting data: change this and both the y-axis
+    // max and the initial point positions (via initialY, below) follow automatically.
+    const initialRequestsPerSecond = 80;
+
+    const [stateYAxisMaxValue, setYAxisMaxValue] = useState<number>(() => pickYAxisMaxValue(initialRequestsPerSecond));
 
     //Below are in svg space no in pixels
     const graphPaddingLeft = 5 + (5 * (stateYAxisMaxValue.toString().length));
@@ -42,9 +45,9 @@ export default function TrafficWidget(){
     
     const yAxisLabels: {numberOfRequests: number, fractionOfMax: number}[] = getYAxisLabels(stateYAxisMaxValue, minNumberOfYAxisLabels, maxNumberOfYAxisLabels);
 
-    const initialY = (65 / stateYAxisMaxValue) * heightSVGGraphPixels;
+    const initialY = (initialRequestsPerSecond / stateYAxisMaxValue) * heightSVGGraphPixels;
 
-    let intervals: Coords[] = Array.from({ length: 24 }, () => ({ x: 0, y: initialY}));
+    let intervals: Coords[] = Array.from({ length: 24 }, () => ({ x: 0, y: initialY }));
 
     const [stateIntervalPositions, setIntervalPositions] = useState<Coords[]>(intervals);
     const [stateSelectedIntervalIndex, setSelectedIntervalIndex] = useState<number | null>(null);
@@ -77,54 +80,43 @@ export default function TrafficWidget(){
 
     }, [stateIsResizingWidget]);
 
-    const [stateObserverLocked, setObserverLocked] = useState<boolean>(false);
+    // Tracks the graph's usable pixel height (svgHeight minus the fixed top/bottom padding)
+    // from the previous resize, so each new interval.y can be rescaled by how much that space
+    // changed. A ref (not a plain variable) survives without re-running the effect, so it never
+    // goes stale the way the old svgHeight-from-closure attempt did. Seeded with the default
+    // heightSVGGraphPixels (not null) so the ResizeObserver's first real measurement rescales
+    // the initial interval positions too - they're computed against that guessed default height,
+    // so the first "resize" (default -> actual rendered size) needs to correct them same as any
+    // later one.
+    const prevGraphHeightRef = useRef<number>(heightSVGGraphPixels);
 
     useLayoutEffect(() => {
-        console.log("useLayoutEffect");
+
         if(!svgRef.current){
             return;
         }
 
-        //triggering several times with the sam height and svgHeight values;
         const resizeObserver = new ResizeObserver((entries) => {
 
-            if(stateObserverLocked){
-                console.log("observerLocked");
-                return;
-            }
-            setObserverLocked(true);
-            console.log(stateObserverLocked);
             const { width, height } = entries[0].contentRect;
-            const oldHeight = svgHeight; 
+            const newGraphHeight = height - graphPaddingTop - graphPaddingBottom;
+            const ratio = newGraphHeight / prevGraphHeightRef.current;
+
+            setIntervalPositions((stateIntervalPositions: Coords[]) =>
+                stateIntervalPositions.map((interval) => ({ ...interval, y: interval.y * ratio }))
+            );
+
+            prevGraphHeightRef.current = newGraphHeight;
             setSvgWidth(width);
             setSvgHeight(height);
-          
-            //go through each interval y and adjust based on ratio of height change
-            const ratio = height / oldHeight;
 
-            setIntervalPositions((stateIntervalPositions: Coords[]) => {
-                const newIntervalPositions = stateIntervalPositions.map((interval: Coords) => {
-
-                    console.log(interval.y);
-                    console.log(ratio);
-                    console.log(interval.y * ratio);
-                    interval.y = interval.y * ratio;
-
-                    return interval;
-                });
-
-                return newIntervalPositions;
-            });
-
-            setObserverLocked(false);
-            
         });
 
         resizeObserver.observe(svgRef.current);
 
         return () => resizeObserver.disconnect();
 
-    }, [stateObserverLocked, setObserverLocked]);
+    }, []);
 
 
     return (

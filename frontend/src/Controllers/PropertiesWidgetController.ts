@@ -269,14 +269,17 @@ export class PropertiesWidgetController implements InputsController {
 
     }
 
-    private updateComponentProperty(newNodeProperty: Property<any>, 
+    private updateComponentProperty(
+        newNodeProperty: Property<any>, 
         propertyCategory: PropertyCategory, 
         propertyRecordPath: string[], 
         componentID: string, 
         inputName: string, 
         componentSetter: React.Dispatch<React.SetStateAction<any>>)
     {
-        
+    
+        console.log(componentSetter);
+
         //need a way to deal with nested inputs 
         componentSetter((components: ComponentData[] | AppComponent[]) => components.map((component: ComponentData | AppComponent) => {
 
@@ -286,11 +289,16 @@ export class PropertiesWidgetController implements InputsController {
 
             const newComponent: ComponentData | AppComponent = structuredClone(component);
 
+            console.log(newComponent);
+
             if(newComponent == null){
                 return newComponent;
             }
 
             const fullPath = [...propertyRecordPath, inputName];
+
+            console.log(fullPath);
+            console.log(newNodeProperty);
 
             switch (propertyCategory){
 
@@ -319,6 +327,16 @@ export class PropertiesWidgetController implements InputsController {
                     this.updatePropertyByPath(0, component.iamProperties, fullPath, newNodeProperty);
                     break;
                 }
+
+                case "simulation": {
+                    const component = newComponent as ComponentData;
+                    if(component.simulationProperties == undefined){
+                        return;
+                    }
+                    this.updatePropertyByPath(0, component.simulationProperties!, fullPath, newNodeProperty);
+                    break;
+                }
+
 
             }
 

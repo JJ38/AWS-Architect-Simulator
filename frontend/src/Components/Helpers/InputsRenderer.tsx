@@ -23,7 +23,6 @@ function getPropertyInput(
             return text;
         }
 
-
         case "link":{
             const text = <p key={key}>{inputsController.getDependantProperty(property, componentData)}</p>
             return text;
@@ -41,6 +40,7 @@ function getPropertyInput(
         }
 
         case "boolean":{
+            console.log("boolean")
             return <input key={key} className="propertyInput" id={`${inputName}`} type="checkbox" checked={property.value ?? false} name={`${inputName}`} onChange={(event) => {inputsController.checkBoxOnChange(event, property, propertyCategory, propertyRecordPath, inputName, componentID, componentSetter)}}/>
         }
 

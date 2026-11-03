@@ -19,6 +19,11 @@ export default class DyanmoDB extends Resource{
 
             id: id,
             metaData:{},
+            simulationProperties: {
+                "simulation_settings": {
+                    "is_input_service": {value: false, type: "boolean"},
+                }
+            },
             terraformProperties: {
                 "aws_dynamodb_table": {
                     "name": {value: id, type: "string"},

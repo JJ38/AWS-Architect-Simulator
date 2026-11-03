@@ -15,6 +15,11 @@ export default class APIGatewayV2 extends Resource{
 
             id: id,
             metaData: {},
+            simulationProperties: {
+                "simulation_settings": {
+                    "is_input_service": {value: true, type: "boolean"},
+                }
+            },
             terraformProperties: {
                 "aws_apigatewayv2_api": {
                     "name": {value: null, type: "string"},
@@ -39,7 +44,6 @@ export default class APIGatewayV2 extends Resource{
 
     }
 
-
     toTerraformEdgePropertiesCaller(edgeType: EdgeType, counterPart: Resource){
         return null;
     }
@@ -47,7 +51,6 @@ export default class APIGatewayV2 extends Resource{
     toTerraformEdgePropertiesReceiver(edgeType: EdgeType, counterPart: Resource){
         return null;
     }
-
 
     public validate(): ValidationResult {
 

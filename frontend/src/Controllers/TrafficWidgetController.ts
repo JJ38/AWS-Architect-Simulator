@@ -1,6 +1,11 @@
 import { yAxisIncrements, yAxisMaxValues } from "../constants";
 import type { Coords, TrafficPeriod } from "../types";
 
+// Smallest yAxisMaxValues entry that still fits highestRequestsPerSecond, so the chart's
+// highest point lands at or below the top gridline instead of being clipped off it.
+export function pickYAxisMaxValue(highestRequestsPerSecond: number): number {
+    return yAxisMaxValues.find((value) => value >= highestRequestsPerSecond) ?? yAxisMaxValues[yAxisMaxValues.length - 1];
+}
 
 export class TrafficWidgetController{
 
@@ -161,6 +166,9 @@ export class TrafficWidgetController{
         this.setIsResizingWidget(false);
     }
 
+   
+
+
     private rightSizeChart(stateIntervalPositions: Coords[], graphHeightSVGUnits: number, yAxisMaxValue: number){
 
         const zoomOutThreshold = 0.95; //is there a value that is 95% of the max y axis value
@@ -202,17 +210,7 @@ export class TrafficWidgetController{
             if(highestIntervalY < graphHeightSVGUnits / 2){
 
                 const highestNumberOfRequestsPerSecond = this.convertToRequestPerSecond(highestIntervalY, graphHeightSVGUnits, yAxisMaxValue);
-                const newYAxisMaxValue = yAxisMaxValues.find((value, i) => {
-
-                    if(i === 0){
-                        return;
-                    }
-
-                    if(value > highestNumberOfRequestsPerSecond && highestNumberOfRequestsPerSecond > yAxisMaxValues[i - 1]){
-                        return value;
-                    }
-
-                }) ?? yAxisMaxValues[0];
+                const newYAxisMaxValue = pickYAxisMaxValue(highestNumberOfRequestsPerSecond);
 
                 this.setYAxisMaxValue(newYAxisMaxValue);
                 this.calibrateChartIntervals(yAxisMaxValue, newYAxisMaxValue, graphHeightSVGUnits, stateIntervalPositions);
