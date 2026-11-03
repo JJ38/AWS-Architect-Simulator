@@ -102,7 +102,6 @@ export default function Canvas(
 
   }, [stateSelectedNodeID, setNodes, stateSelectedEdgeID, setEdges]);
 
-
   return (
     <div className="reactFlowWrapper">
       <ReactFlow
@@ -131,9 +130,11 @@ export default function Canvas(
       <PropertiesWidget 
         stateSelectedNodeID={stateSelectedNodeID} 
         stateSelectedService={selectedNode?.data.service}
+        selectedNode={selectedNode}
         selectedNodeData={selectedNodeData}
         setNodes={setNodes}
         setNodesData={setNodesData}
+        selectedEdge={selectedEdge}
         selectedEdgeData={selectedEdgeData}
         stateSelectedEdgeID={stateSelectedEdgeID}
         setEdges={setEdges}

@@ -1,30 +1,64 @@
+import { Component } from "lucide-react";
 import { resourceContainer } from "../constants";
 import type { ResourceStatics } from "../Models/Resource";
 import type Resource from "../Models/Resource";
+import Lambda from "../Models/Services/Lambda";
+import { TerraformConverter } from "../Models/TerraformConverter";
 import type { AppEdge, AppNode, Property, AppComponent, PropertyCategory, ComponentData, PropertyRecord, CodeChunk, InputsController, Service } from "../types";
 
 export class PropertiesWidgetController implements InputsController {
 
-    private setNodes: React.Dispatch<React.SetStateAction<AppNode[]>>;
     private setEdges: React.Dispatch<React.SetStateAction<AppEdge[]>>;
+    private setEdgesData: React.Dispatch<React.SetStateAction<ComponentData[]>>;
+    private setNodes: React.Dispatch<React.SetStateAction<AppNode[]>>;
     private setNodesData: React.Dispatch<React.SetStateAction<ComponentData[]>>;
 
     public constructor(
-        setNodes: React.Dispatch<React.SetStateAction<AppNode[]>>, 
         setEdges: React.Dispatch<React.SetStateAction<AppEdge[]>>,
+        setEdgesData: React.Dispatch<React.SetStateAction<ComponentData[]>>,
+        setNodes: React.Dispatch<React.SetStateAction<AppNode[]>>, 
         setNodesData: React.Dispatch<React.SetStateAction<ComponentData[]>>
     ){
         this.setEdges = setEdges;
+        this.setEdgesData = setEdgesData;
         this.setNodes = setNodes;
         this.setNodesData = setNodesData;
     }
 
 
     public getEdgeTerraform(componentData: ComponentData | undefined): CodeChunk[]{
-
+        
+        //stubbed out currently to just use resource terraform preview gen. Probably needs refactoring
+        console.log(componentData);
         if(componentData == undefined){
             return [];
         }
+
+        const dummyService: Service = {
+            name: "edgeService",
+            description: "dummy service",
+            terraformType: null,
+            providerTypes: null,
+            icon: "wadwa",
+            image: "string",
+        }
+
+        const edgeResource = new Lambda(dummyService, componentData);
+
+        const propertyRecords: Record<string, PropertyRecord>[] = [];
+
+        if(componentData.iamProperties !== undefined){
+            propertyRecords.push(componentData.iamProperties);
+        }
+
+        if(componentData.componentProperties !== undefined){
+            propertyRecords.push(componentData.componentProperties);
+        }
+
+        return edgeResource.toTerraformPreview(propertyRecords);
+
+
+        return edgeResource.toTerraformPreview(componentData?.iamProperties);
 
         //get both resources.
         const callerName = componentData.metaData.callerName;
@@ -81,8 +115,15 @@ export class PropertiesWidgetController implements InputsController {
 
         const edgeType = componentData.metaData.edgeType;
         
+        //change to using edgedata rather than remaking policy
         const callerTerraform: Record<string, PropertyRecord> = callerInstance.toTerraformEdgePropertiesCaller(edgeType, receiverInstance, callerInstance) ?? {};
         const receiverTerraform: Record<string, PropertyRecord> = receiverInstance.toTerraformEdgePropertiesReceiver(edgeType, callerInstance, receiverInstance) ?? {};
+
+        return[callerInstance.toTerraformPreview([componentData as Record<string, PropertyRecord>])]
+
+        const record: Record<string, PropertyRecord> = {};
+
+        record['aws_iam_policy'] = componentData!;
 
         return [...callerInstance.toTerraformPreview([callerTerraform]), ...receiverInstance.toTerraformPreview([receiverTerraform])];
     }   
@@ -237,41 +278,45 @@ export class PropertiesWidgetController implements InputsController {
     {
         
         //need a way to deal with nested inputs 
-        componentSetter((components: AppComponent[]) => components.map((component: AppComponent) => {
+        componentSetter((components: ComponentData[] | AppComponent[]) => components.map((component: ComponentData | AppComponent) => {
 
             if(component.id !== componentID){
                 return component;
             }
 
-            const newComponent: AppComponent = structuredClone(component);
+            const newComponent: ComponentData | AppComponent = structuredClone(component);
 
-            if(newComponent.data == null){
+            if(newComponent == null){
                 return newComponent;
             }
 
             const fullPath = [...propertyRecordPath, inputName];
 
-            return newComponent;
-
             switch (propertyCategory){
 
                 case "component": {
-                    this.updatePropertyByPath(0, newComponent.data.componentProperties, fullPath, newNodeProperty);
+
+                    const component = newComponent as AppComponent;
+                    const componentData = component.data as Record<string, PropertyRecord>;
+                    this.updatePropertyByPath(0, componentData, fullPath, newNodeProperty);
+
                     break;
                 }
 
                 case "terraform": {
-                    this.updatePropertyByPath(0, newComponent.data.terraformProperties, fullPath, newNodeProperty);
+                    const component = newComponent as ComponentData;
+                    this.updatePropertyByPath(0, component.terraformProperties, fullPath, newNodeProperty);
                     break;
                 }
 
                 case "iam": {
+                    const component = newComponent as ComponentData;
 
-                    if(newComponent.data.iamProperties == undefined){
+                    if(component.iamProperties == undefined){
                         return;
                     }
 
-                    this.updatePropertyByPath(0, newComponent.data.iamProperties, fullPath, newNodeProperty);
+                    this.updatePropertyByPath(0, component.iamProperties, fullPath, newNodeProperty);
                     break;
                 }
 
@@ -342,5 +387,29 @@ export class PropertiesWidgetController implements InputsController {
         this.updateComponentProperty(newNodeProperty, propertyCategory, propertyRecordName, componentID!, inputName, componentSetter);
 
     }
+
+    public getComponentSetter(componentType: string | null, propertyCategory: PropertyCategory){
+
+        if(componentType === null){
+            return () => {};
+        }
+
+        if(componentType == "Node"){
+            return this.setNodesData;
+        }
+
+        if(componentType == "Edge"){
+            
+            if(propertyCategory == "component"){
+                return this.setEdges;
+            }
+
+            return this.setEdgesData;
+
+        }
+
+        return () => {}
+    }
+
 
 }

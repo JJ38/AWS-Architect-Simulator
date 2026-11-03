@@ -72,7 +72,9 @@ export default function Layout() {
                             <LoadWidget
                                 setShowLoadWidget={setShowLoadWidget}
                                 setEdges={setEdges}
+                                setEdgesData={setEdgesData}
                                 setNodes={setNodes}
+                                setNodesData={setNodesData}
                                 setDeploymentSettings={setDeploymentSettings}
                                 setLoadedSaveName={setLoadedSaveName}
                             />
@@ -85,7 +87,9 @@ export default function Layout() {
                                 stateLoadedSaveName={stateLoadedSaveName}
                                 setLoadedSaveName={setLoadedSaveName}
                                 stateNodes={stateNodes}
+                                stateNodesData={stateNodesData}
                                 stateEdges={stateEdges}
+                                stateEdgesData={stateEdgesData}
                                 stateDeploymentSettings={stateDeploymentSettings}
                             />
                     }

@@ -18,7 +18,6 @@ export default function TrafficWidget(){
     const [stateYAxisMaxValue, setYAxisMaxValue] = useState<number>(100);
 
    
-    let intervals: Coords[] = Array.from({ length: 24 }, () => ({ x: 0, y: 0 }));
 
     //Below are in svg space no in pixels
     const graphPaddingLeft = 5 + (5 * (stateYAxisMaxValue.toString().length));
@@ -39,9 +38,13 @@ export default function TrafficWidget(){
 
     const numberOfIncrements = svgHeight - graphPaddingTop - graphPaddingBottom; //Number of unique positions in the y axis the button can be dragged to.
     
-    const heightOfGraphSVGUnits = svgHeight - graphPaddingBottom - graphPaddingTop;
-
+    const heightSVGGraphPixels = svgHeight - graphPaddingBottom - graphPaddingTop; //in pixel screen space
+    
     const yAxisLabels: {numberOfRequests: number, fractionOfMax: number}[] = getYAxisLabels(stateYAxisMaxValue, minNumberOfYAxisLabels, maxNumberOfYAxisLabels);
+
+    const initialY = (65 / stateYAxisMaxValue) * heightSVGGraphPixels;
+
+    let intervals: Coords[] = Array.from({ length: 24 }, () => ({ x: 0, y: initialY}));
 
     const [stateIntervalPositions, setIntervalPositions] = useState<Coords[]>(intervals);
     const [stateSelectedIntervalIndex, setSelectedIntervalIndex] = useState<number | null>(null);
@@ -54,7 +57,7 @@ export default function TrafficWidget(){
     const [stateIsResizingWidget, setIsResizingWidget] = useState<boolean>(false);
 
     const [stateTrafficWidgetController] = useState<TrafficWidgetController>(new TrafficWidgetController(setIntervalPositions, setSelectedIntervalIndex, setIntervalRequestPerSecond, setNumberOfIntervals, setSelectedTrafficPeriod, setWidgetWidth, setWidgetHeight, setIsResizingWidget, setYAxisMaxValue));
-
+    
     useEffect(() => {
 
         if(!stateIsResizingWidget){
@@ -74,25 +77,55 @@ export default function TrafficWidget(){
 
     }, [stateIsResizingWidget]);
 
-    useLayoutEffect(() => {
+    const [stateObserverLocked, setObserverLocked] = useState<boolean>(false);
 
+    useLayoutEffect(() => {
+        console.log("useLayoutEffect");
         if(!svgRef.current){
             return;
         }
 
+        //triggering several times with the sam height and svgHeight values;
         const resizeObserver = new ResizeObserver((entries) => {
+
+            if(stateObserverLocked){
+                console.log("observerLocked");
+                return;
+            }
+            setObserverLocked(true);
+            console.log(stateObserverLocked);
             const { width, height } = entries[0].contentRect;
+            const oldHeight = svgHeight; 
             setSvgWidth(width);
             setSvgHeight(height);
+          
+            //go through each interval y and adjust based on ratio of height change
+            const ratio = height / oldHeight;
+
+            setIntervalPositions((stateIntervalPositions: Coords[]) => {
+                const newIntervalPositions = stateIntervalPositions.map((interval: Coords) => {
+
+                    console.log(interval.y);
+                    console.log(ratio);
+                    console.log(interval.y * ratio);
+                    interval.y = interval.y * ratio;
+
+                    return interval;
+                });
+
+                return newIntervalPositions;
+            });
+
+            setObserverLocked(false);
+            
         });
 
         resizeObserver.observe(svgRef.current);
 
         return () => resizeObserver.disconnect();
 
-    }, []);
+    }, [stateObserverLocked, setObserverLocked]);
 
-    const graphHeightSVGUnits = svgHeight - graphPaddingBottom - graphPaddingTop;
 
     return (
         <div className="trafficWidgetWrapper" style={{ width: stateWidgetWidth, height: stateWidgetHeight }}>
@@ -105,7 +138,7 @@ export default function TrafficWidget(){
             </div>
 
             <div className="timeFrameWrapper">
-                <input name="intervalInput" className='numberOfIntervalsInput' type="number" max={maxNumberOfIntervals} min="1" value={stateNumberOfIntervals} onChange={(event) => stateTrafficWidgetController.numberOfIntervalsInputOnChange(event.target.value, stateIntervalPositions, maxNumberOfIntervals, graphHeightSVGUnits, stateYAxisMaxValue)}/>
+                <input name="intervalInput" className='numberOfIntervalsInput' type="number" max={maxNumberOfIntervals} min="1" value={stateNumberOfIntervals} onChange={(event) => stateTrafficWidgetController.numberOfIntervalsInputOnChange(event.target.value, stateIntervalPositions, maxNumberOfIntervals, heightSVGGraphPixels, stateYAxisMaxValue)}/>
                 <RoundedButton className={`roundedButton ${stateSelectedTrafficPeriod === 'Hour' && 'selectedPeriodButton'}`} onClickHandler={() => stateTrafficWidgetController.periodButtonOnClick('Hour')} buttonText={'Hours'}></RoundedButton>
                 <RoundedButton className={`roundedButton ${stateSelectedTrafficPeriod === 'Day' && 'selectedPeriodButton'}`} onClickHandler={() => stateTrafficWidgetController.periodButtonOnClick('Day')} buttonText={'Days'}></RoundedButton>
                 <RoundedButton className={`roundedButton ${stateSelectedTrafficPeriod === 'Month' && 'selectedPeriodButton'}`} onClickHandler={() => stateTrafficWidgetController.periodButtonOnClick('Month')} buttonText={'Months'}></RoundedButton>
@@ -119,7 +152,7 @@ export default function TrafficWidget(){
                 width="100%"
                 height="100%"
                 onMouseMove={(event) => stateTrafficWidgetController.intervalOnMouseMoveHandler(event, numberOfIncrements, stateSelectedIntervalIndex, svgHeight, graphPaddingBottom, graphPaddingTop, stateYAxisMaxValue)}
-                onMouseUp={() => stateTrafficWidgetController.deselectInterval(stateSelectedIntervalIndex, stateIntervalRequestPerSecond, stateIntervalPositions, graphHeightSVGUnits, stateYAxisMaxValue)} 
+                onMouseUp={() => stateTrafficWidgetController.deselectInterval(stateSelectedIntervalIndex, stateIntervalRequestPerSecond, stateIntervalPositions, heightSVGGraphPixels, stateYAxisMaxValue)} 
                 onMouseLeave={() => stateTrafficWidgetController.deselectInterval()}
                 > {/* viewbox = min-x min-y width height */}
                 
@@ -130,13 +163,13 @@ export default function TrafficWidget(){
 
                 {
                     yAxisLabels.map((label) => {
-                        return <line x1={graphPaddingLeft} y1={svgHeight - graphPaddingBottom - (heightOfGraphSVGUnits * label.fractionOfMax)} x2={svgWidth - graphPaddingRight} y2={svgHeight - graphPaddingBottom - (heightOfGraphSVGUnits * label.fractionOfMax)} stroke="gray"/>
+                        return <line x1={graphPaddingLeft} y1={svgHeight - graphPaddingBottom - (heightSVGGraphPixels * label.fractionOfMax)} x2={svgWidth - graphPaddingRight} y2={svgHeight - graphPaddingBottom - (heightSVGGraphPixels * label.fractionOfMax)} stroke="gray"/>
                     })
                 }
 
                 {
                     yAxisLabels.map((label) => {
-                        return <text className="yAxisLabel" x={graphPaddingLeft - 3} y={svgHeight - graphPaddingBottom - (heightOfGraphSVGUnits * label.fractionOfMax)} textAnchor='end' dominantBaseline='middle'>{label.numberOfRequests}</text>
+                        return <text className="yAxisLabel" x={graphPaddingLeft - 3} y={svgHeight - graphPaddingBottom - (heightSVGGraphPixels * label.fractionOfMax)} textAnchor='end' dominantBaseline='middle'>{label.numberOfRequests}</text>
                     })
                 }
 
@@ -176,7 +209,7 @@ export default function TrafficWidget(){
                             cy={svgHeight - graphPaddingBottom - interval.y} 
                             r="2" 
                             stroke="orange"
-                            onMouseDown={() => stateTrafficWidgetController.intervalOnMouseDownHandler(i, stateIntervalPositions, graphHeightSVGUnits, stateYAxisMaxValue)} 
+                            onMouseDown={() => stateTrafficWidgetController.intervalOnMouseDownHandler(i, stateIntervalPositions, heightSVGGraphPixels, stateYAxisMaxValue)} 
                         />
 
                     })

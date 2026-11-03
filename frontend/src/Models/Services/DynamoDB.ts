@@ -13,7 +13,6 @@ export default class DyanmoDB extends Resource{
     public static targetTypes: EdgeType[] = ["sync"];
     public static permissionType: PermissionType = "Passive";
 
-
     public static createData(id: string): ComponentData{
 
         return {
@@ -42,7 +41,7 @@ export default class DyanmoDB extends Resource{
                     },
                     "deletion_protection_enabled": {value: null, type: "boolean"},
                     "read_capacity": {
-                        value: null, 
+                        value: 0, 
                         type: "number", 
                         dependant: {
                             propertyPath: ['aws_dynamodb_table', 'billing_mode'], 
@@ -50,7 +49,7 @@ export default class DyanmoDB extends Resource{
                         }
                     }, //only if billing mode is PROVISIONED
                     "write_capacity": {
-                        value: null, 
+                        value: 0, 
                         type: "number",
                         dependant: {
                             propertyPath: ['aws_dynamodb_table', 'billing_mode'], 

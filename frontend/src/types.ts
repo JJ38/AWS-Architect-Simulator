@@ -21,6 +21,7 @@ export type PropertyRecord = Record<string, Property<any>>;
 export type ComponentData = {
     id: string,
     metaData: Record<string, any>,
+    simulationProperties?: Record<string, PropertyRecord>,
     componentProperties: Record<string, PropertyRecord>,
     terraformProperties: Record<string, PropertyRecord>,
     iamProperties?: Record<string, PropertyRecord>,
@@ -36,7 +37,9 @@ export type ResourceData = {
 export type AppNode = Node<ResourceData>;
 
 export type EdgeData = {
-    edgeType: EdgeType
+    behaviour: {
+        edgeType: Property<EdgeType>
+    }
 }
 
 export type AppEdge = Edge<EdgeData>;
@@ -88,6 +91,7 @@ export interface InputsController{
 }
 
 export type PropertyCategory =
+"simulation"
 | "component"
 | "terraform" 
 | "iam"

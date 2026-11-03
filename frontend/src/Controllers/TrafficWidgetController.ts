@@ -72,9 +72,9 @@ export class TrafficWidgetController{
 
     }
 
-    public intervalOnMouseDownHandler(intervalIndex: number, stateIntervalPositions: Coords[], graphHeightSVGUnits: number, stateYAxisMaxValue: number){
-
-        const newIntervalRequestsPerSecond = this.convertToRequestPerSecond(stateIntervalPositions[intervalIndex].y, graphHeightSVGUnits, stateYAxisMaxValue);
+    public intervalOnMouseDownHandler(intervalIndex: number, stateIntervalPositions: Coords[], heightSVGGraphPixels: number, stateYAxisMaxValue: number){
+      
+        const newIntervalRequestsPerSecond = this.convertToRequestPerSecond(stateIntervalPositions[intervalIndex].y, heightSVGGraphPixels, stateYAxisMaxValue);
         this.setIntervalRequestPerSecond(newIntervalRequestsPerSecond);
         this.setSelectedIntervalIndex(intervalIndex);
 
@@ -223,12 +223,12 @@ export class TrafficWidgetController{
 
     }
     
-    private calibrateChartIntervals(oldYAxisMaxValue: number, newYAxisMaxValue: number, graphHeightSVGUnits: number, stateIntervalPositions: Coords[]){
+    public calibrateChartIntervals(oldYAxisMaxValue: number, newYAxisMaxValue: number, graphHeightSVGUnits: number, stateIntervalPositions: Coords[]){
 
         const intervalRequestPerSecond = stateIntervalPositions.map((interval) => {
             return this.convertToRequestPerSecond(interval.y, graphHeightSVGUnits, oldYAxisMaxValue);
         });
-
+        
         const newIntervalPositions = stateIntervalPositions.map((interval, i) => {
 
             const newY = intervalRequestPerSecond[i] != 0 ? intervalRequestPerSecond[i] / newYAxisMaxValue : 0;
@@ -239,10 +239,8 @@ export class TrafficWidgetController{
         
     }
 
-    private convertToRequestPerSecond(yPos: number, graphHeightSVGUnits: number, yAxisMaxValue: number){
-        return Math.round((yPos / graphHeightSVGUnits) * yAxisMaxValue);
+    private convertToRequestPerSecond(yPos: number, heightSVGGraphPixels: number, yAxisMaxValue: number){
+        return Math.round((yPos / heightSVGGraphPixels) * yAxisMaxValue); //percentage of way up the graph * max y value
     }
-
-
 
 }

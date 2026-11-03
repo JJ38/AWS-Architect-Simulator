@@ -4,6 +4,7 @@ import { CanvasModel } from "../Models/CanvasModel.ts";
 import { resourceContainer, serviceImageSize } from "../constants.ts";
 import type Resource from "../Models/Resource.ts";
 import type { ResourceStatics } from "../Models/Resource.ts";
+import { IamFactory } from "../Models/IamFactory.ts";
 
 
 export class CanvasController{
@@ -218,9 +219,10 @@ export class CanvasController{
                 "receiverName": receiverName,
             },
             componentProperties:{
-                "behaviour": {
-                    "edgeType": { value: defaultEdge, type: "edgeType", options: validEdgeTypes },
-                }
+                
+            },
+            iamProperties:{
+                "aws_iam_policy": IamFactory.makeIamPolicy("aws_iam_policy", sourceServiceName)
             },
             terraformProperties:{},
             resources:{
@@ -230,7 +232,11 @@ export class CanvasController{
         };
 
         params['type'] = "standardEdge";
-        params['data'] = {edgeType: edgeData.componentProperties.behaviour.edgeType.value} //this is the data based to the edge. data param in standardEdge.tsx
+        params['data'] = {
+            "behaviour": {
+                "edgeType": { value: defaultEdge, type: "edgeType", options: validEdgeTypes },
+            }
+        } //this is the data based to the edge. data param in standardEdge.tsx
 
         this.setEdges((edgesSnapshot) => addEdge(params, edgesSnapshot));
         this.setEdgesData((edgesData) => [...edgesData, edgeData]);
