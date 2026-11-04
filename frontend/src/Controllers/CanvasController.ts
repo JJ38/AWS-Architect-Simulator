@@ -54,8 +54,10 @@ export class CanvasController{
         const newNode: Node = { 
             id: nodeID, 
             data: {
-                service: selectedService
-            }, //dont use
+                service: selectedService,
+                showTraffic: false,
+                highlighted: false
+            },
             position: position ?? {x:0, y:0}, 
             type: 'imageNode', //imageNode, trafficNode 
             measured: { width: 1, height: 1 },
@@ -102,7 +104,17 @@ export class CanvasController{
 
         const position: XYPosition | null = this.getCanvasPosition(event);
 
-        const newGhostNode: AppNode = { id: `n-ghostNode`, position: position, data: { service: selectedService} , type: 'imageNode', measured: { width: 1, height: 1 }} as AppNode;
+        const newGhostNode: AppNode = { 
+            id: `n-ghostNode`, 
+            position: position, 
+            data: { 
+                service: selectedService,
+                highlighted: false,
+                showTraffic: false
+            } , 
+            type: 'imageNode', 
+            measured: { width: 1, height: 1 }
+        } as AppNode;
         this.setGhostNodes([newGhostNode]);
         
     }
@@ -280,45 +292,75 @@ export class CanvasController{
         this.setShowTrafficWidget((show) => !show);
     }
 
-    public updateNodeTypes(stateShowTrafficWidget: boolean, selectedNodeData: ComponentData | undefined, stateNodes: AppNode[], stateNodesData: ComponentData[], stateEdges: AppEdge[], stateEdgesData: ComponentData[]): void{
-
+    //runs every time a new node is selected
+    public updateNodeData(selectedNodeData: ComponentData | undefined, stateNodesData: ComponentData[], stateEdges: AppEdge[], stateEdgesData: ComponentData[]): void{
+        console.log("updateNodeData");
         const isTrafficInputNode = selectedNodeData?.simulationProperties?.simulation_settings?.is_input_service?.value
 
-        if(isTrafficInputNode && stateShowTrafficWidget !== true){
+        //if canvas selected
+        if(selectedNodeData?.id === undefined){
+            console.log("selectedNodeData?.id === undefined")
+            this.setShowTrafficWidget(false);
+            this.resetNodeData();
+            return;
+        }
+
+        let traversalRecord: Record<string, any[]> = {nodes: [selectedNodeData], edges: []};
+        traversalRecord = this.traverseNodes(selectedNodeData?.id, stateNodesData, stateEdges, traversalRecord);
+
+        const traversedNodesIDs: string[] = traversalRecord.nodes.map((node: AppNode) => node.id);
+        const traversedEdgesIDs: string[] = traversalRecord.edges.map((edge: ComponentData) => edge.id);
+
+        if(isTrafficInputNode){
     
             this.setShowTrafficWidget(true);
 
-            console.log(selectedNodeData);
+            this.setNodes((stateNodes: AppNode[]) => stateNodes.map((node: AppNode) => {
+            
+                const newNode = structuredClone(node);
 
-            //update so only nodes downstream of the selected node are traffic nodes, all other nodes are image nodes
+                if(traversedNodesIDs.includes(node.id)){
+                    newNode.data.highlighted = true;
+                    newNode.data.showTraffic = true;
+                }else{
+                    newNode.data.highlighted = false;
+                    newNode.data.showTraffic = false;
+                }
 
-            const traversalRecord: Record<string, any[]> = {nodes: [selectedNodeData], edges: []};
-            const traversedNodes: Record<string, any[]> = this.traverseNodes(selectedNodeData?.id, stateNodesData, stateEdges, traversalRecord);
+                return newNode;
 
-            console.log(traversedNodes);
+            }));
 
-        }else if(!isTrafficInputNode && stateShowTrafficWidget !== false){
+        }else if(!isTrafficInputNode){
 
             this.setShowTrafficWidget(false);
-            this.setNodes((stateNodes: AppNode[]) => stateNodes.map((node: AppNode) => {
-                const newNode = structuredClone(node);
-                newNode.type = "imageNode";
-                return newNode;
-            }));
+            this.resetNodeData();
 
         }
 
     }
 
+    private resetNodeData(){
+
+        this.setNodes((stateNodes: AppNode[]) => stateNodes.map((node: AppNode) => {
+            
+            const newNode = structuredClone(node);
+
+            newNode.data.highlighted = false;
+            newNode.data.showTraffic = false;
+    
+            return newNode;
+
+        }));
+    }
+
     private traverseNodes(nextNodeID: string, stateNodesData: ComponentData[], stateEdges: AppEdge[], traversalRecord: Record<string, any[]>): Record<string, any[]>{
-        console.log("traverseNodes");
 
         const nextEdge: AppEdge | null = stateEdges.find((edge: AppEdge) => edge.source == nextNodeID) ?? null;
 
         if(nextEdge == null){
             return traversalRecord;
         }
-
 
         const nextNode: ComponentData | null = stateNodesData.find((node: ComponentData) => nextEdge.target == node.id) ?? null;
 

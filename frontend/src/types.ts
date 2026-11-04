@@ -31,7 +31,9 @@ export type ComponentData = {
 export type ResourceData = {
     id: string,
     service: Service,
-    resourceName: string
+    resourceName: string,
+    showTraffic: boolean,
+    highlighted: boolean
 }
 
 export type AppNode = Node<ResourceData>;

@@ -64,9 +64,6 @@ export default function Canvas(
     setShowTrafficWidget
   ))
 
-  console.log("Canvas render");
-  console.log(stateNodesData);
-
   const selectedNode = stateNodes.find((node: AppNode) => node.id == stateSelectedNodeID);
   const selectedEdge = stateEdges.find((edge: AppEdge) => edge.id == stateSelectedEdgeID);
 
@@ -94,11 +91,13 @@ export default function Canvas(
 
       if(stateSelectedNodeID != null){
         setNodes((nodes: AppNode[]) => nodes.filter((node: AppNode) => node.id != stateSelectedNodeID));
+        setNodesData((data: ComponentData[]) => data.filter((data: ComponentData) => data.id != stateSelectedNodeID));
         return;
       }
 
       if(stateSelectedEdgeID != null){
         setEdges((edges: AppEdge[]) => edges.filter((edge: AppEdge) => edge.id != stateSelectedEdgeID));
+        setEdgesData((data: ComponentData[]) => data.filter((data: ComponentData) => data.id != stateSelectedNodeID));
         return;
       }
 
@@ -111,9 +110,9 @@ export default function Canvas(
 
   //only runs when the value in the dependacy array changes
   useEffect(() => {
-    stateCanvasController.updateNodeTypes(stateShowTrafficWidget, selectedNodeData, stateNodes, stateNodesData, stateEdges, stateEdgesData);
+    stateCanvasController.updateNodeData(selectedNodeData, stateNodesData, stateEdges, stateEdgesData);
     //even though im not using stateSelectedNodeID if it has changed then selectedNodeData has changed
-  }, [stateSelectedNodeID, stateShowTrafficWidget, selectedNodeData, stateNodes, stateNodesData, stateEdges, stateEdgesData]);
+  }, [stateSelectedNodeID, selectedNodeData, stateNodesData, stateEdges, stateEdgesData]);
  
 
   return (
