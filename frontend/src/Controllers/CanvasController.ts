@@ -148,7 +148,6 @@ export class CanvasController{
     public handleEdgeClick(edge: Edge, stateSelectedEdgeID: string | null){;
 
         if(edge.id !== stateSelectedEdgeID){
-            console.log("edge.id !== stateSelectedEdgeID");
             this.setSelectedEdgeID(edge.id);
             this.setSelectedNodeID(null);
         }
@@ -264,7 +263,7 @@ export class CanvasController{
     public getPropertiesWidgetTitle(selectedNodeData: ResourceData | undefined, selectedNodeID: string | undefined, stateNodes: AppNode[], selectedEdge: AppEdge | undefined): string{
 
         let title = "";
-        console.log(selectedNodeData)
+
         if(selectedNodeData != undefined){
             title += selectedNodeData.service.description;
             title += ": ";
@@ -309,9 +308,6 @@ export class CanvasController{
 
         const traversedNodesIDs: string[] = traversalRecord.nodes.map((node: AppNode) => node.id);
         const traversedEdgesIDs: string[] = traversalRecord.edges.map((edge: ComponentData) => edge.id);
-
-        console.log(traversedNodesIDs);
-        console.log(traversedEdgesIDs);
 
         if(isTrafficInputNode){
     

@@ -39,11 +39,11 @@ function PropertiesWidget(
 
     const [statePropertiesWidgetController] = useState(() => new PropertiesWidgetController(setEdges, setEdgesData, setNodes, setNodesData));
 
-    const selectedComponentType: string | null = stateSelectedNodeID != undefined ? "Node" : stateSelectedEdgeID != null ? "Edge" : null
+    const selectedComponentType: string | null = stateSelectedNodeID != undefined ? "Node" : stateSelectedEdgeID != undefined ? "Edge" : null
 
     const componentID: string | null = selectedComponentType == "Node" ? stateSelectedNodeID : selectedComponentType == "Edge" ? stateSelectedEdgeID : null;
     const componentData = selectedComponentType == "Node"? selectedNodeData : selectedComponentType == "Edge" ? selectedEdgeData : undefined;
-
+ 
     const selectedComponent = selectedNode !== undefined ? selectedNode : selectedEdge !== undefined ? selectedEdge : undefined;
 
     const simulationProperties: Record<string, PropertyRecord> | undefined = componentData != null ? componentData?.simulationProperties : undefined;

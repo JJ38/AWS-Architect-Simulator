@@ -1,6 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
 import { ReactFlow, applyNodeChanges, applyEdgeChanges, useReactFlow, Background, BackgroundVariant } from '@xyflow/react';
-import { Activity } from 'lucide-react';
 import type { AppEdge, AppNode, ComponentData, Service } from '../types.ts';
 import { CanvasController } from '../Controllers/CanvasController.ts';
 import '@xyflow/react/dist/style.css';
@@ -11,7 +10,6 @@ import ThemeToggle from './ThemeToggle.tsx';
 import { useTheme } from '../Providers/ThemeProvider.tsx';
 import TrafficWidget from './Widgets/TrafficWidget.tsx';
 import { edgeTypes, nodeTypes } from '../constants.ts';
-import IconButton from './Buttons/IconButton.tsx';
 
 export default function Canvas(
   {
@@ -69,7 +67,7 @@ export default function Canvas(
 
   const selectedNodeData = stateNodesData.find((data: ComponentData) => data.id == stateSelectedNodeID);
   const selectedEdgeData = stateEdgesData.find((edge: ComponentData) => edge.id == stateSelectedEdgeID);
-  
+
   const title: string = stateCanvasController.getPropertiesWidgetTitle(selectedNode?.data, selectedNode?.id, stateNodes, selectedEdge);
 
   const onNodesChange = useCallback((changes: any) => setNodes((nodesSnapshot) => applyNodeChanges(changes, nodesSnapshot)), []);
@@ -97,7 +95,7 @@ export default function Canvas(
 
       if(stateSelectedEdgeID != null){
         setEdges((edges: AppEdge[]) => edges.filter((edge: AppEdge) => edge.id != stateSelectedEdgeID));
-        setEdgesData((data: ComponentData[]) => data.filter((data: ComponentData) => data.id != stateSelectedNodeID));
+        setEdgesData((data: ComponentData[]) => data.filter((data: ComponentData) => data.id != stateSelectedEdgeID));
         return;
       }
 

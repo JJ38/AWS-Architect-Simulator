@@ -29,7 +29,6 @@ export class PropertiesWidgetController implements InputsController {
     public getEdgeTerraform(componentData: ComponentData | undefined): CodeChunk[]{
         
         //stubbed out currently to just use resource terraform preview gen. Probably needs refactoring
-        console.log(componentData);
         if(componentData == undefined){
             return [];
         }
