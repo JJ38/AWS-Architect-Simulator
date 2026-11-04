@@ -1,11 +1,11 @@
 import Resource from "../Resource";
-import type { ComponentData, EdgeType, PermissionType, ResourceData, Service, ValidationResult } from "../../types.ts";
+import type { ComponentData, EdgeType, PermissionType, ValidationResult } from "../../types.ts";
 
 
 export default class APIGatewayV2 extends Resource{
     
-    public static sourceTypes: EdgeType[] = ["sync", "async"];
-    public static targetTypes: EdgeType[] = ["sync"];
+    public static sourceTypes: EdgeType[] = ['push'];
+    public static targetTypes: EdgeType[] = ['push'];
     public static permissionType: PermissionType = "Service";
     
 

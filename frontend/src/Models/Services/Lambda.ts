@@ -5,8 +5,8 @@ import { IamFactory } from "../IamFactory.ts";
 
 export default class Lambda extends Resource{
 
-    public static sourceTypes: EdgeType[] = ["sync", "async"];
-    public static targetTypes: EdgeType[] = ["sync", "async", "pull"]
+    public static sourceTypes: EdgeType[] = ["push"];
+    public static targetTypes: EdgeType[] = ["push", "pull"]
     public static permissionType: PermissionType = "IAM";
     public static iamRoleName: string = "lambda_role";
 

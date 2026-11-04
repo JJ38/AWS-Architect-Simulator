@@ -4,8 +4,8 @@ import { IamFactory } from "../IamFactory.ts";
 
 export default class EC2 extends Resource{
 
-    public static sourceTypes: EdgeType[] = ["sync", "pull", "async"];
-    public static targetTypes: EdgeType[] = ["sync"];
+    public static sourceTypes: EdgeType[] = ["push", "pull"];
+    public static targetTypes: EdgeType[] = ["push"];
     public static permissionType: PermissionType = "IAM";
     
     public static createData(id: string): ComponentData{
