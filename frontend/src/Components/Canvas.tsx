@@ -69,8 +69,8 @@ export default function Canvas(
 
   const selectedNodeData = stateNodesData.find((data: ComponentData) => data.id == stateSelectedNodeID);
   const selectedEdgeData = stateEdgesData.find((edge: ComponentData) => edge.id == stateSelectedEdgeID);
-
-  const title: string = stateCanvasController.getPropertiesWidgetTitle(selectedNode?.data, stateNodes, selectedEdge);
+  
+  const title: string = stateCanvasController.getPropertiesWidgetTitle(selectedNode?.data, selectedNode?.id, stateNodes, selectedEdge);
 
   const onNodesChange = useCallback((changes: any) => setNodes((nodesSnapshot) => applyNodeChanges(changes, nodesSnapshot)), []);
   const onEdgesChange = useCallback((changes: any) => setEdges((edgesSnapshot) => applyEdgeChanges(changes, edgesSnapshot)), []);
@@ -159,7 +159,7 @@ export default function Canvas(
         stateSelectedEdgeID={stateSelectedEdgeID}
         setEdges={setEdges}
         setEdgesData={setEdgesData}
-        title={"title"}
+        title={title}
       >
       </PropertiesWidget>
       {stateShowTrafficWidget && <TrafficWidget></TrafficWidget>}

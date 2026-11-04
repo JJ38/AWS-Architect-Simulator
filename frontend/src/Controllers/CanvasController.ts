@@ -261,17 +261,17 @@ export class CanvasController{
     
     }
 
-    public getPropertiesWidgetTitle(selectedNodeData: ResourceData | undefined, stateNodes: AppNode[], selectedEdge: AppEdge | undefined): string{
+    public getPropertiesWidgetTitle(selectedNodeData: ResourceData | undefined, selectedNodeID: string | undefined, stateNodes: AppNode[], selectedEdge: AppEdge | undefined): string{
 
         let title = "";
-
+        console.log(selectedNodeData)
         if(selectedNodeData != undefined){
             title += selectedNodeData.service.description;
             title += ": ";
-            title += selectedNodeData.id;
+            title += selectedNodeID;
         }
 
-         if(selectedEdge != undefined){
+        if(selectedEdge != undefined){
 
             const sourceNode = stateNodes.find((node) => node.id === selectedEdge?.source);
             const targetNode = stateNodes.find((node) => node.id === selectedEdge?.target);
@@ -294,12 +294,11 @@ export class CanvasController{
 
     //runs every time a new node is selected
     public updateNodeData(selectedNodeData: ComponentData | undefined, stateNodesData: ComponentData[], stateEdges: AppEdge[], stateEdgesData: ComponentData[]): void{
-        console.log("updateNodeData");
+
         const isTrafficInputNode = selectedNodeData?.simulationProperties?.simulation_settings?.is_input_service?.value
 
         //if canvas selected
         if(selectedNodeData?.id === undefined){
-            console.log("selectedNodeData?.id === undefined")
             this.setShowTrafficWidget(false);
             this.resetNodeData();
             return;
@@ -310,6 +309,9 @@ export class CanvasController{
 
         const traversedNodesIDs: string[] = traversalRecord.nodes.map((node: AppNode) => node.id);
         const traversedEdgesIDs: string[] = traversalRecord.edges.map((edge: ComponentData) => edge.id);
+
+        console.log(traversedNodesIDs);
+        console.log(traversedEdgesIDs);
 
         if(isTrafficInputNode){
     
@@ -356,25 +358,50 @@ export class CanvasController{
 
     private traverseNodes(nextNodeID: string, stateNodesData: ComponentData[], stateEdges: AppEdge[], traversalRecord: Record<string, any[]>): Record<string, any[]>{
 
-        const nextEdge: AppEdge | null = stateEdges.find((edge: AppEdge) => edge.source == nextNodeID) ?? null;
+        const nextEdges: AppEdge[] = stateEdges.filter((edge: AppEdge) => edge.source == nextNodeID);
 
-        if(nextEdge == null){
+        if(nextEdges.length === 0){
             return traversalRecord;
         }
 
-        const nextNode: ComponentData | null = stateNodesData.find((node: ComponentData) => nextEdge.target == node.id) ?? null;
+        for(let i = 0; i < nextEdges.length; i++){
 
-        traversalRecord = {
-            edges: [...traversalRecord.edges, nextEdge],
-            nodes: [...traversalRecord.nodes, nextNode]
+            const nextNode: ComponentData | null = stateNodesData.find((node: ComponentData) => nextEdges[i].target == node.id) ?? null;
+
+            traversalRecord = {
+                edges: [...traversalRecord.edges, nextEdges[i]],
+                nodes: [...traversalRecord.nodes, nextNode]
+            }
+
+            if(nextNode == null){
+                return traversalRecord;
+            }
+
+            traversalRecord = this.traverseNodes(nextNode.id, stateNodesData, stateEdges, traversalRecord);
+
         }
 
-        //shouldnt ever happen. No nice handling of this case
-        if(nextNode == null){
-            return traversalRecord;
-        }
+        return traversalRecord;
 
-        return this.traverseNodes(nextNode.id, stateNodesData, stateEdges, traversalRecord);
     }
+
+
+     // console.log(i);
+
+            // const nextNode: ComponentData | null = stateNodesData.find((node: ComponentData) => nextEdges[i].target == node.id) ?? null;
+
+            // traversalRecord = {
+            //     edges: [...traversalRecord.edges, nextEdges[i]],
+            //     nodes: [...traversalRecord.nodes, nextNode]
+            // }
+
+            // console.log(traversalRecord);
+
+            // //shouldnt ever happen. No nice handling of this case
+            // if(nextNode == null){
+            //     return traversalRecord;
+            // }
+
+            // return this.traverseNodes(nextNode.id, stateNodesData, stateEdges, traversalRecord);
 
 }
