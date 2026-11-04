@@ -34,7 +34,7 @@ export default abstract class Resource{
      public constructor(service: Service, componentData: ComponentData){
         this.id = componentData.id;
         this.service = service;
-        this.resourceName = "data.resourceName";
+        this.resourceName = componentData.id;
         this.mandatoryFields = componentData.mandatoryFields;
         this.terraformProperties = componentData.terraformProperties;
         this.iamProperties = componentData.iamProperties;
