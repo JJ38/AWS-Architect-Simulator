@@ -38,12 +38,8 @@ export class TerraformConverter{
         this.resourceTerraform = "";
         this.providerTerraform = "";
 
-        console.log("nodes:", myNodes)
             myNodes.map(
                 (stateNodeData: ComponentData) => {
-                    console.log("statenodes:",this.stateNodes)
-                    console.log("nodedata:",myNodes)
-
                     let myNode = this.stateNodes.find((node)=>node.id == stateNodeData.id)
                     console.log("mynode:",myNode)
                     const resource: ResourceStatics = resourceContainer[myNode.data.service.name];
@@ -251,9 +247,14 @@ export class TerraformConverter{
                 // console.log(resource)
                     // console.log(key,": ",property.value)
 
-                console.log(resource.terraformProperties["aws_iam_role"])
+                console.log(resource.terraformProperties["aws_s3_bucket_public_access_block"])
                 if(resource.mandatoryFields && !resource.mandatoryFields.includes(key)){
-                    if(property.value == null || property.value == undefined || property.value.length === 0 || Object.keys(property.value).length === 0){
+                    if(property.value == null || property.value == undefined || property.value.length === 0){
+                        console.log(key,": ",property.value)
+                        continue;
+                    } 
+                    //handle bool case
+                    if(property.type != "boolean" && Object.keys(property.value).length === 0){
                         console.log(key,": ",property.value)
                         continue;
                     } 

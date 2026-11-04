@@ -35,7 +35,8 @@ export default function TerraformWidget({
     const showNotification = useNotification();
     const [stateShowDownloadTerraformForm, setShowDownloadTerraformForm] = useState<boolean>(false);
     const [stateTerraformWidgetController] = useState(() => new TerraformWidgetController(setShowTerraformWidget, showNotification, setNodes, setEdges, setShowDownloadTerraformForm, setDeploymentSettings));
-    console.log("widgetr:",stateNodesData)
+    // console.log("widgetDATA:",stateNodesData)
+    // console.log("widgetNodes:",stateNodes)
     return(
          <div className="terraformWidgetWrapper">
 
