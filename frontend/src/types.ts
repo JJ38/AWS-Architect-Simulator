@@ -117,7 +117,7 @@ export type PropertyType =
 | "tatement"
 | "radio";
 
-export type EdgeType = "sync" | "async" | "pull";
+export type EdgeType = "Request/Response" | "Event" | "Poll";
 
 export type NodeType = "imageNode" | "costNode" | "trafficNode" | "capacityNode";
 

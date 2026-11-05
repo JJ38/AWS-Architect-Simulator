@@ -15,37 +15,37 @@
   stroke-dasharray: 8 24;      /* 8px visible dash, 24px gap — repeats along the whole path */
 }
 
-.standardEdge-sync{
+.standardEdge-requestResponse{
   stroke: rgb(139, 167, 219) !important;
-  animation: standardEdgeSync 1s linear infinite alternate;
+  animation: standardEdgeRequestResponse 1s linear infinite alternate;
 }
 
-.standardEdge-async{
+.standardEdge-event{
   stroke: rgb(210, 61, 255) !important;
-  animation: standardEdgeAsync 1s linear infinite;
+  animation: standardEdgeEvent 1s linear infinite;
 }
 
-.standardEdge-pull{
+.standardEdge-poll{
   stroke: #d15959 !important;
-  animation: standardEdgePull 1s linear infinite;
+  animation: standardEdgePoll 1s linear infinite;
 }
 
-@keyframes standardEdgeSync {
+@keyframes standardEdgeRequestResponse {
   to {
     stroke-dashoffset: -32;
   }
 }
 
 
-@keyframes standardEdgeAsync {
+@keyframes standardEdgeEvent {
   to {
-    stroke-dashoffset: -32;  
+    stroke-dashoffset: -32;
   }
 }
 
 
-@keyframes standardEdgePull {
+@keyframes standardEdgePoll {
   to {
-    stroke-dashoffset: -32; 
+    stroke-dashoffset: -32;
   }
 }

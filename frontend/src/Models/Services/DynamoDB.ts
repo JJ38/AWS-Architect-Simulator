@@ -9,8 +9,8 @@ export const dynamodb_billing_mode = [
 
 export default class DyanmoDB extends Resource{
     
-    public static sourceTypes: EdgeType[] = ["pull"];
-    public static targetTypes: EdgeType[] = ["sync"];
+    public static sourceTypes: EdgeType[] = ["Poll"];
+    public static targetTypes: EdgeType[] = ["Request/Response"];
     public static permissionType: PermissionType = "Passive";
 
     public static createData(id: string): ComponentData{

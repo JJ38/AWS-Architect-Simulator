@@ -4,8 +4,8 @@ import type { Service, ValidationResult, EdgeType, ResourceData, PermissionType,
 
 export default class S3 extends Resource{
 
-    public static sourceTypes: EdgeType[] = ["async"];
-    public static targetTypes: EdgeType[] = ["sync"];
+    public static sourceTypes: EdgeType[] = ["Event"];
+    public static targetTypes: EdgeType[] = ["Request/Response"];
     public static permissionType: PermissionType = "Service";
 
     public static createData(id: string): ComponentData{

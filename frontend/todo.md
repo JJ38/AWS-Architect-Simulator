@@ -21,7 +21,7 @@ diagram) remains a stretch goal for now.
 - [ ] Custom node component (icon, name, short config summary)
 - [x] Click-drag between nodes creates an edge (connection)
 - [ ] Node selection + properties panel (edit name, size/tier, config fields)
-- [ ] Edge selection + properties: `type` (sync/async/pull, restricted to the
+- [ ] Edge selection + properties: `type` (Request/Response, Event, Poll, restricted to the
       valid intersection for that service pair — see edge-type sections in
       `terraform-resource-templates.md`), a plain-English one-liner explaining
       the selected type, plus a label field. Mockup:
@@ -30,9 +30,9 @@ diagram) remains a stretch goal for now.
 ┌─ Edge ──────────────────────────────────┐
 │  S3 (bucket-uploads)  →  Lambda (fn-x)  │
 │                                          │
-│  Type:  [ Async ▾ ]                     │
+│  Type:  [ Event ▾ ]                     │
 │                                          │
-│   ⓘ Async — S3 fires an event and moves │
+│   ⓘ Event — S3 fires an event and moves │
 │     on immediately. Lambda runs on its  │
 │     own schedule; S3 never waits for a  │
 │     result.                             │
@@ -46,7 +46,7 @@ diagram) remains a stretch goal for now.
 ```
 
 - [ ] Restrict valid edge types per service pair. Each service gets
-      `edgeRolesAsSource`/`edgeRolesAsTarget` lists (sync/async/pull). For a
+      `edgeRolesAsSource`/`edgeRolesAsTarget` lists (Request/Response, Event, Poll). For a
       given edge, valid types = source node's `asSource` list ∩ target node's
       `asTarget` list. Two places this is used:
       1. `isValidConnection` (React Flow prop) — rejects the connection at
@@ -87,10 +87,10 @@ in, metrics out) — testable, and keeps sim logic out of components.
 - [ ] Companion resource handling (Lambda's IAM role, API Gateway's
       integration/route/stage/permission bundle, etc.) — see "Cross-cutting
       pattern for the converter" in `terraform-resource-templates.md`
-- [ ] Edge → Terraform mapping driven by edge `type` (sync/async/pull) — e.g.
-      sync API Gateway→Lambda emits the integration bundle, async S3→Lambda
-      emits `aws_s3_bucket_notification` + permission, pull SQS→Lambda emits
-      `aws_lambda_event_source_mapping`
+- [ ] Edge → Terraform mapping driven by edge `type` (Request/Response, Event,
+      Poll) — e.g. Request/Response API Gateway→Lambda emits the integration
+      bundle, Event S3→Lambda emits `aws_s3_bucket_notification` + permission,
+      Poll SQS→Lambda emits `aws_lambda_event_source_mapping`
 - [ ] Full diagram export: generate a complete `.tf` file from the node/edge
       graph
 

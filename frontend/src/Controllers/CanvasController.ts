@@ -203,7 +203,7 @@ export class CanvasController{
         let receiverID: string;
 
         
-        if(defaultEdge == "pull"){
+        if(defaultEdge == "Poll"){
 
             callerInstance = new targetResource(targetNode.data.service, targetNodeData);
             receiverInstance = new sourceResource(sourceNode.data.service, sourceNodeData);

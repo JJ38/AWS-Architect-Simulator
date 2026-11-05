@@ -4,8 +4,8 @@ import type { ComponentData, EdgeType, PermissionType, ResourceData, Service, Va
 
 export default class APIGatewayV2 extends Resource{
     
-    public static sourceTypes: EdgeType[] = ["sync", "async"];
-    public static targetTypes: EdgeType[] = ["sync"];
+    public static sourceTypes: EdgeType[] = ["Request/Response", "Event"];
+    public static targetTypes: EdgeType[] = ["Request/Response"];
     public static permissionType: PermissionType = "Service";
     
 
