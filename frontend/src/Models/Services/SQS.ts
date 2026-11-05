@@ -4,8 +4,8 @@ import type { ComponentData, EdgeType, PermissionType, ValidationResult } from "
 export default class SQS extends Resource{
 
 
-    public static sourceTypes: EdgeType[] = ['push', "pull"];
-    public static targetTypes: EdgeType[] = ["push"];
+    public static sourceTypes: EdgeType[] = ["pull"];
+    public static targetTypes: EdgeType[] = ["async"];
     public static permissionType: PermissionType = "Passive";
 
     public static createData(id: string): ComponentData{

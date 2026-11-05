@@ -352,21 +352,9 @@ export class CanvasController{
         }));
     }
 
-    private traverseNodes(currentNodeID: string, stateNodesData: ComponentData[], stateEdges: AppEdge[], traversalRecord: Record<string, any[]>): Record<string, any[]>{
+    private traverseNodes(nextNodeID: string, stateNodesData: ComponentData[], stateEdges: AppEdge[], traversalRecord: Record<string, any[]>): Record<string, any[]>{
 
-        const nextEdges: AppEdge[] = stateEdges.filter((edge: AppEdge) => {
-
-            //find all the edges that have the current node as a source
-            if(edge.source == currentNodeID){
-                return edge;
-            }
-
-            //find all the edges that have the current node as a target and are of edgetype pull
-            if(edge.data?.behaviour.edgeType.value == "pull" && edge.target == currentNodeID){
-                return edge;
-            }   
-
-        });
+        const nextEdges: AppEdge[] = stateEdges.filter((edge: AppEdge) => edge.source == nextNodeID);
 
         if(nextEdges.length === 0){
             return traversalRecord;
