@@ -98,11 +98,11 @@ export class TerraformWidgetController implements InputsController{
         
     }
 
-    public handleConvertToTerraform(stateNodes: AppNode[], stateEdges: AppEdge[]){
+    public handleConvertToTerraform(stateNodes: AppNode[], stateEdges: AppEdge[], stateNodeData: ComponentData[]){
 
         //create resource of each node.
-        const terraformConverter = new TerraformConverter({stateNodes: stateNodes, stateEdges: stateEdges});
-
+        const terraformConverter = new TerraformConverter({stateNodes: stateNodes, stateEdges: stateEdges, stateNodesData: stateNodeData});
+        console.log("hadnle:",stateNodeData)
         const validDiagram = terraformConverter.validateDiagram();
 
         if(!validDiagram){
@@ -110,7 +110,7 @@ export class TerraformWidgetController implements InputsController{
             return;
         }
 
-        const successfulConversion = terraformConverter.diagramToTerraform();
+        const successfulConversion = terraformConverter.diagramToTerraform(stateNodeData);
 
         if(!successfulConversion){
             this.showNotification(false, "Error - conversion failed");
@@ -142,15 +142,16 @@ export class TerraformWidgetController implements InputsController{
         return codeChunks;
     }
 
-    public getNodesTerraformPreview(stateNodes: AppNode[]): CodeChunk[]{
+    public getNodesTerraformPreview(stateNodes: AppNode[],stateNodesData: ComponentData[]): CodeChunk[]{
 
         let codeChunks: CodeChunk[] = [];
 
-        stateNodes?.map(
-            (node: AppNode) => {
-
-                const resource: ResourceStatics = resourceContainer[node.data.service.name!];
-                const resourceInstance = new resource(node.data);
+        stateNodesData?.map(
+            (stateNodeData: ComponentData) => {
+                
+                let myNode = stateNodes.find((node)=>{node.id == stateNodeData.id})
+                const resource: ResourceStatics = resourceContainer[myNode.data.service.name];
+                const resourceInstance = new resource(myNode.data.service,stateNodeData);
 
                 const terraformProperties = resourceInstance.terraformProperties;
 

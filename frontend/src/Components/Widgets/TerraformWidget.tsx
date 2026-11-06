@@ -3,7 +3,7 @@ import { TerraformWidgetController } from "../../Controllers/TerraformWidgetCont
 import { useNotification } from "../../Providers/NotificationProvider";
 import RoundedButton from "../Buttons/RoundedButton";
 import '../../styles/TerraformWidget.css';
-import type { AppEdge, AppNode, CodeChunk } from "../../types";
+import type { AppEdge, AppNode, CodeChunk, ComponentData } from "../../types";
 import { resourceContainer } from "../../constants";
 import type { ResourceStatics } from "../../Models/Resource";
 import { InputsRenderer } from "../Helpers/InputsRenderer";
@@ -12,8 +12,10 @@ import { InputsRenderer } from "../Helpers/InputsRenderer";
 
 export default function TerraformWidget({ 
         setShowTerraformWidget, 
-        stateNodes, 
-        setNodes, 
+        stateNodes,
+        setNodes,
+        stateNodesData,
+        setNodesData,
         stateEdges, 
         setEdges,
         setDeploymentSettings 
@@ -23,6 +25,8 @@ export default function TerraformWidget({
         setShowTerraformWidget: React.Dispatch<React.SetStateAction<boolean>>, 
         stateNodes: AppNode[], 
         setNodes: React.Dispatch<React.SetStateAction<AppNode[]>>, 
+        stateNodesData: ComponentData[],
+        setNodesData: React.Dispatch<React.SetStateAction<ComponentData[]>> 
         stateEdges: AppEdge[], 
         setEdges: React.Dispatch<React.SetStateAction<AppEdge[]>> 
         setDeploymentSettings: React.Dispatch<React.SetStateAction<Record<string, any>>>
@@ -31,7 +35,8 @@ export default function TerraformWidget({
     const showNotification = useNotification();
     const [stateShowDownloadTerraformForm, setShowDownloadTerraformForm] = useState<boolean>(false);
     const [stateTerraformWidgetController] = useState(() => new TerraformWidgetController(setShowTerraformWidget, showNotification, setNodes, setEdges, setShowDownloadTerraformForm, setDeploymentSettings));
-    
+    // console.log("widgetDATA:",stateNodesData)
+    // console.log("widgetNodes:",stateNodes)
     return(
          <div className="terraformWidgetWrapper">
 
@@ -44,7 +49,7 @@ export default function TerraformWidget({
 
                         <div className="terraformSettingsInputsWrapper">
 
-                            {InputsRenderer(stateTerraformWidgetController, stateTerraformWidgetController.deploymentProperties, "terraform", undefined, null, null)}
+                            {InputsRenderer(stateTerraformWidgetController, stateTerraformWidgetController.deploymentProperties, "terraform", undefined, null,()=>{})}
 
                         </div>
 
@@ -130,7 +135,7 @@ export default function TerraformWidget({
                     {
                         !stateShowDownloadTerraformForm &&
 
-                            <RoundedButton
+                            <RoundedButton className=""
                                 onClickHandler={() => stateTerraformWidgetController.handleCancelClick()}
                                 buttonText='Cancel'
                             />
@@ -140,7 +145,7 @@ export default function TerraformWidget({
 
                         stateShowDownloadTerraformForm &&
 
-                            <RoundedButton
+                            <RoundedButton className=""
                                 onClickHandler={() => stateTerraformWidgetController.handleCancelDownloadClick()}
                                 buttonText='Cancel Download'
                             />
@@ -149,7 +154,7 @@ export default function TerraformWidget({
                     {
                         !stateShowDownloadTerraformForm &&
                     
-                            <RoundedButton
+                            <RoundedButton className=""
                                 onClickHandler={() => stateTerraformWidgetController.handleUploadClick()}
                                 buttonText='Upload'
                             />
@@ -159,7 +164,7 @@ export default function TerraformWidget({
                     {
                         !stateShowDownloadTerraformForm &&
 
-                        <RoundedButton
+                        <RoundedButton className=""
                             onClickHandler={() => stateTerraformWidgetController.handleDownloadClick(stateNodes)}
                             buttonText='Download'
                         />
@@ -168,8 +173,8 @@ export default function TerraformWidget({
                     {
                         stateShowDownloadTerraformForm &&
 
-                        <RoundedButton
-                            onClickHandler={() => stateTerraformWidgetController.handleConvertToTerraform(stateNodes, stateEdges)}
+                        <RoundedButton className=""
+                            onClickHandler={() => stateTerraformWidgetController.handleConvertToTerraform(stateNodes, stateEdges, stateNodesData)}
                             buttonText='Convert to terraform'
                         />
                     }
@@ -207,7 +212,7 @@ export default function TerraformWidget({
 
 
 
-                        <div id="panel-nodes" className='terraformWidgetSnippetWrapper'>
+                        {/* <div id="panel-nodes" className='terraformWidgetSnippetWrapper'>
                             <pre>
                                 <code className='terraformCode'>
                                      {
@@ -221,7 +226,7 @@ export default function TerraformWidget({
                                     }
                                 </code>
                             </pre>
-                        </div>
+                        </div> */}
 
 
                         <div id="panel-edges" className='terraformWidgetSnippetWrapper'>

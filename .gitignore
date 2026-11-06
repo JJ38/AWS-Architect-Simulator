@@ -26,6 +26,7 @@ override.tf.json
 *_override.tf.json
 .terraformrc
 terraform.rc
+terraform/aws creds
 
 # Editor directories and files
 .vscode/*

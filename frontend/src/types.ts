@@ -23,6 +23,7 @@ export type ComponentData = {
     id: string,
     metaData: Record<string, any>,
     simulationProperties?: Record<string, PropertyRecord>,
+    mandatoryFields: Array<String>,
     componentProperties: Record<string, PropertyRecord>,
     terraformProperties: Record<string, PropertyRecord>,
     iamProperties?: Record<string, PropertyRecord>,
@@ -104,6 +105,7 @@ export type PropertyType =
 | "edgeType"
 | "link"
 | "json"
+| "jsonObject"
 | "propertyArray"
 | "stringArray"
 | "text"

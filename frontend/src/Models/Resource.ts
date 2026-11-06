@@ -16,6 +16,7 @@ export default abstract class Resource{
     public id: string;
     public service: Service;
     public resourceName: string;
+    public mandatoryFields?: Array<String>;
     public terraformProperties: Record<string, PropertyRecord>;
     public iamProperties?: Record<string, PropertyRecord>;
 
@@ -24,6 +25,7 @@ export default abstract class Resource{
     //     this.id = data.id;
     //     this.service = data.service;
     //     this.resourceName = data.resourceName;
+    //     this.mandatoryFields = data.mandatoryFields;
     //     this.terraformProperties = componentData.terraformProperties;
     //     this.iamProperties = componentData.iamProperties;
     // }
@@ -32,7 +34,8 @@ export default abstract class Resource{
      public constructor(service: Service, componentData: ComponentData){
         this.id = componentData.id;
         this.service = service;
-        this.resourceName = "data.resourceName";
+        this.resourceName = componentData.id;
+        this.mandatoryFields = componentData.mandatoryFields;
         this.terraformProperties = componentData.terraformProperties;
         this.iamProperties = componentData.iamProperties;
     }
@@ -73,8 +76,8 @@ export default abstract class Resource{
         for(const recordName of Object.keys(properties as Record<string, PropertyRecord>)){
 
             codeChunks.push({value: "resource ", className:"terraformKeyword"})
-            codeChunks.push({value: recordName + " ", className:"terraformParameter"})
-            codeChunks.push({value: this.resourceName, className:"terraformParameter"})
+            codeChunks.push({value: '"'+recordName + '" ', className:"terraformParameter"})
+            codeChunks.push({value: '"'+this.resourceName+'" ', className:"terraformParameter"})
 
             codeChunks.push({value: "{", className:"terraformBracket"})
             // console.log(recordName+ " props: ", JSON.stringify(properties))
@@ -139,6 +142,17 @@ export default abstract class Resource{
                     codeChunks.push(...tagChunks);
                     
                 }
+
+                codeChunks.push({value: `\n${indent}}`, className:""});
+
+                break;
+            }
+
+            case "json": { 
+
+                codeChunks.push({value: `{\n${indent} JSON HERE`, className:""});
+
+              
 
                 codeChunks.push({value: `\n${indent}}`, className:""});
 
@@ -216,214 +230,4 @@ export default abstract class Resource{
 
     }
 
-    expandNested(value: any, depth: number): string {
-
-        const indent = "  ".repeat(depth);
-
-        let terraform = " {\n";
-
-        for (const [name, property] of Object.entries(value)) {
-
-            terraform += `${indent}  ${name}`;
-            terraform += this.renderProperty(property as Property<any>, depth + 1);
-            terraform += "\n";
-        }
-
-        terraform += `${indent}}`;
-
-        return terraform;
-    }
-    
-    expandArray(value: any[], depth: number): string {
-        const indent = "  ".repeat(depth);
-        const childIndent = "  ".repeat(depth + 1);
-
-        let terraform = " = [\n";
-
-        for (const item of value) {
-
-            // Primitive item
-            if (typeof item !== "object" || item === null) {
-
-                terraform += typeof item === "string"
-                    ? `${childIndent}"${item}"\n`
-                    : `${childIndent}${item}\n`;
-
-                continue;
-            }
-
-            // Property wrapper ({ value: ..., type: ... })
-            if ("value" in item) {
-
-                if (
-                    typeof item.value === "object" &&
-                    item.value !== null
-                ) {
-                    terraform += `${childIndent}`;
-                    terraform += this.expandNested(item.value, depth + 1);
-                    terraform += "\n";
-                }
-                else {
-                    terraform += typeof item.value === "string"
-                        ? `${childIndent}"${item.value}"\n`
-                        : `${childIndent}${item.value}\n`;
-                }
-
-                continue;
-            }
-
-            // Plain object
-            terraform += `${childIndent}`;
-            terraform += this.expandNested(item, depth + 1);
-            terraform += "\n";
-        }
-
-        terraform += `${indent}]`;
-
-        return terraform;
-    }
-
-    renderProperty(property: Property<any>, depth: number): string {
-
-    switch (property.type) {
-
-        case "block":
-            return this.expandNested(property.value, depth);
-
-        case "tags":
-            return ` = ${this.expandNested(property.value, depth)}`;
-
-        case "propertyArray":
-        case "stringArray":
-            return this.expandArray(property.value, depth);
-
-        case "string":
-            return ` = "${property.value}"`;
-
-        default:
-            return ` = ${property.value}`;
-    }
-
-    }
-    toTerraform(): string {
-        let terraform = "";
-
-        for (const recordName of Object.keys(this.terraformProperties)) {
-
-            terraform += `resource ${recordName} ${this.resourceName} {\n`;
-
-            for (const [key, property] of Object.entries(this.terraformProperties[recordName])) {
-
-                terraform += `  ${key}`;
-                terraform += this.renderProperty(property as Property<any>, 1);
-                terraform += "\n";
-            }
-
-            terraform += "}\n\n";
-        }
-
-        return terraform;
-    }
 }
-
-
-
-    // //consumes values of the form: tags = this.terraformProperties[recordName][key].value;
-    // expandNested(value: any, depth: number = 1): string {
-    // const indent = "  ".repeat(depth);
-    // const childIndent = "  ".repeat(depth + 1);
-
-    // let terraform = `${indent}{\n`;
-
-    // for (const [name, data] of Object.entries(value)) {
-    //     const val = (data as any).value;
-
-    //     //handle arrays like IAM role Statement
-    //     if (Array.isArray(val)) {
-    //             terraform += `${childIndent}${name} = [\n`;
-
-    //             for (const item of val) {
-    //                 terraform += this.expandNested(item.value, depth + 2);
-    //                 terraform += "\n";
-    //             }
-
-    //             terraform += `${childIndent}]\n`;
-    //     }
-    //     //go layer deaper if subject is still an object
-    //     else if (typeof val === "object" && val !== null) {
-    //         terraform += `${childIndent}${name} `;
-    //         terraform += this.expandNested(val, depth + 1);
-    //         terraform += "\n";
-    //     }
-    //     else {
-
-    //         terraform += typeof val === "string"
-    //             ? `${childIndent}${name} = "${val}"\n`
-    //             : `${childIndent}${name} = ${val}\n`;
-    //     }
-    // }
-
-    // terraform += `${indent}}`;
-
-    // return terraform;
-    // }
-
-    // toTerraform(): string{ 
-
-    //     let terraform: string = "";
-       
-    //     for(const recordName of Object.keys(this.terraformProperties)){
-
-    //         terraform += `resource ${recordName} ${this.resourceName} {\n`;
-
-    //         for(const key of Object.keys(this.terraformProperties[recordName])){
-    //             console.log("key: ", key);
-    //             terraform += `\n  ${key}`;
-                
-    //             //look at the property value. It might be a record/tags and need deconstructing further
-    //             if (this.terraformProperties[recordName][key].type == "tags"){
-    //                 terraform += " ="
-    //                 terraform += this.expandNested(this.terraformProperties[recordName][key].value)
-    //                 break
-
-    //             } 
-    //             if (this.terraformProperties[recordName][key].type == "block"){
-    //                 terraform += this.expandNested(this.terraformProperties[recordName][key].value)
-    //                 console.log("block reached")
-
-    //                 break
-
-    //             } 
-    //             if (this.terraformProperties[recordName][key].type == "Statement"){
-    //                 terraform += JSON.stringify(this.terraformProperties[recordName][key].value)
-    //                 console.log("statement reached")
-    //                 break
-
-    //             }
-    //             else {
-    //                 switch (key) {
-                        
-    //                     case "Statement": {
-    //                         //still needs to be solved properly
-    //                         terraform += JSON.stringify(this.terraformProperties[recordName][key].value)
-    //                         break;
-    //                     }
-
-    //                     default: {
-    //                         terraform += " = ";
-    //                         if(this.terraformProperties[recordName][key].type == "string"){
-    //                             terraform += '"' + this.terraformProperties[recordName][key].value + '"';
-    //                         }
-    //                         else {
-    //                             terraform += this.terraformProperties[recordName][key].value;
-    //                         }
-    //                     }
-    //                 }
-    //             }
-    //         }
-    //     terraform += "\n}\n";
-    //     }
-
-
-    //     return terraform;
-    // }
