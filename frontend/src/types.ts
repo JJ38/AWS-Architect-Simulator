@@ -33,7 +33,8 @@ export type ResourceData = {
     service: Service,
     resourceName: string,
     showTraffic: boolean,
-    highlighted: boolean
+    highlighted: boolean,
+    requestsPerPeriod?: number
 }
 
 export type AppNode = Node<ResourceData>;
@@ -61,7 +62,7 @@ export interface Property<T>{
 export interface InputsController{
 
     keyboardInputOnChange(
-        event: React.ChangeEvent<HTMLInputElement, HTMLInputElement>, 
+        event: string | number, 
         nodeProperty: Property<any>, 
         propertyCategory: PropertyCategory,
         propertyRecordName: string[],
@@ -133,3 +134,7 @@ export interface Coords{
     x: number,
     y: number
 }
+
+
+export type RequestRecord = {node?: ComponentData, requests?: number, edge?: ComponentData, multiplier?: number};
+

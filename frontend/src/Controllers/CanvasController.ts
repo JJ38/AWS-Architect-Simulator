@@ -1,5 +1,5 @@
 import { type XYPosition, type Node, type ViewportHelperFunctions, type Edge, addEdge } from "@xyflow/react";
-import type { AppEdge, AppNode, ComponentData, EdgeData, EdgeType, ResourceData, Service } from "../types";
+import type { AppEdge, AppNode, ComponentData, EdgeType, RequestRecord, ResourceData, Service } from "../types";
 import { resourceContainer, serviceImageSize } from "../constants.ts";
 import type Resource from "../Models/Resource.ts";
 import type { ResourceStatics } from "../Models/Resource.ts";
@@ -287,10 +287,6 @@ export class CanvasController{
         return title;
     }
 
-    public handleTrafficWidhgetClick(): void{
-        this.setShowTrafficWidget((show) => !show);
-    }
-
     //runs every time a new node is selected
     public updateNodeData(selectedNodeData: ComponentData | undefined, stateNodesData: ComponentData[], stateEdges: AppEdge[], stateEdgesData: ComponentData[]): void{
 
@@ -303,11 +299,15 @@ export class CanvasController{
             return;
         }
 
-        let traversalRecord: Record<string, any[]> = {nodes: [selectedNodeData], edges: []};
-        traversalRecord = this.traverseNodes(selectedNodeData?.id, stateNodesData, stateEdges, traversalRecord);
 
-        const traversedNodesIDs: string[] = traversalRecord.nodes.map((node: AppNode) => node.id);
-        const traversedEdgesIDs: string[] = traversalRecord.edges.map((edge: ComponentData) => edge.id);
+        //traverses nodes and calculates request on each node
+        let traversalRecords: Record<string, RequestRecord[]> = {nodes: [{node: selectedNodeData, requests: selectedNodeData.simulationProperties?.simulation_settings?.requests_per_period?.value ?? 0}], edges: [{}]};
+        traversalRecords = this.traverseNodes(selectedNodeData?.id, stateNodesData, stateEdgesData, stateEdges, traversalRecords, null, null);
+        console.log(traversalRecords);
+
+        //highlight downstream nodes and toggles traffic widget
+        const traversedNodesIDs: string[] = traversalRecords.nodes.map((record: RequestRecord) => record.node?.id ?? "");
+        const traversedEdgesIDs: string[] = traversalRecords.edges.map((record: RequestRecord) => record.edge?.id ?? "");
 
         if(isTrafficInputNode){
     
@@ -320,6 +320,11 @@ export class CanvasController{
                 if(traversedNodesIDs.includes(node.id)){
                     newNode.data.highlighted = true;
                     newNode.data.showTraffic = true;
+                    
+                    //get requst data for node by id
+                    const nodeTraversalRecord = traversalRecords.nodes.find((record: RequestRecord) => record.node?.id === node.id);
+                    newNode.data.requestsPerPeriod = nodeTraversalRecord?.requests;
+
                 }else{
                     newNode.data.highlighted = false;
                     newNode.data.showTraffic = false;
@@ -352,32 +357,74 @@ export class CanvasController{
         }));
     }
 
-    private traverseNodes(nextNodeID: string, stateNodesData: ComponentData[], stateEdges: AppEdge[], traversalRecord: Record<string, any[]>): Record<string, any[]>{
+    private traverseNodes(currentNodeID: string, stateNodesData: ComponentData[], stateEdgesData: ComponentData[], stateEdges: AppEdge[], traversalRecords: Record<string, RequestRecord[]>, previousEdgeMultiplier: number | null, previousNodeRequests: number | null): Record<string, RequestRecord[]>{
+        
+        let currentNodeRequests: number = 0;
 
-        const nextEdges: AppEdge[] = stateEdges.filter((edge: AppEdge) => edge.source == nextNodeID);
-
-        if(nextEdges.length === 0){
-            return traversalRecord;
+        //calculate current node requests based on previous node and edge data. If no previous node or edge data, use current node data.
+        if(previousNodeRequests !== null && previousEdgeMultiplier !== null){
+            currentNodeRequests = previousNodeRequests * previousEdgeMultiplier;
+        }else{
+            console.log(traversalRecords.nodes[0].requests);
+            currentNodeRequests = traversalRecords.nodes[0].requests ?? 0; //should never be 0 as its defined before passing in 
         }
+    
+        //get outgoing edges from the current node
+        const currentEdges: AppEdge[] = stateEdges.filter((edge: AppEdge) => edge.source == currentNodeID);
 
-        for(let i = 0; i < nextEdges.length; i++){
+        if(currentEdges.length === 0){
+            console.log("currentEdges.length === 0")
+            return traversalRecords;
+        }
+        
+        for(let i = 0; i < currentEdges.length; i++){
 
-            const nextNode: ComponentData | null = stateNodesData.find((node: ComponentData) => nextEdges[i].target == node.id) ?? null;
+            const nextNode: ComponentData | undefined = stateNodesData.find((node: ComponentData) => node.id == currentEdges[i].target);
 
-            traversalRecord = {
-                edges: [...traversalRecord.edges, nextEdges[i]],
-                nodes: [...traversalRecord.nodes, nextNode]
+            //find current outgoing edge data
+            const currentEdgeData: ComponentData | undefined = stateEdgesData.find((edge: ComponentData) => edge.id == currentEdges[i].id); //check if ids checks make sense
+
+            if(nextNode == undefined || currentEdgeData == undefined){
+                console.log("nextNode == null || nextNode == undefined || currentEdgeData == null || currentEdgeData == undefined");
+                return traversalRecords;
             }
 
-            if(nextNode == null){
-                return traversalRecord;
+            const currentEdgeMultiplier = currentEdgeData?.simulationProperties?.simulation_settings?.request_multiplier?.value ?? 1;
+            
+            const edgeRequestRecord: RequestRecord = {
+                edge: currentEdgeData,
+                multiplier: currentEdgeMultiplier
+            }  
+
+            const establishedNodeRequestRecord: RequestRecord | undefined = traversalRecords.nodes.find((record: RequestRecord) => record.node?.id === nextNode.id);
+
+            if(establishedNodeRequestRecord !== undefined){
+                //find and update record in place
+                establishedNodeRequestRecord.requests = (establishedNodeRequestRecord!.requests ?? 0) + (currentNodeRequests * (currentEdgeMultiplier ?? 1));
+
+                traversalRecords = {
+                    edges: [...traversalRecords.edges, edgeRequestRecord],
+                }
+
+            }else{
+            
+                const nodeRequestRecord: RequestRecord = {
+                    node: nextNode,
+                    requests: currentNodeRequests * (currentEdgeMultiplier ?? 1)
+                }
+
+                traversalRecords = {
+                    edges: [...traversalRecords.edges, edgeRequestRecord],
+                    nodes: [...traversalRecords.nodes, nodeRequestRecord]
+                }
+
             }
 
-            traversalRecord = this.traverseNodes(nextNode.id, stateNodesData, stateEdges, traversalRecord);
+            traversalRecords = this.traverseNodes(nextNode.id, stateNodesData, stateEdgesData, stateEdges, traversalRecords, currentEdgeMultiplier, currentNodeRequests);
 
         }
 
-        return traversalRecord;
+        return traversalRecords;
 
     }
 

@@ -18,7 +18,10 @@ function imageNode({ data, isConnectable }: { data: any; isConnectable: boolean 
             </div>
             {
                 data.showTraffic &&
-                <div className="trafficNodeLabel">{data.service?.name}</div>
+                <div>
+                    <div className="trafficNodeLabel">{data.service?.name}</div>
+                    <div className="trafficNodeLabel">{`${data.requestsPerPeriod?? "unknown"} Reqs`}</div>
+                </div>
             }
 
         </>

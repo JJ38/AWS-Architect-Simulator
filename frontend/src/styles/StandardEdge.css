@@ -46,6 +46,6 @@
 
 @keyframes standardEdgePoll {
   to {
-    stroke-dashoffset: -32;
+    stroke-dashoffset: 32;
   }
 }

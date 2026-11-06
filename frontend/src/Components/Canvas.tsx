@@ -78,6 +78,7 @@ export default function Canvas(
     ...node,
     data: { ...node.data, isSelected: node.id === stateSelectedNodeID }
   }));
+  
 
   useEffect(() => {
     
@@ -87,9 +88,21 @@ export default function Canvas(
         return;
       }
 
+      console.log(stateEdges);
+      console.log(stateEdgesData);
+      console.log(stateSelectedNodeID);
+
       if(stateSelectedNodeID != null){
         setNodes((nodes: AppNode[]) => nodes.filter((node: AppNode) => node.id != stateSelectedNodeID));
         setNodesData((data: ComponentData[]) => data.filter((data: ComponentData) => data.id != stateSelectedNodeID));
+
+        //an edge 
+
+        console.log(stateEdgesData.filter((data: ComponentData) => {console.log(data); return data.resources?.callerID == stateSelectedEdgeID}));
+        console.log(stateEdgesData.filter((data: ComponentData) => data.resources?.recieverID == stateSelectedEdgeID))
+
+        //find and delete all connected edges
+    
         return;
       }
 
@@ -110,7 +123,7 @@ export default function Canvas(
   useEffect(() => {
     stateCanvasController.updateNodeData(selectedNodeData, stateNodesData, stateEdges, stateEdgesData);
     //even though im not using stateSelectedNodeID if it has changed then selectedNodeData has changed
-  }, [stateSelectedNodeID, selectedNodeData, stateNodesData, stateEdges, stateEdgesData]);
+  }, [stateSelectedNodeID, selectedNodeData, stateEdges, stateEdgesData]);
  
 
   return (

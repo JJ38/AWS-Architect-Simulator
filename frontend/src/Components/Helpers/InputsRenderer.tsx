@@ -29,13 +29,13 @@ function getPropertyInput(
         }
 
         case "string":{
-            const input = <input key={key} className="propertyInput" id={`${inputName}`} type="text" name={`${inputName}`} value={property.value ?? ""} onChange={(event) => {inputsController.keyboardInputOnChange(event, property, propertyCategory, propertyRecordPath, inputName, componentID, componentSetter)}}/>
+            const input = <input key={key} className="propertyInput" id={`${inputName}`} type="text" name={`${inputName}`} value={property.value ?? ""} onChange={(event) => {inputsController.keyboardInputOnChange(event.target.value, property, propertyCategory, propertyRecordPath, inputName, componentID, componentSetter)}}/>
             return input;
         }
 
         case "number":{
 
-            const input = <input key={key} className="propertyInput" id={`${inputName}`} type="number" name={`${inputName}`} value={`${property.value ?? ""}`} onChange={(event) => {inputsController.keyboardInputOnChange(event, property, propertyCategory, propertyRecordPath, inputName, componentID, componentSetter)}}/>     
+            const input = <input key={key} className="propertyInput" id={`${inputName}`} type="number" name={`${inputName}`} value={`${property.value ?? ""}`} onChange={(event) => {inputsController.keyboardInputOnChange(parseInt(event.target.value), property, propertyCategory, propertyRecordPath, inputName, componentID, componentSetter)}}/>     
             return input;
         }
 

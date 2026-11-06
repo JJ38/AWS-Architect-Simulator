@@ -4,8 +4,8 @@ import { IamFactory } from "../IamFactory.ts";
 
 export default class EC2 extends Resource{
 
-    public static sourceTypes: EdgeType[] = ["Request/Response", "Poll", "Event"];
-    public static targetTypes: EdgeType[] = ["Request/Response"];
+    public static sourceTypes: EdgeType[] = ["Request/Response", "Event"];
+    public static targetTypes: EdgeType[] = ["Request/Response", "Poll"];
     public static permissionType: PermissionType = "IAM";
     
     public static createData(id: string): ComponentData{
@@ -17,7 +17,7 @@ export default class EC2 extends Resource{
             simulationProperties: {
                 "simulation_settings": {
                     "is_input_service": {value: false, type: "boolean"},
-                    "request_per_period": {
+                    "requests_per_period": {
                         value: 10, 
                         type: "number", 
                         dependant: {

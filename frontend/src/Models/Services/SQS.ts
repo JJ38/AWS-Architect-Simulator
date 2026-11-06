@@ -5,7 +5,7 @@ export default class SQS extends Resource{
 
 
     public static sourceTypes: EdgeType[] = ["Poll"];
-    public static targetTypes: EdgeType[] = ["Event"];
+    public static targetTypes: EdgeType[] = ["Request/Response", "Event"];
     public static permissionType: PermissionType = "Passive";
 
     public static createData(id: string): ComponentData{
@@ -17,7 +17,7 @@ export default class SQS extends Resource{
             simulationProperties: {
                 "simulation_settings": {
                     "is_input_service": {value: false, type: "boolean"},
-                    "request_per_period": {
+                    "requests_per_period": {
                         value: 10, 
                         type: "number", 
                         dependant: {

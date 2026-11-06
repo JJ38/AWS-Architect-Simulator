@@ -18,7 +18,7 @@ export default class APIGatewayV2 extends Resource{
             simulationProperties: {
                 "simulation_settings": {
                     "is_input_service": {value: true, type: "boolean"},
-                    "request_per_period": {
+                    "requests_per_period": {
                         value: 10, 
                         type: "number", 
                         dependant: {

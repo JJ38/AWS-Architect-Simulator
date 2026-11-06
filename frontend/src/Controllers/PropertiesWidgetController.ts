@@ -366,7 +366,7 @@ export class PropertiesWidgetController implements InputsController {
 
 
     public keyboardInputOnChange(
-        event: React.ChangeEvent<HTMLInputElement, HTMLInputElement>, 
+        newValue: any, 
         nodeProperty: Property<any>, 
         propertyCategory: PropertyCategory,
         propertyRecordName: string[],
@@ -378,7 +378,7 @@ export class PropertiesWidgetController implements InputsController {
         if(!this.validProperty(nodeProperty, componentID)) return;
 
         const newNodeProperty = structuredClone(nodeProperty);
-        newNodeProperty.value = event.target.value;
+        newNodeProperty.value = newValue;
 
         this.updateComponentProperty(newNodeProperty, propertyCategory, propertyRecordName, componentID!, inputName, componentSetter);
 
