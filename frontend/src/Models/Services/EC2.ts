@@ -25,6 +25,7 @@ export default class EC2 extends Resource{
                             value: true,
                         }
                     },
+                    "capacity": {value: 100, type: "number"}
                 }
             },
             terraformProperties: {

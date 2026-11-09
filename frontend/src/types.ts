@@ -135,6 +135,24 @@ export interface Coords{
     y: number
 }
 
+export interface ThrottleIngress{
+    capacity: ThroughPut //concurrency / duration || workers x work per worker
+}
+
+export interface QueueIngress{
+    capacity: ThroughPut,
+    size: number,
+    timeout: number
+}
+
+export interface ThroughPut{
+    requests: number,
+    period: TimePeriod
+}   
+
+export type TimePeriod = "Seconds" | "Minutes" | "Hours";
+
+export type Ingress = ThrottleIngress | QueueIngress;
 
 export type RequestRecord = {node?: ComponentData, requests?: number, edge?: ComponentData, multiplier?: number};
 

@@ -373,58 +373,112 @@ export class CanvasController{
         const currentEdges: AppEdge[] = stateEdges.filter((edge: AppEdge) => edge.source == currentNodeID);
 
         if(currentEdges.length === 0){
-            console.log("currentEdges.length === 0")
+            console.log("currentEdges.length === 0");
             return traversalRecords;
         }
+
+        const arePollEdges: boolean = currentEdges[0].data?.behaviour.edgeType.value === 'Poll';
+
+        if(arePollEdges){
+
+            //what is the total capacity of all child nodes
+            const nextNodes: ComponentData[] = [];
+
+            for(let i = 0; i < currentEdges.length; i++){
+
+                const nextNode: ComponentData | undefined = stateNodesData.find((node: ComponentData) => node.id == currentEdges[i].target);
+
+                if(nextNode === undefined){
+                    return traversalRecords; //Loud failure should never happen. Will not traverse all the way through 
+                }
+
+                nextNodes.push(nextNode);
+
+            }   
+
+            //is the capacity / number of children nodes higher than atleast one of the nodes capacity
+            
+            const capacities: number[] = [];
+
+            console.log(nextNodes);
+
+            for(let i = 0; i < nextNodes.length; i++){
+                const capacity: any | undefined = nextNodes[i].simulationProperties?.simulation_settings?.capacity?.value;
+
+                if(capacity === undefined){
+                    return traversalRecords;
+                }
+
+                capacities.push(parseInt(capacity));
+
+            }
+
+            const totalCapacity: number = (capacities as number[]).reduce((total, current) => total + current);
+
+            //if so process that edge with max capacity and keep a running total of remain requests
+
+            if(capacities.sort((a, b) => a < b ? a : b)[0] < (totalCapacity / nextNodes.length)){
+                console.log("lowest capacity is lower than proportion")
+            }
+
+            console.log(capacities);
+            console.log(totalCapacity);
+
+            //repeat for remaining request and number of unprocessed children.
+            //If capcacity/number of children is lower than the lowest capacity of a child node then distribute request evenly amongst remain nodes
+
+        }else{
         
-        for(let i = 0; i < currentEdges.length; i++){
+            for(let i = 0; i < currentEdges.length; i++){
 
-            const nextNode: ComponentData | undefined = stateNodesData.find((node: ComponentData) => node.id == currentEdges[i].target);
+                const nextNode: ComponentData | undefined = stateNodesData.find((node: ComponentData) => node.id == currentEdges[i].target);
 
-            //find current outgoing edge data
-            const currentEdgeData: ComponentData | undefined = stateEdgesData.find((edge: ComponentData) => edge.id == currentEdges[i].id); //check if ids checks make sense
+                //find current outgoing edge data
+                const currentEdgeData: ComponentData | undefined = stateEdgesData.find((edge: ComponentData) => edge.id == currentEdges[i].id); //check if ids checks make sense
 
-            if(nextNode == undefined || currentEdgeData == undefined){
-                console.log("nextNode == null || nextNode == undefined || currentEdgeData == null || currentEdgeData == undefined");
-                return traversalRecords;
+                if(nextNode == undefined || currentEdgeData == undefined){
+                    console.log("nextNode == null || nextNode == undefined || currentEdgeData == null || currentEdgeData == undefined");
+                    return traversalRecords;
+                }
+
+                const currentEdgeMultiplier = currentEdgeData?.simulationProperties?.simulation_settings?.request_multiplier?.value ?? 1;
+                
+                const edgeRequestRecord: RequestRecord = {
+                    edge: currentEdgeData,
+                    multiplier: currentEdgeMultiplier
+                }  
+
+                const establishedNodeRequestRecord: RequestRecord | undefined = traversalRecords.nodes.find((record: RequestRecord) => record.node?.id === nextNode.id);
+
+                if(establishedNodeRequestRecord !== undefined){
+                    //find and update record in place
+                    establishedNodeRequestRecord.requests = (establishedNodeRequestRecord!.requests ?? 0) + (currentNodeRequests * (currentEdgeMultiplier ?? 1));
+
+                    traversalRecords = {
+                        edges: [...traversalRecords.edges, edgeRequestRecord],
+                        nodes: [...traversalRecords.nodes, establishedNodeRequestRecord]
+                    }
+
+                }else{
+                
+                    const nodeRequestRecord: RequestRecord = {
+                        node: nextNode,
+                        requests: currentNodeRequests * (currentEdgeMultiplier ?? 1)
+                    }
+
+                    const edges = traversalRecords.edges ?? []; //to handle the initial record case were previous edges are null
+
+                    traversalRecords = {
+                        edges: [...edges, edgeRequestRecord],
+                        nodes: [...traversalRecords.nodes, nodeRequestRecord]
+                    }
+
+                }
+
+                traversalRecords = this.traverseNodes(nextNode.id, stateNodesData, stateEdgesData, stateEdges, traversalRecords, currentEdgeMultiplier, currentNodeRequests);
+
             }
-
-            const currentEdgeMultiplier = currentEdgeData?.simulationProperties?.simulation_settings?.request_multiplier?.value ?? 1;
-            
-            const edgeRequestRecord: RequestRecord = {
-                edge: currentEdgeData,
-                multiplier: currentEdgeMultiplier
-            }  
-
-            const establishedNodeRequestRecord: RequestRecord | undefined = traversalRecords.nodes.find((record: RequestRecord) => record.node?.id === nextNode.id);
-
-            if(establishedNodeRequestRecord !== undefined){
-                //find and update record in place
-                establishedNodeRequestRecord.requests = (establishedNodeRequestRecord!.requests ?? 0) + (currentNodeRequests * (currentEdgeMultiplier ?? 1));
-
-                traversalRecords = {
-                    edges: [...traversalRecords.edges, edgeRequestRecord],
-                    nodes: [...traversalRecords.nodes, establishedNodeRequestRecord]
-                }
-
-            }else{
-            
-                const nodeRequestRecord: RequestRecord = {
-                    node: nextNode,
-                    requests: currentNodeRequests * (currentEdgeMultiplier ?? 1)
-                }
-
-                const edges = traversalRecords.edges ?? []; //to handle the initial record case were previous edges are null
-
-                traversalRecords = {
-                    edges: [...edges, edgeRequestRecord],
-                    nodes: [...traversalRecords.nodes, nodeRequestRecord]
-                }
-
-            }
-
-            traversalRecords = this.traverseNodes(nextNode.id, stateNodesData, stateEdgesData, stateEdges, traversalRecords, currentEdgeMultiplier, currentNodeRequests);
-
+        
         }
 
         return traversalRecords;
