@@ -404,6 +404,7 @@ export class CanvasController{
 
                 traversalRecords = {
                     edges: [...traversalRecords.edges, edgeRequestRecord],
+                    nodes: [...traversalRecords.nodes, establishedNodeRequestRecord]
                 }
 
             }else{
