@@ -301,13 +301,13 @@ export class CanvasController{
 
 
         //traverses nodes and calculates request on each node
-        let traversalRecords: Record<string, RequestRecord[]> = {nodes: [{node: selectedNodeData, requests: selectedNodeData.simulationProperties?.simulation_settings?.requests_per_period?.value ?? 0}], edges: [{}]};
+        let traversalRecords: Record<string, RequestRecord[]> = {nodes: [{node: selectedNodeData, requests: selectedNodeData.simulationProperties?.simulation_settings?.requests_per_period?.value ?? 0}]};
         traversalRecords = this.traverseNodes(selectedNodeData?.id, stateNodesData, stateEdgesData, stateEdges, traversalRecords, null, null);
         console.log(traversalRecords);
 
         //highlight downstream nodes and toggles traffic widget
         const traversedNodesIDs: string[] = traversalRecords.nodes.map((record: RequestRecord) => record.node?.id ?? "");
-        const traversedEdgesIDs: string[] = traversalRecords.edges.map((record: RequestRecord) => record.edge?.id ?? "");
+        const traversedEdgesIDs: string[] = traversalRecords.edges?.map((record: RequestRecord) => record.edge?.id ?? "");
 
         if(isTrafficInputNode){
     
@@ -414,8 +414,10 @@ export class CanvasController{
                     requests: currentNodeRequests * (currentEdgeMultiplier ?? 1)
                 }
 
+                const edges = traversalRecords.edges ?? []; //to handle the initial record case were previous edges are null
+
                 traversalRecords = {
-                    edges: [...traversalRecords.edges, edgeRequestRecord],
+                    edges: [...edges, edgeRequestRecord],
                     nodes: [...traversalRecords.nodes, nodeRequestRecord]
                 }
 

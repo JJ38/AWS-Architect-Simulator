@@ -83,26 +83,33 @@ export default function Canvas(
   useEffect(() => {
     
     function handleKeyDown(event: KeyboardEvent){
-
-      if(event.key !== "Delete") {
-        return;
-      }
-
+      
       console.log(stateEdges);
       console.log(stateEdgesData);
       console.log(stateSelectedNodeID);
 
+      if(event.key !== "Delete"){
+        return;
+      }
+
       if(stateSelectedNodeID != null){
+
+        const callerEdges = stateEdges.filter((edge: AppEdge) => edge.source == stateSelectedNodeID);
+        const receiverEdges = stateEdges.filter((edge: AppEdge) => edge.target == stateSelectedNodeID);
+
+        const edgesToRemove = [...new Set<AppEdge>([...callerEdges, ...receiverEdges])];
+
+        const callerEdgesData = stateEdgesData.filter((data: ComponentData) => data.resources?.callerID == stateSelectedEdgeID && data.resources?.receiverID == stateSelectedNodeID);
+        const receiverEdgesData = stateEdgesData.filter((data: ComponentData) => data.resources?.receiver == stateSelectedEdgeID && data.resources?.callerID == stateSelectedNodeID);
+
+        const edgesDataToRemove = [...new Set<ComponentData>([...callerEdgesData, ...receiverEdgesData])];
+
+        setEdges((edges: AppEdge[]) => edges.filter((edge: AppEdge) => !edgesToRemove.includes(edge)));
+        setEdgesData((edgesData: ComponentData[]) => edgesData.filter((edge: ComponentData) => !edgesDataToRemove.includes(edge)));
+
         setNodes((nodes: AppNode[]) => nodes.filter((node: AppNode) => node.id != stateSelectedNodeID));
         setNodesData((data: ComponentData[]) => data.filter((data: ComponentData) => data.id != stateSelectedNodeID));
 
-        //an edge 
-
-        console.log(stateEdgesData.filter((data: ComponentData) => {console.log(data); return data.resources?.callerID == stateSelectedEdgeID}));
-        console.log(stateEdgesData.filter((data: ComponentData) => data.resources?.recieverID == stateSelectedEdgeID))
-
-        //find and delete all connected edges
-    
         return;
       }
 
@@ -114,8 +121,8 @@ export default function Canvas(
 
     }
 
-    window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
 
   }, [stateSelectedNodeID, setNodes, stateSelectedEdgeID, setEdges]);
 
