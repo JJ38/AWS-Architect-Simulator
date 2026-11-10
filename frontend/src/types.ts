@@ -154,5 +154,5 @@ export type TimePeriod = "Seconds" | "Minutes" | "Hours";
 
 export type Ingress = ThrottleIngress | QueueIngress;
 
-export type RequestRecord = {node?: ComponentData, requests?: number, edge?: ComponentData, multiplier?: number};
+export type RequestRecord = {node?: ComponentData, throughPut?: number, edge?: ComponentData, multiplier?: number};
 

@@ -301,7 +301,7 @@ export class CanvasController{
 
 
         //traverses nodes and calculates request on each node
-        let traversalRecords: Record<string, RequestRecord[]> = {nodes: [{node: selectedNodeData, requests: selectedNodeData.simulationProperties?.simulation_settings?.requests_per_period?.value ?? 0}]};
+        let traversalRecords: Record<string, RequestRecord[]> = {nodes: [{node: selectedNodeData, throughPut: selectedNodeData.simulationProperties?.simulation_settings?.requests_per_period?.value ?? 0}]};
         traversalRecords = this.traverseNodes(selectedNodeData?.id, stateNodesData, stateEdgesData, stateEdges, traversalRecords, null, null);
         console.log(traversalRecords);
 
@@ -323,7 +323,7 @@ export class CanvasController{
                     
                     //get requst data for node by id
                     const nodeTraversalRecord = traversalRecords.nodes.find((record: RequestRecord) => record.node?.id === node.id);
-                    newNode.data.requestsPerPeriod = nodeTraversalRecord?.requests;
+                    newNode.data.requestsPerPeriod = nodeTraversalRecord?.throughPut;
 
                 }else{
                     newNode.data.highlighted = false;
@@ -357,17 +357,8 @@ export class CanvasController{
         }));
     }
 
-    private traverseNodes(currentNodeID: string, stateNodesData: ComponentData[], stateEdgesData: ComponentData[], stateEdges: AppEdge[], traversalRecords: Record<string, RequestRecord[]>, previousEdgeMultiplier: number | null, previousNodeRequests: number | null): Record<string, RequestRecord[]>{
+    private traverseNodes(currentNodeID: string, stateNodesData: ComponentData[], stateEdgesData: ComponentData[], stateEdges: AppEdge[], traversalRecords: Record<string, RequestRecord[]>, previousNodeRequestRecord: RequestRecord): Record<string, RequestRecord[]>{
         
-        let currentNodeRequests: number = 0;
-
-        //calculate current node requests based on previous node and edge data. If no previous node or edge data, use current node data.
-        if(previousNodeRequests !== null && previousEdgeMultiplier !== null){
-            currentNodeRequests = previousNodeRequests * previousEdgeMultiplier;
-        }else{
-            console.log(traversalRecords.nodes[0].requests);
-            currentNodeRequests = traversalRecords.nodes[0].requests ?? 0; //should never be 0 as its defined before passing in 
-        }
     
         //get outgoing edges from the current node
         const currentEdges: AppEdge[] = stateEdges.filter((edge: AppEdge) => edge.source == currentNodeID);
@@ -376,111 +367,135 @@ export class CanvasController{
             console.log("currentEdges.length === 0");
             return traversalRecords;
         }
+       
+        for(let i = 0; i < currentEdges.length; i++){
 
-        const arePollEdges: boolean = currentEdges[0].data?.behaviour.edgeType.value === 'Poll';
+            console.log(traversalRecords);
+            let currentNodeRequests: number = 0;
 
-        if(arePollEdges){
+            //calculate current node requests based on previous node and edge data. If no previous node or edge data, use current node data.
 
-            //what is the total capacity of all child nodes
-            const nextNodes: ComponentData[] = [];
+            if(currentEdges[i].data?.behaviour?.edgeType.value == "Poll"){
+                currentNodeRequests = this.calculatePollEdgeThroughPut(currentNodeRequests, currentEdges, stateNodesData);
+            }else if(previousNodeRequestRecord !== null){
+                currentNodeRequests = previousNodeRequestRecord.throughPut ?? 0;
+            }else{
+                console.log(traversalRecords.nodes[0].throughPut);
+                currentNodeRequests = traversalRecords.nodes[0].throughPut ?? 0; //should never be 0 as its defined before passing in 
+            }
 
-            for(let i = 0; i < currentEdges.length; i++){
-
-                const nextNode: ComponentData | undefined = stateNodesData.find((node: ComponentData) => node.id == currentEdges[i].target);
-
-                if(nextNode === undefined){
-                    return traversalRecords; //Loud failure should never happen. Will not traverse all the way through 
-                }
-
-                nextNodes.push(nextNode);
-
-            }   
-
-            //is the capacity / number of children nodes higher than atleast one of the nodes capacity
+            traversalRecords = this.processEdge(currentNodeRequests, currentEdges[i], stateNodesData, stateEdges, stateEdgesData, traversalRecords);
+        }
             
-            const capacities: number[] = [];
+        
 
-            console.log(nextNodes);
+        return traversalRecords;
 
-            for(let i = 0; i < nextNodes.length; i++){
-                const capacity: any | undefined = nextNodes[i].simulationProperties?.simulation_settings?.capacity?.value;
+    }
 
-                if(capacity === undefined){
-                    return traversalRecords;
-                }
+    private calculatePollEdgeThroughPut(currentNodeRequests: number, currentEdges: AppEdge[], stateNodesData: ComponentData[]): number{
 
-                capacities.push(parseInt(capacity));
+        let throughPut: number = 0;
 
+        //what is the total capacity of all child nodes
+        const nextNodes: ComponentData[] = [];
+
+        for(let i = 0; i < currentEdges.length; i++){
+
+            const nextNode: ComponentData | undefined = stateNodesData.find((node: ComponentData) => node.id == currentEdges[i].target);
+
+            if(nextNode === undefined){
+                return -1; //Loud failure should never happen. Will not traverse all the way through 
             }
 
-            const totalCapacity: number = (capacities as number[]).reduce((total, current) => total + current);
+            nextNodes.push(nextNode);
 
-            //if so process that edge with max capacity and keep a running total of remain requests
+        }   
 
-            if(capacities.sort((a, b) => a < b ? a : b)[0] < (totalCapacity / nextNodes.length)){
-                console.log("lowest capacity is lower than proportion")
+        //is the capacity / number of children nodes higher than atleast one of the nodes capacity
+        
+        const capacities: number[] = [];
+
+        for(let i = 0; i < nextNodes.length; i++){
+
+            const capacity: any | undefined = nextNodes[i].simulationProperties?.simulation_settings?.capacity?.value;
+
+            if(capacity === undefined){
+                return -1;
             }
 
-            console.log(capacities);
-            console.log(totalCapacity);
+            capacities.push(parseInt(capacity));
 
-            //repeat for remaining request and number of unprocessed children.
-            //If capcacity/number of children is lower than the lowest capacity of a child node then distribute request evenly amongst remain nodes
+        }
+
+        const totalCapacity: number = (capacities as number[]).reduce((total, current) => total + current);
+
+        //if so process that edge with max capacity and keep a running total of remain requests
+        const isCapacityThrottled: boolean[] = [];
+
+        capacities.sort((a, b) => a < b ? a : b);
+
+        capacities.forEach((capacity) => isCapacityThrottled.push(capacity < (currentNodeRequests / nextNodes.length))); //is the max capacity of the node less than its proportional share
+        //repeat for remaining request and number of unprocessed children.
+        //If capcacity/number of children is lower than the lowest capacity of a child node then distribute request evenly amongst remain nodes
+
+        return throughPut;
+    }
+
+    private processEdge(currentNodeRequests: number, currentEdge: AppEdge, stateNodesData: ComponentData[], stateEdges: AppEdge[], stateEdgesData: ComponentData[], traversalRecords: Record<string, RequestRecord[]>): Record<string, RequestRecord[]>{
+        
+        const nextNode: ComponentData | undefined = stateNodesData.find((node: ComponentData) => node.id == currentEdge.target);
+
+        //find current outgoing edge data
+        const currentEdgeData: ComponentData | undefined = stateEdgesData.find((edge: ComponentData) => edge.id == currentEdge.id); //check if ids checks make sense
+
+        if(nextNode == undefined || currentEdgeData == undefined){
+            console.log("nextNode == null || nextNode == undefined || currentEdgeData == null || currentEdgeData == undefined");
+            return traversalRecords;
+        }
+
+        const currentEdgeMultiplier = currentEdgeData?.simulationProperties?.simulation_settings?.request_multiplier?.value ?? 1;
+        
+        const edgeRequestRecord: RequestRecord = {
+            edge: currentEdgeData,
+            multiplier: currentEdgeMultiplier
+        }  
+
+        const establishedNodeRequestRecord: RequestRecord | undefined = traversalRecords.nodes.find((record: RequestRecord) => record.node?.id === nextNode.id);
+
+        let currentNodeRequestRecord: RequestRecord | undefined;
+
+        if(establishedNodeRequestRecord !== undefined){
+            //find and update record in place
+            establishedNodeRequestRecord.throughPut = (establishedNodeRequestRecord!.throughPut ?? 0) + (currentNodeRequests * (currentEdgeMultiplier ?? 1));
+
+            traversalRecords = {
+                edges: [...traversalRecords.edges, edgeRequestRecord],
+                nodes: [...traversalRecords.nodes, establishedNodeRequestRecord]
+            }
+
+            currentNodeRequestRecord = establishedNodeRequestRecord;
 
         }else{
         
-            for(let i = 0; i < currentEdges.length; i++){
-
-                const nextNode: ComponentData | undefined = stateNodesData.find((node: ComponentData) => node.id == currentEdges[i].target);
-
-                //find current outgoing edge data
-                const currentEdgeData: ComponentData | undefined = stateEdgesData.find((edge: ComponentData) => edge.id == currentEdges[i].id); //check if ids checks make sense
-
-                if(nextNode == undefined || currentEdgeData == undefined){
-                    console.log("nextNode == null || nextNode == undefined || currentEdgeData == null || currentEdgeData == undefined");
-                    return traversalRecords;
-                }
-
-                const currentEdgeMultiplier = currentEdgeData?.simulationProperties?.simulation_settings?.request_multiplier?.value ?? 1;
-                
-                const edgeRequestRecord: RequestRecord = {
-                    edge: currentEdgeData,
-                    multiplier: currentEdgeMultiplier
-                }  
-
-                const establishedNodeRequestRecord: RequestRecord | undefined = traversalRecords.nodes.find((record: RequestRecord) => record.node?.id === nextNode.id);
-
-                if(establishedNodeRequestRecord !== undefined){
-                    //find and update record in place
-                    establishedNodeRequestRecord.requests = (establishedNodeRequestRecord!.requests ?? 0) + (currentNodeRequests * (currentEdgeMultiplier ?? 1));
-
-                    traversalRecords = {
-                        edges: [...traversalRecords.edges, edgeRequestRecord],
-                        nodes: [...traversalRecords.nodes, establishedNodeRequestRecord]
-                    }
-
-                }else{
-                
-                    const nodeRequestRecord: RequestRecord = {
-                        node: nextNode,
-                        requests: currentNodeRequests * (currentEdgeMultiplier ?? 1)
-                    }
-
-                    const edges = traversalRecords.edges ?? []; //to handle the initial record case were previous edges are null
-
-                    traversalRecords = {
-                        edges: [...edges, edgeRequestRecord],
-                        nodes: [...traversalRecords.nodes, nodeRequestRecord]
-                    }
-
-                }
-
-                traversalRecords = this.traverseNodes(nextNode.id, stateNodesData, stateEdgesData, stateEdges, traversalRecords, currentEdgeMultiplier, currentNodeRequests);
-
+            const nodeRequestRecord: RequestRecord = {
+                node: nextNode,
+                throughPut: currentNodeRequests * (currentEdgeMultiplier ?? 1)
             }
-        
+
+            const edges = traversalRecords.edges ?? []; //to handle the initial record case were previous edges are null
+
+            traversalRecords = {
+                edges: [...edges, edgeRequestRecord],
+                nodes: [...traversalRecords.nodes, nodeRequestRecord]
+            }
+
+            currentNodeRequestRecord = nodeRequestRecord;
+
         }
 
+        traversalRecords = this.traverseNodes(nextNode.id, stateNodesData, stateEdgesData, stateEdges, traversalRecords, currentNodeRequestRecord);
+    
         return traversalRecords;
 
     }
